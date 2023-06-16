@@ -90,7 +90,10 @@ public class RoleDiscoveryService {
           .filter(res -> ProjectId.isProjectFullResourceName(res.getFullResourceName()))
           .map(res -> new RoleBinding(
             res.getFullResourceName(),
-            result.getIamBinding().getRole()))))
+            result.getIamBinding().getRole(),
+            JitConstraints.getAdditionalConditions(result.getIamBinding()
+                                                         .getCondition()
+                                                         .getExpression())))))
       .collect(Collectors.toList());
   }
 

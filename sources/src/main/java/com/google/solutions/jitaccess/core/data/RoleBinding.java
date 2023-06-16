@@ -31,6 +31,17 @@ import java.util.Objects;
 public class RoleBinding {
   public final String fullResourceName;
   public final String role;
+  public final String additionalConditions;
+
+
+  public RoleBinding(String fullResourceName, String role, String additionalConditions) {
+    Preconditions.checkNotNull(fullResourceName);
+    Preconditions.checkNotNull(role);
+
+    this.fullResourceName = fullResourceName;
+    this.role = role;
+    this.additionalConditions = additionalConditions;
+  }
 
   public RoleBinding(String fullResourceName, String role) {
     Preconditions.checkNotNull(fullResourceName);
@@ -38,6 +49,7 @@ public class RoleBinding {
 
     this.fullResourceName = fullResourceName;
     this.role = role;
+    this.additionalConditions = "";
   }
 
   public RoleBinding(ProjectId project, String role) {

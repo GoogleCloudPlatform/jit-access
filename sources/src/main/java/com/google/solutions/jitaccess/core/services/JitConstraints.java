@@ -42,6 +42,10 @@ public class JitConstraints {
   private static final Pattern MPA_CONDITION_PATTERN = Pattern
     .compile("^\\s*([^|]|\\(.*\\|*.*\\))*\\s*has\\(\\s*\\{\\s*\\}.multipartyapprovalconstraint\\s*\\)\\s*([^|]|\\(.*\\|*.*\\))*\\s*$");
 
+  /** Additional conditions besides activation. They should appear after AND (&&) */
+  private static final Pattern ADDITIONAL_CONDITIONS_PATTERN = Pattern
+    .compile("\\s*&&.*$");
+
   private JitConstraints() {
   }
 
@@ -78,4 +82,15 @@ public class JitConstraints {
     return iamCondition != null &&
       ACTIVATION_CONDITION_TITLE.equals(iamCondition.getTitle());
   }
+
+  // Get the extra conditions that should be added in the final
+  // constraints (when the role is activated using JIT)
+  private static String getAdditionalConditions(
+    String conditionExpression
+  ) {
+
+    return ADDITIONAL_CONDITIONS_PATTERN.matcher(conditionExpression).group();
+
+  }
+
 }

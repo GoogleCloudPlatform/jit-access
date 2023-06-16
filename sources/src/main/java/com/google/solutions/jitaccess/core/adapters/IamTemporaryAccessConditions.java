@@ -47,7 +47,7 @@ public class IamTemporaryAccessConditions {
     return expression != null && CONDITION.matcher(expression).matches();
   }
 
-  public static String createExpression(Instant startTime, Instant endTime) {
+  public static String createExpression(Instant startTime, Instant endTime, String additionalConditions) {
     assert (startTime.isBefore(endTime));
 
     var clause = String.format(
@@ -57,13 +57,32 @@ public class IamTemporaryAccessConditions {
 
     assert (isTemporaryAccessCondition(clause));
 
+    // Assuming additionalConditions has the format "&& <other-conditions>"
+    if ( !additionalConditions.isEmpty() ) {
+
+      clause += additionalConditions;
+
+    }
+
     return clause;
+  }
+
+  public static String createExpression(Instant startTime, Instant endTime) {
+    return createExpression(startTime, endTime, "");
   }
 
   public static String createExpression(
     Instant startTime,
-    TemporalAmount duration
+    TemporalAmount duration,
+    String additionalConditions
   ) {
-    return createExpression(startTime, startTime.plus(duration));
+    return createExpression(startTime, startTime.plus(duration), additionalConditions);
+  }
+
+  public static String createExpression(
+  Instant startTime,
+  TemporalAmount duration
+  ) {
+    return createExpression(startTime, startTime.plus(duration), "");
   }
 }

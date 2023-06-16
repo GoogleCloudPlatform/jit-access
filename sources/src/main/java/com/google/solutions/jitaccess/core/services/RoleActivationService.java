@@ -182,7 +182,7 @@ public class RoleActivationService {
       .setCondition(new com.google.api.services.cloudresourcemanager.v3.model.Expr()
         .setTitle(JitConstraints.ACTIVATION_CONDITION_TITLE)
         .setDescription(bindingDescription)
-        .setExpression(IamTemporaryAccessConditions.createExpression(activationTime, expiryTime)));
+        .setExpression(IamTemporaryAccessConditions.createExpression(activationTime, expiryTime, roleBinding.additionalConditions)));
 
     this.resourceManagerAdapter.addProjectIamBinding(
       ProjectId.fromFullResourceName(roleBinding.fullResourceName),
@@ -258,7 +258,8 @@ public class RoleActivationService {
         .setDescription(bindingDescription)
         .setExpression(IamTemporaryAccessConditions.createExpression(
           request.startTime,
-          request.endTime)));
+          request.endTime,
+          roleBinding.additionalConditions)));
 
     this.resourceManagerAdapter.addProjectIamBinding(
       ProjectId.fromFullResourceName(request.roleBinding.fullResourceName),
