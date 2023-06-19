@@ -95,6 +95,7 @@
                                                 </label>
                                             </th>
                                             <th class="mdl-data-table__cell--non-numeric">Role</th>
+                                            <th class="mdl-data-table__cell--non-numeric">Additional Conditions</th>
                                             <th class="mdl-data-table__cell--non-numeric">Status</th>
                                         </tr>
                                     </thead>
@@ -586,6 +587,7 @@
                         item.roleBinding.role,
                         [
                             { text: item.roleBinding.role },
+                            { text: item.roleBinding.additionalConditions},
                             { text: this.statusCaptions[item.status] ?? item.status, class: item.status === "ACTIVATED" ? "activated" : null }
                         ],
                         true,
@@ -841,6 +843,7 @@
                             activationStatus = await backend.selfApproveActivation(
                                 requestPane.selectedProjectId,
                                 requestPane.selectedRoles.map(r => r.roleBinding.role),
+                                requestPane.selectedRoles.map(r => r.roleBinding.additionalConditions),
                                 requestPane.justificationText,
                                 parseInt(requestPane.activationTimeout))
                         }

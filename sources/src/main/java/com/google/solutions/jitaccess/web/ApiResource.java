@@ -46,10 +46,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.function.*;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * REST API controller.
@@ -301,10 +303,16 @@ public class ApiResource {
     //
     // NB. The input list of roles might contain duplicates, therefore reduce to a set.
     //
-    var roleBindings = request.roles
-      .stream()
-      .map(r -> new RoleBinding(projectId.getFullResourceName(), r))
-      .collect(Collectors.toSet());
+
+    var mapRolesToConditions = IntStream.range(0, request.roles.size())
+                               .boxed()
+                               .collect(Collectors
+                                        .toMap(Function.identity(), index -> new RoleBinding(projectId.getFullResourceName(), request.roles.get(index), request.additionalConditions.get(index))));
+
+    var roleBindings = mapRolesToConditions
+                       .values()
+                       .stream()
+                       .collect(Collectors.toSet());
 
     var activations = new ArrayList<RoleActivationService.Activation>();
     for (var roleBinding : roleBindings) {
@@ -741,6 +749,7 @@ public class ApiResource {
 
   public static class SelfActivationRequest {
     public List<String> roles;
+    public List<String> additionalConditions;
     public String justification;
     public int activationTimeout; // in minutes.
   }

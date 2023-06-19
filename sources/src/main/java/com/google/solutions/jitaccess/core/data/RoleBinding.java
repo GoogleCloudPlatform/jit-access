@@ -32,6 +32,7 @@ public class RoleBinding {
   public final String fullResourceName;
   public final String role;
   public final String additionalConditions;
+  public final boolean isConditional;
 
 
   public RoleBinding(String fullResourceName, String role, String additionalConditions) {
@@ -41,6 +42,8 @@ public class RoleBinding {
     this.fullResourceName = fullResourceName;
     this.role = role;
     this.additionalConditions = additionalConditions;
+    this.isConditional = !this.additionalConditions.isEmpty();
+
   }
 
   public RoleBinding(String fullResourceName, String role) {
@@ -50,6 +53,12 @@ public class RoleBinding {
     this.fullResourceName = fullResourceName;
     this.role = role;
     this.additionalConditions = "";
+    this.isConditional = false;
+
+  }
+
+  public RoleBinding(ProjectId project, String role, String additionalConditions) {
+    this(project.getFullResourceName(), role, additionalConditions);
   }
 
   public RoleBinding(ProjectId project, String role) {
@@ -58,7 +67,7 @@ public class RoleBinding {
 
   @Override
   public String toString() {
-    return String.format("%s:%s:%s", this.fullResourceName, this.role, this.additionalConditions);
+    return String.format("%s:%s", this.fullResourceName, this.role, this.isConditional? "-conditional": "");
   }
 
   // -------------------------------------------------------------------------

@@ -46,7 +46,7 @@ public class JitConstraints {
 
   /** Additional conditions besides activation. They should appear after AND (&&) */
   private static final Pattern ADDITIONAL_CONDITIONS_PATTERN = Pattern
-    .compile("\\s*&&.*$");
+    .compile("\\s*&&[^&]*$");
 
   private JitConstraints() {
   }
