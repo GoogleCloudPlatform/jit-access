@@ -58,7 +58,7 @@ public class RoleBinding {
 
   @Override
   public String toString() {
-    return String.format("%s:%s", this.fullResourceName, this.role);
+    return String.format("%s:%s:%s", this.fullResourceName, this.role, this.additionalConditions);
   }
 
   // -------------------------------------------------------------------------
@@ -76,11 +76,13 @@ public class RoleBinding {
     }
 
     var that = (RoleBinding) o;
-    return this.fullResourceName.equals(that.fullResourceName) && this.role.equals(that.role);
+    return this.fullResourceName.equals(that.fullResourceName) &&
+           this.role.equals(that.role) &&
+           this.additionalConditions.equals(that.additionalConditions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.fullResourceName, this.role);
+    return Objects.hash(this.fullResourceName, this.role, this.additionalConditions);
   }
 }
