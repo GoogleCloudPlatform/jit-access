@@ -689,6 +689,7 @@
                         [
                             { text: item.projectId },
                             { text: item.roleBinding.role },
+                            { text: item.roleBinding.additionalConditions },
                             { text: this.statusCaptions[item.status] ?? item.status, class: item.status === "ACTIVATED" ? "activated" : null }
                         ],
                         false);
@@ -797,7 +798,7 @@
                             throw "You can only request peer approval for a single role at a time";
                         }
 
-                        const peersResult = await backend.listPeers(requestPane.selectedProjectId, selectedRoles[0].roleBinding.role);
+                        const peersResult = await backend.listPeers(requestPane.selectedProjectId, selectedRoles[0].roleBinding.role, selectedRoles[0].roleBinding.additionalConditions);
 
                         if (!peersResult.peers || peersResult.peers.length == 0) {
                             throw "There are currently no peers that could approve your request";
@@ -835,6 +836,7 @@
                             activationStatus = await backend.requestActivation(
                                 requestPane.selectedProjectId,
                                 requestPane.selectedRoles[0].roleBinding.role,
+                                requestPane.selectedRoles[0].roleBinding.additionalConditions,
                                 requestPane.selectedPeers,
                                 requestPane.justificationText,
                                 parseInt(requestPane.activationTimeout));
