@@ -584,7 +584,7 @@
                 this._roleTable.clear();
                 roles.forEach((item) => {
                     this._roleTable.addRow(
-                        item.roleBinding.role,
+                        item.roleBinding.role + item.roleBinding.additionalConditions,
                         [
                             { text: item.roleBinding.role },
                             { text: item.roleBinding.additionalConditions},
@@ -597,7 +597,7 @@
 
             get selectedRoles() {
                 console.assert(this._roles);
-                return this._roles.filter(i => this._roleTable.selected.includes(i.roleBinding.role));
+                return this._roles.filter(i => this._roleTable.selected.includes(i.roleBinding.role + i.roleBinding.additionalConditions));
             }
 
             set peers(peers) {
