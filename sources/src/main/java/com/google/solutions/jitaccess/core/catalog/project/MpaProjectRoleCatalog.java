@@ -69,6 +69,7 @@ public class MpaProjectRoleCatalog implements Catalog<
     @NotNull ActivationRequest<ProjectRole> request
   ) {
     Preconditions.checkNotNull(request, "request");
+
     Preconditions.checkArgument(
       request.duration().toSeconds() >= this.options.minActivationDuration().toSeconds(),
       String.format(

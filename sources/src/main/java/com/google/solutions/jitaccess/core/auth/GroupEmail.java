@@ -36,6 +36,7 @@ public class GroupEmail implements Comparable<GroupEmail>, PrincipalIdentifier {
 
   public GroupEmail(@NotNull String email) {
     Preconditions.checkNotNull(email, "email");
+    Preconditions.checkArgument(!email.isBlank());
     this.email = email;
   }
 

@@ -19,23 +19,20 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.auth;
+package com.google.solutions.jitaccess.core.catalog.policy;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.List;
 
 /**
- * Represents an entity such as a user.
+ * A set of one or more policies.
  */
-public interface Subject {
-  /**
-   * @return Primary id.
-   */
-  @NotNull UserEmail user();
-
-  /**
-   * @return full set of principals, including groups.
-   */
-  @NotNull Set<PrincipalIdentifier> principals();
+public record PolicySet(@NotNull List<Policy> policies) {
+  public PolicySet {
+    Preconditions.checkArgument(
+      !policies.isEmpty(),
+      "The set must contain at least one policy");
+  }
 }
