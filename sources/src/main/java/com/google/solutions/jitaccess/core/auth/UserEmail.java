@@ -37,6 +37,7 @@ public class UserEmail implements Comparable<UserEmail>, PrincipalIdentifier {
 
   public UserEmail(@NotNull String email) {
     Preconditions.checkNotNull(email, "email");
+    Preconditions.checkArgument(!email.isBlank());
     this.email = email;
   }
 

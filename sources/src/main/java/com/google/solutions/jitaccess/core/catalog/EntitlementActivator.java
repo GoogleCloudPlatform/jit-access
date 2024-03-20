@@ -34,7 +34,8 @@ import java.util.Set;
 /**
  * Activates entitlements, for example by modifying IAM policies.
  */
-public abstract class EntitlementActivator<
+public abstract class
+EntitlementActivator<
   TEntitlementId extends EntitlementId,
   TScopeId extends ResourceId,
   TUserContext extends CatalogUserContext> {
@@ -144,7 +145,7 @@ public abstract class EntitlementActivator<
     //
     // Check that the user is (still) allowed to activate this entitlement.
     //
-    this.catalog.verifyUserCanRequest(userContext, request);
+    this.catalog.verifyUserCanRequest(userContext, request); // TODO: move up to createJitRequest!
 
     //
     // Request is legit, apply it.
@@ -180,7 +181,7 @@ public abstract class EntitlementActivator<
     //
     // Check that the user is (still) allowed to request this entitlement.
     //
-    this.catalog.verifyUserCanRequest(userContext, request);
+    this.catalog.verifyUserCanRequest(userContext, request); // TODO: wrong/obsolete - remove or load requestor context!?
 
     //
     // Check that the approving user is (still) allowed to approve this entitlement.
