@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.catalog;
+package com.google.solutions.jitaccess.core.resources;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
