@@ -21,7 +21,6 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.clients.DirectoryGroupsClient;
 import com.google.solutions.jitaccess.core.notifications.MailNotificationService;
 import org.junit.jupiter.api.Test;
 
@@ -82,7 +81,6 @@ public class TestRuntimeConfiguration {
       RuntimeConfiguration.Catalog.POLICYANALYZER,
       configuration.catalog.getValue());
     assertFalse(configuration.availableProjectsQuery.isValid());
-    assertFalse(configuration.getRequiredOauthScopes().contains(DirectoryGroupsClient.OAUTH_SCOPE));
   }
 
   @Test
@@ -97,7 +95,6 @@ public class TestRuntimeConfiguration {
     assertEquals(
       "state:ACTIVE",
       configuration.availableProjectsQuery.getValue());
-    assertTrue(configuration.getRequiredOauthScopes().contains(DirectoryGroupsClient.OAUTH_SCOPE));
   }
 
   // -------------------------------------------------------------------------

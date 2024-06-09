@@ -317,14 +317,8 @@ class RuntimeConfiguration {
     var scopes = new HashSet<String>();
 
     scopes.add(ResourceManagerClient.OAUTH_SCOPE);
-    scopes.add(PolicyAnalyzerClient.OAUTH_SCOPE);
-    scopes.add(AssetInventoryClient.OAUTH_SCOPE);
     scopes.add(IamCredentialsClient.OAUTH_SCOPE);
     scopes.add(SecretManagerClient.OAUTH_SCOPE);
-
-    if (this.catalog.getValue() == RuntimeConfiguration.Catalog.ASSETINVENTORY) {
-      scopes.add(DirectoryGroupsClient.OAUTH_SCOPE);
-    }
 
     return scopes;
   }
