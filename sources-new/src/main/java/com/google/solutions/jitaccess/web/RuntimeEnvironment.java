@@ -97,7 +97,7 @@ public class RuntimeEnvironment {
   }
 
   public String getBackendServiceId() {
-    return configuration.backendServiceId.getValue();
+    throw new RuntimeException("NIY");
   }
 
   // -------------------------------------------------------------------------
@@ -155,12 +155,11 @@ public class RuntimeEnvironment {
         logAdapter
           .newInfoEntry(
             LogEvents.RUNTIME_STARTUP,
-            String.format("Running in project %s (%s) as %s, version %s, using %s catalog",
+            String.format("Running in project %s (%s) as %s, version %s",
               this.projectId,
               this.projectNumber,
               this.applicationPrincipal,
-              ApplicationVersion.VERSION_STRING,
-              this.configuration.catalog.getValue()))
+              ApplicationVersion.VERSION_STRING))
           .write();
       }
       catch (IOException e) {
