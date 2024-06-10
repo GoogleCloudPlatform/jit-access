@@ -34,6 +34,9 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.solutions.jitaccess.core.ApplicationVersion;
 import com.google.solutions.jitaccess.core.auth.EmailMapping;
 import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
+import com.google.solutions.jitaccess.core.clients.Diagnosable;
+import com.google.solutions.jitaccess.core.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.core.clients.HttpTransport;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
@@ -43,6 +46,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Provides access to runtime configuration (AppEngine, local). To be injected using CDI.
@@ -257,15 +262,42 @@ public class RuntimeEnvironment {
 
 
   @Produces
-  public GoogleCredentials getApplicationCredentials() {
+  @Singleton
+  public @NotNull Diagnosable produceDevModeDiagnosable() {
+    final String name = "DevModeIsDisabled";
+    return new Diagnosable() {
+      @Override
+      public Collection<DiagnosticsResult> diagnose() {
+        if (!isDebugModeEnabled()) {
+          return List.of(new DiagnosticsResult(name));
+        }
+        else {
+          return List.of(
+            new DiagnosticsResult(
+              name,
+              false,
+              "Application is running in development mode"));
+        }
+      }
+    };
+  }
+
+  @Produces
+  public @NotNull CloudIdentityGroupsClient.Options produceCloudIdentityGroupsClientOptions() {
+    return new CloudIdentityGroupsClient.Options(
+      this.configuration.customerId.getValue());
+  }
+
+  @Produces
+  public GoogleCredentials produceApplicationCredentials() {
     return applicationCredentials;
   }
 
   @Produces
-  public @NotNull HttpTransport.Options getHttpTransportOptions() {
+  public @NotNull HttpTransport.Options produceHttpTransportOptions() {
     return new HttpTransport.Options(
-      this.configuration.backendConnectTimeout(),
-      this.configuration.backendReadTimeout(),
-      this.configuration.backendWriteTimeout());
+      this.configuration.backendConnectTimeout.getValue(),
+      this.configuration.backendReadTimeout.getValue(),
+      this.configuration.backendWriteTimeout.getValue());
   }
 }

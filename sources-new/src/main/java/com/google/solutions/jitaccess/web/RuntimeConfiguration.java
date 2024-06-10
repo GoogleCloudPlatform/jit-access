@@ -1,5 +1,5 @@
 //
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -25,11 +25,34 @@ import com.google.solutions.jitaccess.core.clients.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 
-class RuntimeConfiguration { // TODO: load from YAML
+class RuntimeConfiguration {
   private final Function<String, String> readSetting;
+
+  /**
+   * Cloud Identity/Workspace customer ID.
+   */
+  public final @NotNull StringSetting customerId;
+
+  /**
+   * Connect timeout for HTTP requests to backends.
+   */
+  public final @NotNull DurationSetting backendConnectTimeout;
+
+  /**
+   * Read timeout for HTTP requests to backends.
+   */
+  public final @NotNull DurationSetting backendReadTimeout;
+
+  /**
+   * Write timeout for HTTP requests to backends.
+   */
+  public final @NotNull DurationSetting backendWriteTimeout;
 
   public RuntimeConfiguration(@NotNull Map<String, String> settings) {
     this(key -> settings.get(key));
@@ -37,6 +60,29 @@ class RuntimeConfiguration { // TODO: load from YAML
 
   public RuntimeConfiguration(Function<String, String> readSetting) {
     this.readSetting = readSetting;
+
+    //
+    // Backend settings.
+    //
+    this.backendConnectTimeout = new DurationSetting(
+      List.of("BACKEND_CONNECT_TIMEOUT"),
+      ChronoUnit.SECONDS,
+      Duration.ofSeconds(5));
+    this.backendReadTimeout = new DurationSetting(
+      List.of("BACKEND_READ_TIMEOUT"),
+      ChronoUnit.SECONDS,
+      Duration.ofSeconds(20));
+    this.backendWriteTimeout = new DurationSetting(
+      List.of("BACKEND_WRITE_TIMEOUT"),
+      ChronoUnit.SECONDS,
+      Duration.ofSeconds(5));
+
+    //
+    // Directory settings.
+    //
+    this.customerId = new StringSetting(
+      List.of("RESOURCE_CUSTOMER_ID"),
+      null);
   }
 
   public boolean isSmtpConfigured() {
@@ -53,15 +99,123 @@ class RuntimeConfiguration { // TODO: load from YAML
     return scopes;
   }
 
-  public Duration backendConnectTimeout() {
-    return Duration.ofSeconds(10); // TODO: read from config
+  // -------------------------------------------------------------------------
+  // Inner classes.
+  // -------------------------------------------------------------------------
+
+  public abstract class Setting<T> {
+    private final Collection<String> keys;
+    private final T defaultValue;
+
+    protected abstract T parse(String value);
+
+    protected Setting(Collection<String> keys, T defaultValue) {
+      this.keys = keys;
+      this.defaultValue = defaultValue;
+    }
+
+    public T getValue() {
+      for (var key : this.keys) {
+        var value = readSetting.apply(key);
+        if (value != null) {
+          value = value.trim();
+          if (!value.isEmpty()) {
+            return parse(value);
+          }
+        }
+      }
+
+      if (this.defaultValue != null) {
+        return this.defaultValue;
+      }
+      else {
+        throw new IllegalStateException("No value provided for " + this.keys);
+      }
+    }
+
+    public boolean isValid() {
+      try {
+        getValue();
+        return true;
+      }
+      catch (Exception ignored) {
+        return false;
+      }
+    }
   }
 
-  public Duration backendReadTimeout() {
-    return Duration.ofSeconds(10); // TODO: read from config
+  public class StringSetting extends Setting<String> {
+    public StringSetting(Collection<String> keys, String defaultValue) {
+      super(keys, defaultValue);
+    }
+
+    @Override
+    protected String parse(String value) {
+      return value;
+    }
   }
 
-  public Duration backendWriteTimeout() {
-    return Duration.ofSeconds(10); // TODO: read from config
+  public class IntSetting extends Setting<Integer> {
+    public IntSetting(Collection<String> keys, Integer defaultValue) {
+      super(keys, defaultValue);
+    }
+
+    @Override
+    protected @NotNull Integer parse(@NotNull String value) {
+      return Integer.parseInt(value);
+    }
+  }
+
+  public class BooleanSetting extends Setting<Boolean> {
+    public BooleanSetting(Collection<String> keys, Boolean defaultValue) {
+      super(keys, defaultValue);
+    }
+
+    @Override
+    protected @NotNull Boolean parse(String value) {
+      return Boolean.parseBoolean(value);
+    }
+  }
+
+  public class DurationSetting extends Setting<Duration> {
+    private final ChronoUnit unit;
+    public DurationSetting(Collection<String> keys, ChronoUnit unit, Duration defaultValue) {
+      super(keys, defaultValue);
+      this.unit = unit;
+    }
+
+    @Override
+    protected Duration parse(@NotNull String value) {
+      return Duration.of(Integer.parseInt(value), this.unit);
+    }
+  }
+
+  public class ZoneIdSetting extends Setting<ZoneId> {
+    public ZoneIdSetting(Collection<String> keys) {
+      super(keys, ZoneOffset.UTC);
+    }
+
+    @Override
+    protected @NotNull ZoneId parse(@NotNull String value) {
+      return ZoneId.of(value);
+    }
+  }
+
+  public class EnumSetting<E extends Enum<E>> extends Setting<E> {
+    private final Class<E> enumClass;
+
+    public EnumSetting(
+      Class<E> enumClass,
+      Collection<String> keys,
+      E defaultValue
+    ) {
+      super(keys, defaultValue);
+      this.enumClass = enumClass;
+    }
+
+    @Override
+    protected @NotNull E parse(@NotNull String value) {
+      return E.valueOf(this.enumClass, value.trim().toUpperCase());
+    }
   }
 }
