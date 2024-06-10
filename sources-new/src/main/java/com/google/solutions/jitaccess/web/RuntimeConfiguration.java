@@ -32,27 +32,27 @@ import java.util.*;
 import java.util.function.Function;
 
 class RuntimeConfiguration {
-  private final Function<String, String> readSetting;
+  private final @NotNull Function<String, String> readSetting;
 
   /**
    * Cloud Identity/Workspace customer ID.
    */
-  public final @NotNull StringSetting customerId;
+  public final @NotNull Setting<String> customerId;
 
   /**
    * Connect timeout for HTTP requests to backends.
    */
-  public final @NotNull DurationSetting backendConnectTimeout;
+  public final @NotNull Setting<Duration> backendConnectTimeout;
 
   /**
    * Read timeout for HTTP requests to backends.
    */
-  public final @NotNull DurationSetting backendReadTimeout;
+  public final @NotNull Setting<Duration> backendReadTimeout;
 
   /**
    * Write timeout for HTTP requests to backends.
    */
-  public final @NotNull DurationSetting backendWriteTimeout;
+  public final @NotNull Setting<Duration> backendWriteTimeout;
 
   public RuntimeConfiguration(@NotNull Map<String, String> settings) {
     this(key -> settings.get(key));
@@ -65,15 +65,15 @@ class RuntimeConfiguration {
     // Backend settings.
     //
     this.backendConnectTimeout = new DurationSetting(
-      List.of("BACKEND_CONNECT_TIMEOUT"),
+      "BACKEND_CONNECT_TIMEOUT",
       ChronoUnit.SECONDS,
       Duration.ofSeconds(5));
     this.backendReadTimeout = new DurationSetting(
-      List.of("BACKEND_READ_TIMEOUT"),
+      "BACKEND_READ_TIMEOUT",
       ChronoUnit.SECONDS,
       Duration.ofSeconds(20));
     this.backendWriteTimeout = new DurationSetting(
-      List.of("BACKEND_WRITE_TIMEOUT"),
+      "BACKEND_WRITE_TIMEOUT",
       ChronoUnit.SECONDS,
       Duration.ofSeconds(5));
 
@@ -81,7 +81,7 @@ class RuntimeConfiguration {
     // Directory settings.
     //
     this.customerId = new StringSetting(
-      List.of("RESOURCE_CUSTOMER_ID"),
+      "RESOURCE_CUSTOMER_ID",
       null);
   }
 
@@ -104,24 +104,22 @@ class RuntimeConfiguration {
   // -------------------------------------------------------------------------
 
   public abstract class Setting<T> {
-    private final Collection<String> keys;
+    private final String key;
     private final T defaultValue;
 
     protected abstract T parse(String value);
 
-    protected Setting(Collection<String> keys, T defaultValue) {
-      this.keys = keys;
+    protected Setting(String key, T defaultValue) {
+      this.key = key;
       this.defaultValue = defaultValue;
     }
 
     public T getValue() {
-      for (var key : this.keys) {
-        var value = readSetting.apply(key);
-        if (value != null) {
-          value = value.trim();
-          if (!value.isEmpty()) {
-            return parse(value);
-          }
+      var value = readSetting.apply(key);
+      if (value != null) {
+        value = value.trim();
+        if (!value.isEmpty()) {
+          return parse(value);
         }
       }
 
@@ -129,7 +127,7 @@ class RuntimeConfiguration {
         return this.defaultValue;
       }
       else {
-        throw new IllegalStateException("No value provided for " + this.keys);
+        throw new IllegalStateException("No value provided for " + this.key);
       }
     }
 
@@ -144,9 +142,9 @@ class RuntimeConfiguration {
     }
   }
 
-  public class StringSetting extends Setting<String> {
-    public StringSetting(Collection<String> keys, String defaultValue) {
-      super(keys, defaultValue);
+  private class StringSetting extends Setting<String> {
+    public StringSetting(String key, String defaultValue) {
+      super(key, defaultValue);
     }
 
     @Override
@@ -155,9 +153,9 @@ class RuntimeConfiguration {
     }
   }
 
-  public class IntSetting extends Setting<Integer> {
-    public IntSetting(Collection<String> keys, Integer defaultValue) {
-      super(keys, defaultValue);
+  private class IntSetting extends Setting<Integer> {
+    public IntSetting(String key, Integer defaultValue) {
+      super(key, defaultValue);
     }
 
     @Override
@@ -166,9 +164,9 @@ class RuntimeConfiguration {
     }
   }
 
-  public class BooleanSetting extends Setting<Boolean> {
-    public BooleanSetting(Collection<String> keys, Boolean defaultValue) {
-      super(keys, defaultValue);
+  private class BooleanSetting extends Setting<Boolean> {
+    public BooleanSetting(String key, Boolean defaultValue) {
+      super(key, defaultValue);
     }
 
     @Override
@@ -177,10 +175,10 @@ class RuntimeConfiguration {
     }
   }
 
-  public class DurationSetting extends Setting<Duration> {
+  private class DurationSetting extends Setting<Duration> {
     private final ChronoUnit unit;
-    public DurationSetting(Collection<String> keys, ChronoUnit unit, Duration defaultValue) {
-      super(keys, defaultValue);
+    public DurationSetting(String key, ChronoUnit unit, Duration defaultValue) {
+      super(key, defaultValue);
       this.unit = unit;
     }
 
@@ -190,9 +188,9 @@ class RuntimeConfiguration {
     }
   }
 
-  public class ZoneIdSetting extends Setting<ZoneId> {
-    public ZoneIdSetting(Collection<String> keys) {
-      super(keys, ZoneOffset.UTC);
+  private class ZoneIdSetting extends Setting<ZoneId> {
+    public ZoneIdSetting(String key) {
+      super(key, ZoneOffset.UTC);
     }
 
     @Override
@@ -201,15 +199,15 @@ class RuntimeConfiguration {
     }
   }
 
-  public class EnumSetting<E extends Enum<E>> extends Setting<E> {
+  private class EnumSetting<E extends Enum<E>> extends Setting<E> {
     private final Class<E> enumClass;
 
     public EnumSetting(
       Class<E> enumClass,
-      Collection<String> keys,
+      String key,
       E defaultValue
     ) {
-      super(keys, defaultValue);
+      super(key, defaultValue);
       this.enumClass = enumClass;
     }
 
