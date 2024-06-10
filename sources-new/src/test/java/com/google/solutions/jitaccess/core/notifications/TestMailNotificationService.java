@@ -23,7 +23,7 @@ package com.google.solutions.jitaccess.core.notifications;
 
 import com.google.solutions.jitaccess.core.auth.EmailMapping;
 import com.google.solutions.jitaccess.core.auth.UserId;
-import com.google.solutions.jitaccess.core.clients.EmailAddress;
+import com.google.solutions.jitaccess.core.auth.EmailAddress;
 import com.google.solutions.jitaccess.core.clients.SmtpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

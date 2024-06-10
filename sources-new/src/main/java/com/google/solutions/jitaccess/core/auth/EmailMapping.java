@@ -23,7 +23,6 @@ package com.google.solutions.jitaccess.core.auth;
 
 import com.google.api.client.json.GenericJson;
 import com.google.solutions.jitaccess.cel.ExtractFunction;
-import com.google.solutions.jitaccess.core.clients.EmailAddress;
 import dev.cel.common.CelException;
 import dev.cel.common.types.CelTypes;
 import dev.cel.compiler.CelCompiler;
