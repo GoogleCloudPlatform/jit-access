@@ -1,5 +1,5 @@
 //
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,14 +19,14 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core;
+package com.google.solutions.jitaccess.core.clients;
 
-public class AccessDeniedException extends AccessException {
-  public AccessDeniedException(String message) {
+public class ResourceNotFoundException extends AccessException {
+  public ResourceNotFoundException(String message) {
     super(message, null);
   }
 
-  public AccessDeniedException(String message, Exception inner) {
+  public ResourceNotFoundException(String message, Exception inner) {
     super(message, inner);
   }
 }

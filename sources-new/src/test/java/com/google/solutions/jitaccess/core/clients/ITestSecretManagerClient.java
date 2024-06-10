@@ -28,9 +28,6 @@ import com.google.api.services.secretmanager.v1.model.Automatic;
 import com.google.api.services.secretmanager.v1.model.Replication;
 import com.google.api.services.secretmanager.v1.model.Secret;
 import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.solutions.jitaccess.core.AccessDeniedException;
-import com.google.solutions.jitaccess.core.NotAuthenticatedException;
-import com.google.solutions.jitaccess.core.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

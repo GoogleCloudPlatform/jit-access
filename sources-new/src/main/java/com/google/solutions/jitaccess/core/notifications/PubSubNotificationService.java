@@ -4,7 +4,7 @@ import com.google.api.client.json.GenericJson;
 import com.google.api.services.pubsub.model.PubsubMessage;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.google.solutions.jitaccess.core.AccessException;
+import com.google.solutions.jitaccess.core.clients.AccessException;
 import com.google.solutions.jitaccess.core.clients.PubSubClient;
 import com.google.solutions.jitaccess.core.clients.PubSubTopic;
 import org.jetbrains.annotations.NotNull;

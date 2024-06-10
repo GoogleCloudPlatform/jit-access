@@ -22,8 +22,6 @@
 package com.google.solutions.jitaccess.core.clients;
 
 import com.google.api.services.pubsub.model.PubsubMessage;
-import com.google.solutions.jitaccess.core.AccessDeniedException;
-import com.google.solutions.jitaccess.core.NotAuthenticatedException;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 

@@ -21,10 +21,10 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.AccessDeniedException;
-import com.google.solutions.jitaccess.core.AccessException;
-import com.google.solutions.jitaccess.core.NotAuthenticatedException;
-import com.google.solutions.jitaccess.core.ResourceNotFoundException;
+import com.google.solutions.jitaccess.core.clients.AccessDeniedException;
+import com.google.solutions.jitaccess.core.clients.AccessException;
+import com.google.solutions.jitaccess.core.clients.NotAuthenticatedException;
+import com.google.solutions.jitaccess.core.clients.ResourceNotFoundException;
 import com.google.solutions.jitaccess.core.auth.UserId;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;

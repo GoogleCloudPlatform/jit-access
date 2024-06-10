@@ -2,7 +2,6 @@ package com.google.solutions.jitaccess.core.clients;
 
 import com.google.api.client.json.webtoken.JsonWebToken;
 import com.google.auth.oauth2.TokenVerifier;
-import com.google.solutions.jitaccess.core.AccessDeniedException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

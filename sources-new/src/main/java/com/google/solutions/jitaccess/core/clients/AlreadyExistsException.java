@@ -19,10 +19,10 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core;
+package com.google.solutions.jitaccess.core.clients;
 
-public class NotAuthenticatedException extends AccessException {
-  public NotAuthenticatedException(String message, Exception inner) {
-    super(message, inner);
+public class AlreadyExistsException extends Exception {
+  AlreadyExistsException(String message) {
+    super(message);
   }
 }

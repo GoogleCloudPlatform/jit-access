@@ -30,7 +30,6 @@ import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.*;
 import com.google.solutions.jitaccess.core.auth.GroupId;
 import com.google.solutions.jitaccess.core.auth.UserId;
-import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

@@ -21,7 +21,7 @@
 
 package com.google.solutions.jitaccess.core.util;
 
-import com.google.solutions.jitaccess.core.AccessDeniedException;
+import com.google.solutions.jitaccess.core.clients.AccessDeniedException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -19,14 +19,14 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core;
+package com.google.solutions.jitaccess.core.clients;
 
-public abstract class AccessException extends Exception {
-  public AccessException(String message) {
-    super(message);
+public class AccessDeniedException extends AccessException {
+  public AccessDeniedException(String message) {
+    super(message, null);
   }
 
-  public AccessException(String message, Exception inner) {
+  public AccessDeniedException(String message, Exception inner) {
     super(message, inner);
   }
 }

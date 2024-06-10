@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.core;
 
+import com.google.solutions.jitaccess.core.clients.AccessException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
