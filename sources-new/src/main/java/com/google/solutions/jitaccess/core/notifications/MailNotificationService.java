@@ -24,7 +24,7 @@ package com.google.solutions.jitaccess.core.notifications;
 import com.google.common.base.Preconditions;
 import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
-import com.google.solutions.jitaccess.core.auth.EmailMapping;
+import com.google.solutions.jitaccess.core.model.EmailMapping;
 import com.google.solutions.jitaccess.core.clients.SmtpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

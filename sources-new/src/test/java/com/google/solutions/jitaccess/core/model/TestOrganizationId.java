@@ -19,8 +19,9 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.resources;
+package com.google.solutions.jitaccess.core.model;
 
+import com.google.solutions.jitaccess.core.model.OrganizationId;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

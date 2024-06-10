@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.auth;
+package com.google.solutions.jitaccess.core.model;
 
 import com.google.api.client.json.GenericJson;
 import com.google.solutions.jitaccess.cel.ExtractFunction;

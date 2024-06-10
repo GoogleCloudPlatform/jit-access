@@ -1,5 +1,5 @@
 //
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,28 +19,18 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.resources;
+package com.google.solutions.jitaccess.core.model;
 
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Identifier for a Resource Manager resource.
+ * A routable email address.
  */
-public interface ResourceId {
-  /**
-   * Type of resource, for example project, folder, organization.
-   */
-  @NotNull String type();
-
-  /**
-   * Unique ID of the resource, without prefix.
-   */
-  @NotNull String id();
-
-  /**
-   * Path, in notation type/id.
-   *
-   * For example, projects/test-123 folders/234, organizations/345.
-   */
-  @NotNull String path();
+public record EmailAddress(
+  @NotNull String value
+) {
+  @Override
+  public String toString() {
+    return this.value;
+  }
 }

@@ -19,23 +19,21 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.auth;
+package com.google.solutions.jitaccess.core.model;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
 /**
- * Represents an entity such as a user.
+ * Identifier for a principal such as a user or group.
  */
-public interface Subject {
+public interface PrincipalId {
   /**
-   * @return Primary id.
+   * Type of principal, for example user, serviceAccount, group.
    */
-  @NotNull UserId user();
+  @NotNull String type();
 
   /**
-   * @return full set of principals, including groups.
+   * Name of principal.
    */
-  @NotNull Set<PrincipalId> principals();
+  @NotNull String value();
 }

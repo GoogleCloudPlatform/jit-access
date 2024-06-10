@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.web;
 
 import com.google.gson.Gson;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.core.model.UserId;
 import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import com.google.solutions.jitaccess.web.iap.IapPrincipal;
 import jakarta.ws.rs.core.MediaType;

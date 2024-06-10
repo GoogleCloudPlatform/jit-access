@@ -1,5 +1,5 @@
 //
-// Copyright 2023 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,47 +19,21 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.resources;
+package com.google.solutions.jitaccess.core.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.TreeSet;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestFolderId {
-
-  @Test
-  public void toStringReturnsId() {
-    assertEquals("111", new FolderId("111").toString());
-  }
-
+public class TestUserId {
   // -------------------------------------------------------------------------
-  // Type.
+  // toString.
   // -------------------------------------------------------------------------
 
   @Test
-  public void type() {
-    assertEquals("folder", new FolderId("111").type());
-  }
-
-  // -------------------------------------------------------------------------
-  // ID.
-  // -------------------------------------------------------------------------
-
-  @Test
-  public void id() {
-    assertEquals("111", new FolderId("111").id());
-  }
-
-  // -------------------------------------------------------------------------
-  // Path.
-  // -------------------------------------------------------------------------
-
-  @Test
-  public void path() {
-    assertEquals("folders/111", new FolderId("111").path());
+  public void toStringReturnsEmailInLowerCase() {
+    assertEquals("test@example.com", new UserId("test@example.com").toString());
+    assertEquals("test@example.com", new UserId("Test@Example.com").toString());
   }
 
   // -------------------------------------------------------------------------
@@ -68,59 +42,64 @@ public class TestFolderId {
 
   @Test
   public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
-    FolderId id1 = new FolderId("111");
-    FolderId id2 = new FolderId("111");
+    UserId id1 = new UserId("bob@example.com");
+    UserId id2 = new UserId("bob@example.com");
 
     assertTrue(id1.equals(id2));
     assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
+  }
+
+  @Test
+  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+    UserId id1 = new UserId("Bob@Example.Com");
+    UserId id2 = new UserId("bob@example.com");
+
+    assertTrue(id1.equals(id2));
+    assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectAreSame_ThenEqualsReturnsTrue() {
-    FolderId id1 = new FolderId("111");
+    UserId id1 = new UserId("bob@example.com");
 
     assertTrue(id1.equals(id1));
+    assertEquals(0, id1.compareTo(id1));
   }
 
   @Test
   public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
-    FolderId id1 = new FolderId("111");
-    FolderId id2 = new FolderId("222");
+    UserId id1 = new UserId("alice@example.com");
+    UserId id2 = new UserId("bob@example.com");
 
     assertFalse(id1.equals(id2));
     assertNotEquals(id1.hashCode(), id2.hashCode());
+    assertNotEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectIsNull_ThenEqualsReturnsFalse() {
-    FolderId id1 = new FolderId("111");
+    UserId id1 = new UserId("bob@example.com");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
   public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
-    FolderId id1 = new FolderId("111");
+    UserId id1 = new UserId("bob@example.com");
 
     assertFalse(id1.equals(""));
   }
-  
+
   // -------------------------------------------------------------------------
-  // Comparable.
+  // PrincipalId.
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenInTreeSet_ThenReturnsInExpectedOrder() {
-    var folders = List.of(
-      new FolderId("333"),
-      new FolderId("111"),
-      new FolderId("222"));
-
-    assertIterableEquals(
-      List.of(
-        new FolderId("111"),
-        new FolderId("222"),
-        new FolderId("333")),
-      new TreeSet<>(folders));
+  public void value() {
+    assertEquals(
+      "bob@example.com",
+      new UserId("bob@example.com").value());
   }
 }
