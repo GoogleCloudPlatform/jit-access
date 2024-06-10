@@ -28,7 +28,7 @@ import java.security.Principal;
 /**
  * Represents a logged-in user.
  */
-public interface IapPrincipal extends Principal {
+public interface IapPrincipal extends Principal { // TODO: implement subject, inject
   UserId email();
 
   String subjectId();
