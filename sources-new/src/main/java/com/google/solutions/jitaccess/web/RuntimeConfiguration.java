@@ -24,10 +24,11 @@ package com.google.solutions.jitaccess.web;
 import com.google.solutions.jitaccess.core.clients.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 
-class RuntimeConfiguration {
+class RuntimeConfiguration { // TODO: load from YAML
   private final Function<String, String> readSetting;
 
   public RuntimeConfiguration(@NotNull Map<String, String> settings) {
@@ -50,5 +51,17 @@ class RuntimeConfiguration {
     scopes.add(SecretManagerClient.OAUTH_SCOPE);
 
     return scopes;
+  }
+
+  public Duration backendConnectTimeout() {
+    return Duration.ofSeconds(10); // TODO: read from config
+  }
+
+  public Duration backendReadTimeout() {
+    return Duration.ofSeconds(10); // TODO: read from config
+  }
+
+  public Duration backendWriteTimeout() {
+    return Duration.ofSeconds(10); // TODO: read from config
   }
 }

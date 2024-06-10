@@ -1,5 +1,5 @@
 //
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -23,7 +23,7 @@ package com.google.solutions.jitaccess.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.core.Logger;
 import com.google.solutions.jitaccess.web.iap.IapPrincipal;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
@@ -35,22 +35,37 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Adapter class for writing structured logs.
+ * Logger that emits JSON-structured messages to STDOUT.
  */
 @RequestScoped
-public class LogAdapter {
+public class ConsoleLogger implements Logger {
+  private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
   private final @NotNull Appendable output;
+  private @Nullable String traceId;
+  private @Nullable IapPrincipal principal;
 
-  private String traceId;
-  private IapPrincipal principal;
-
-  public LogAdapter(@NotNull Appendable output) {
-    Preconditions.checkNotNull(output);
+  public ConsoleLogger(@NotNull Appendable output) {
     this.output = output;
   }
 
-  public LogAdapter() {
+  public ConsoleLogger() {
     this(System.out);
+  }
+
+  /**
+   * Emit the log entry to the log.
+   */
+  private void log(LogEntry entry) {
+    try {
+      this.output.append(JSON_MAPPER.writeValueAsString(entry)).append("\n");
+    }
+    catch (IOException e) {
+      try {
+        this.output.append(String.format("Failed to log: %s\n", entry.message));
+      }
+      catch (IOException ignored) {
+      }
+    }
   }
 
   /**
@@ -60,6 +75,7 @@ public class LogAdapter {
     this.traceId = traceId;
   }
 
+
   /**
    * Set principal for current request.
    */
@@ -67,25 +83,61 @@ public class LogAdapter {
     this.principal = principal;
   }
 
-  public @NotNull LogEntry newInfoEntry(String eventId, String message) {
-    return new LogEntry("INFO", eventId, message, this.principal, this.traceId);
+  //---------------------------------------------------------------------------
+  // Logger.
+  //---------------------------------------------------------------------------
+
+  @Override
+  public void info(
+    @NotNull String eventId,
+    @NotNull String message
+  ) {
+    log(new LogEntry(
+      "INFO",
+      eventId,
+      message,
+      this.principal,
+      this.traceId));
   }
 
-  public @NotNull LogEntry newWarningEntry(String eventId, String message) {
-    return new LogEntry("WARNING", eventId, message, this.principal, this.traceId);
+  @Override
+  public void warn(
+    @NotNull String eventId,
+    @NotNull String message
+  ) {
+    log(new LogEntry(
+      "WARN",
+      eventId,
+      message,
+      this.principal,
+      this.traceId));
   }
 
-  public @NotNull LogEntry newErrorEntry(String eventId, String message) {
-    return new LogEntry("ERROR", eventId, message, this.principal, this.traceId);
-  }
-
-  public @NotNull LogEntry newErrorEntry(String eventId, String message, @NotNull Exception e) {
-    return new LogEntry(
+  @Override
+  public void error(
+    @NotNull String eventId, 
+    @NotNull String message
+  ) {
+    log(new LogEntry(
       "ERROR",
       eventId,
-      String.format("%s: %s", message, e.getMessage()),
+      message,
       this.principal,
-      this.traceId);
+      this.traceId));
+  }
+
+  @Override
+  public void error(
+    @NotNull String eventId, 
+    @NotNull String message, 
+    @NotNull Exception exception
+  ) {
+    log(new LogEntry(
+      "ERROR",
+      eventId,
+      String.format("%s: %s", message, exception.getMessage()),
+      this.principal,
+      this.traceId));
   }
 
   //---------------------------------------------------------------------
@@ -140,25 +192,6 @@ public class LogAdapter {
 
     public LogEntry addLabels(@NotNull Function<LogEntry, LogEntry> func) {
       return func.apply(this);
-    }
-
-    /**
-     * Emit the log entry to the log.
-     */
-    public void write() {
-      try {
-        //
-        // Write to STDOUT, AppEngine picks it up from there.
-        //
-        output.append(new ObjectMapper().writeValueAsString(this)).append("\n");
-      }
-      catch (IOException e) {
-        try {
-          output.append(String.format("Failed to log: %s\n", message));
-        }
-        catch (IOException ignored) {
-        }
-      }
     }
   }
 }

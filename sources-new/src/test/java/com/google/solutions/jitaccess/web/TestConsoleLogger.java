@@ -30,13 +30,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestLogAdapter {
+public class TestConsoleLogger {
   @Test
   public void whenTraceIdAndUserIdSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var adapter = new LogAdapter(buffer);
-    adapter.setTraceId("trace-1");
-    adapter.setPrincipal(
+    var logger = new ConsoleLogger(buffer);
+    logger.setTraceId("trace-1");
+    logger.setPrincipal(
       new IapPrincipal() {
         @Override
         public UserId email() {
@@ -59,7 +59,7 @@ public class TestLogAdapter {
         }
       });
 
-    adapter.newInfoEntry("event-1", "message-1").write();
+    logger.info("event-1", "message-1");
 
     assertEquals(
       "{\"severity\":\"INFO\",\"message\":\"message-1\",\"logging.googleapis.com/labels\":" +
@@ -71,9 +71,9 @@ public class TestLogAdapter {
   @Test
   public void whenTraceIdAndAccessLevelsSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var adapter = new LogAdapter(buffer);
-    adapter.setTraceId("trace-1");
-    adapter.setPrincipal(
+    var logger = new ConsoleLogger(buffer);
+    logger.setTraceId("trace-1");
+    logger.setPrincipal(
       new IapPrincipal() {
         @Override
         public UserId email() {
@@ -96,7 +96,7 @@ public class TestLogAdapter {
         }
       });
 
-    adapter.newInfoEntry("event-1", "message-1").write();
+    logger.info("event-1", "message-1");
 
     assertEquals(
       "{\"severity\":\"INFO\",\"message\":\"message-1\",\"logging.googleapis.com/labels\":" +
@@ -109,8 +109,8 @@ public class TestLogAdapter {
   @Test
   public void whenTraceIdAndPrincipalNotSet_ThenWriteLogSucceeds() {
     var buffer = new StringBuilder();
-    var adapter = new LogAdapter(buffer);
-    adapter.newErrorEntry("event-1", "message-1").write();
+    var logger = new ConsoleLogger(buffer);
+    logger.error("event-1", "message-1");
 
     assertEquals(
       "{\"severity\":\"ERROR\",\"message\":\"message-1\",\"logging.googleapis.com/labels\"" +

@@ -44,7 +44,7 @@ import java.util.*;
 /**
  * Client for the Cloud Identity Groups API.
  */
-@Singleton
+//TODO: @Singleton
 public class CloudIdentityGroupsClient {
   public static final String OAUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
   private static final String LOCAL_USERS_AND_SERVICEACCOUNTS_ONLY =

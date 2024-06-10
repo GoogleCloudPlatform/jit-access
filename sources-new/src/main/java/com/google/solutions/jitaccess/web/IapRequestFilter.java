@@ -23,6 +23,7 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.auth.oauth2.TokenVerifier;
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.core.Logger;
 import com.google.solutions.jitaccess.core.auth.UserId;
 import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import com.google.solutions.jitaccess.web.iap.IapAssertion;
@@ -56,7 +57,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
   private static final String DEBUG_PRINCIPAL_HEADER = "x-debug-principal";
 
   @Inject
-  LogAdapter log;
+  ConsoleLogger logger;
 
   @Inject
   RuntimeEnvironment runtimeEnvironment;
@@ -90,9 +91,9 @@ public class IapRequestFilter implements ContainerRequestFilter {
 
     String assertion = requestContext.getHeaderString(IAP_ASSERTION_HEADER);
     if (assertion == null) {
-      this.log
-        .newErrorEntry(EVENT_AUTHENTICATE, "Missing IAP assertion in header, IAP might be disabled")
-        .write();
+      this.logger.warn(
+        EVENT_AUTHENTICATE,
+        "Missing IAP assertion in header, IAP might be disabled");
 
       throw new ForbiddenException("Identity-Aware Proxy must be enabled for this application");
     }
@@ -112,15 +113,13 @@ public class IapRequestFilter implements ContainerRequestFilter {
       return verifiedAssertion;
     }
     catch (TokenVerifier.VerificationException | IllegalArgumentException e) {
-      this.log
-        .newErrorEntry(
-          EVENT_AUTHENTICATE,
-          String.format(
-            "Verifying IAP assertion failed. This might be because the " +
-            "IAP assertion was tampered with, or because it had the wrong audience " +
-            "(expected audience: %s).", expectedAudience),
-          e)
-        .write();
+      this.logger.error(
+        EVENT_AUTHENTICATE,
+        String.format(
+          "Verifying IAP assertion failed. This might be because the " +
+          "IAP assertion was tampered with, or because it had the wrong audience " +
+          "(expected audience: %s).", expectedAudience),
+        e);
 
       throw new ForbiddenException("Invalid IAP assertion", e);
     }
@@ -162,14 +161,14 @@ public class IapRequestFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(@NotNull ContainerRequestContext requestContext) {
-    Preconditions.checkNotNull(this.log, "log");
+    Preconditions.checkNotNull(this.logger, "logger");
     Preconditions.checkNotNull(this.runtimeEnvironment, "runtimeEnvironment");
 
     var principal = this.runtimeEnvironment.isDebugModeEnabled()
       ? authenticateDebugRequest(requestContext)
       : authenticateIapRequest(requestContext);
 
-    this.log.setPrincipal(principal);
+    this.logger.setPrincipal(principal);
 
     requestContext.setSecurityContext(
       new SecurityContext() {
@@ -194,6 +193,6 @@ public class IapRequestFilter implements ContainerRequestFilter {
         }
       });
 
-    this.log.newInfoEntry(EVENT_AUTHENTICATE, "Authenticated IAP principal").write();
+    this.logger.info(EVENT_AUTHENTICATE, "Authenticated IAP principal");
   }
 }

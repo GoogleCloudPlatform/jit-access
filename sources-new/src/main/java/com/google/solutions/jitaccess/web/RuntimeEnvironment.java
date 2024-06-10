@@ -34,6 +34,8 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.solutions.jitaccess.core.ApplicationVersion;
 import com.google.solutions.jitaccess.core.auth.EmailMapping;
 import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.core.clients.HttpTransport;
+import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
@@ -109,14 +111,12 @@ public class RuntimeEnvironment {
     // Create a log adapter. We can't rely on injection as the adapter
     // is request-scoped.
     //
-    var logAdapter = new LogAdapter();
+    var logger = new ConsoleLogger();
 
     if (!this.configuration.isSmtpConfigured()) {
-      logAdapter
-        .newWarningEntry(
-          LogEvents.RUNTIME_STARTUP,
-          "The SMTP configuration is incomplete")
-        .write();
+      logger.warn(
+        LogEvents.RUNTIME_STARTUP,
+        "The SMTP configuration is incomplete");
     }
 
     if (isRunningOnAppEngine() || isRunningOnCloudRun()) {
@@ -152,22 +152,18 @@ public class RuntimeEnvironment {
             0);
         }
 
-        logAdapter
-          .newInfoEntry(
-            LogEvents.RUNTIME_STARTUP,
-            String.format("Running in project %s (%s) as %s, version %s",
-              this.projectId,
-              this.projectNumber,
-              this.applicationPrincipal,
-              ApplicationVersion.VERSION_STRING))
-          .write();
+        logger.info(
+          LogEvents.RUNTIME_STARTUP,
+          String.format("Running in project %s (%s) as %s, version %s",
+            this.projectId,
+            this.projectNumber,
+            this.applicationPrincipal,
+            ApplicationVersion.VERSION_STRING));
       }
       catch (IOException e) {
-        logAdapter
-          .newErrorEntry(
-            LogEvents.RUNTIME_STARTUP,
-            "Failed to lookup instance metadata", e)
-          .write();
+        logger.error(
+          LogEvents.RUNTIME_STARTUP,
+          "Failed to lookup instance metadata", e);
         throw new RuntimeException("Failed to initialize runtime environment", e);
       }
     }
@@ -227,11 +223,9 @@ public class RuntimeEnvironment {
         throw new RuntimeException("Failed to lookup application credentials", e);
       }
 
-      logAdapter
-        .newWarningEntry(
-          LogEvents.RUNTIME_STARTUP,
-          String.format("Running in development mode as %s", this.applicationPrincipal))
-        .write();
+      logger.warn(
+        LogEvents.RUNTIME_STARTUP,
+        String.format("Running in development mode as %s", this.applicationPrincipal));
     }
     else {
       throw new RuntimeException(
@@ -257,7 +251,21 @@ public class RuntimeEnvironment {
     return projectNumber;
   }
 
-  public @NotNull UserId getApplicationPrincipal() {
-    return applicationPrincipal;
+  //---------------------------------------------------------------------------
+  // Producers.
+  //---------------------------------------------------------------------------
+
+
+  @Produces
+  public GoogleCredentials getApplicationCredentials() {
+    return applicationCredentials;
+  }
+
+  @Produces
+  public @NotNull HttpTransport.Options getHttpTransportOptions() {
+    return new HttpTransport.Options(
+      this.configuration.backendConnectTimeout(),
+      this.configuration.backendReadTimeout(),
+      this.configuration.backendWriteTimeout());
   }
 }
