@@ -63,7 +63,7 @@ public class DiagnosticsResource {
 
     return new WhoamiResponseEntity(
       requestContext.user().email,
-      requestContext.principals()
+      requestContext.subject().principals()
         .stream()
         .map(p -> p.id().value())
         .collect(Collectors.toList()));

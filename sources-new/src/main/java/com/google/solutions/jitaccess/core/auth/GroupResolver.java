@@ -26,11 +26,11 @@ import com.google.solutions.jitaccess.core.*;
 import com.google.solutions.jitaccess.core.clients.AccessException;
 import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -42,25 +42,28 @@ public class GroupResolver {
   private final @NotNull CloudIdentityGroupsClient groupsClient;
   private final @NotNull Executor executor;
 
-  public GroupResolver(CloudIdentityGroupsClient groupsClient, Executor executor) {
+  public GroupResolver(
+    @NotNull CloudIdentityGroupsClient groupsClient,
+    @NotNull Executor executor
+  ) {
     this.groupsClient = groupsClient;
     this.executor = executor;
   }
 
-  private static @Nullable PrincipalId tryGetPrincipalFromMembership( // TODO: return Optional
+  private static @NotNull Optional<PrincipalId> principalFromMembership(
     @NotNull Membership membership
   ) {
     if (UserId.TYPE.equalsIgnoreCase(membership.getType())) {
-      return new UserId(membership.getPreferredMemberKey().getId());
+      return Optional.of(new UserId(membership.getPreferredMemberKey().getId()));
     }
     else if (GroupId.TYPE.equalsIgnoreCase(membership.getType())) {
-      return new GroupId(membership.getPreferredMemberKey().getId());
+      return Optional.of(new GroupId(membership.getPreferredMemberKey().getId()));
     }
     else {
       //
       // Ignore other types (in particular, SERVICE_ACCOUNT).
       //
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -72,7 +75,7 @@ public class GroupResolver {
    * To fully resolve all groups, call this method until the
    * set contains no more groups.
    */
-  public Set<PrincipalId> expand(
+  Set<PrincipalId> expand(
     @NotNull Set<PrincipalId> principals
   ) throws AccessException, IOException {
     var groups = principals
@@ -105,8 +108,9 @@ public class GroupResolver {
       var members = ThrowingCompletableFuture
         .awaitAndRethrow(future)
         .stream()
-        .map(m -> tryGetPrincipalFromMembership(m))
-        .filter(p -> p != null)
+        .map(m -> principalFromMembership(m))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .toList();
       expandedPrincipals.addAll(members);
     }

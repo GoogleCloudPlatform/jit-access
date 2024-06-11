@@ -8,70 +8,85 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 @RequestScoped
-public class RequestContext implements Subject {
-  private final @NotNull UserId ANONYMOUS_USER = new UserId("anonymous");
+public class RequestContext {
+  private static final @NotNull Subject ANONYMOUS_SUBJECT = new Subject() {
+    @Override
+    public @NotNull UserId user() {
+      return new UserId("anonymous");
+    }
+
+    @Override
+    public @NotNull Set<Principal> principals() {
+      return Set.of(new Principal(user()));
+    }
+  };
 
   /**
-   * Current user ID, if authenticated.
+   * Current user's device.
    */
-  private @Nullable UserId user;
+  private @NotNull Device device;
 
   /**
-   * Current user's device, if authenticated.
+   * Current subject.
    */
-  private @Nullable Device device;
+  private @NotNull Subject subject;
 
-  /**
-   * Cached set of user principals, looked up lazily.
-   */
-  private @Nullable Set<Principal> cachedPrincipals;
-  private @NotNull Object cachedPrincipalsLock = new Object();
 
   public RequestContext() {
-    this.user = ANONYMOUS_USER;
+    this.subject = ANONYMOUS_SUBJECT;
     this.device = IapDevice.UNKNOWN;
   }
 
   /**
-   * Authenticate the request context using the IAP principal.
-   * @param principal
+   * Authenticate the request context.
    */
-  void authenticate(UserId user, Device device) {
+  void authenticate(UserId userId, Device device) {
     if (isAuthenticated()) {
       throw new IllegalStateException(
         "Request context has been authenticated before");
     }
-    this.user = user;
+
+    this.subject = new Subject() {
+      private @Nullable Set<Principal> cachedPrincipals;
+      private final @NotNull Object cachedPrincipalsLock = new Object();
+
+      @Override
+      public @NotNull UserId user() {
+        return userId;
+      }
+
+      @Override
+      public @NotNull Set<Principal> principals() {
+        //
+        // Resolve lazily.
+        //
+        synchronized (this.cachedPrincipalsLock)
+        {
+          if (this.cachedPrincipals == null) {
+            // TODO: lookup
+            throw new RuntimeException("NIY");
+          }
+
+          return this.cachedPrincipals;
+        }
+      }
+    };
     this.device = device;
   }
 
   boolean isAuthenticated() {
-    return this.user != ANONYMOUS_USER;
+    return this.subject != ANONYMOUS_SUBJECT;
   }
 
-  public Device device() {
+  public @NotNull Device device() {
     return this.device;
   }
 
-  @Override
-  public @NotNull UserId user() {
-    return this.user;
+  public @NotNull Subject subject() {
+    return this.subject;
   }
 
-  @Override
-  public @NotNull Set<Principal> principals() {
-    if (!isAuthenticated()) {
-      return Set.of(new Principal(ANONYMOUS_USER));
-    }
-
-    synchronized (this.cachedPrincipalsLock)
-    {
-      if (this.cachedPrincipals == null) {
-        // TODO: lookup
-        throw new RuntimeException("NIY");
-      }
-
-      return this.cachedPrincipals;
-    }
+  public @NotNull UserId user() {
+    return this.subject.user();
   }
 }
