@@ -25,6 +25,7 @@ import com.google.solutions.jitaccess.core.access.AccessControlList;
 import com.google.solutions.jitaccess.core.auth.*;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,6 +121,23 @@ public class TestAccessControlList {
       Set.of(new Principal(TEST_USER), new Principal(TEST_GROUP_1)));
 
     assertFalse(acl.isAllowed(subject, Rights.READ | Rights.WRITE));
+  }
+
+  @Test
+  public void whenPrincipalExpired_ThenIsAllowedIgnoresPrincipal() {
+    var acl = new AccessControlList.Builder()
+      .allow(TEST_USER, Rights.READ)
+      .allow(TEST_GROUP_1, Rights.EXECUTE)
+      .build();
+
+    var subject = new TestSubject(
+      TEST_USER,
+      Set.of(
+        new Principal(TEST_USER),
+        new Principal(TEST_GROUP_1, Instant.now().minusSeconds(10))));
+
+    assertTrue(acl.isAllowed(subject, Rights.READ));
+    assertFalse(acl.isAllowed(subject, Rights.EXECUTE));
   }
 
   //---------------------------------------------------------------------------

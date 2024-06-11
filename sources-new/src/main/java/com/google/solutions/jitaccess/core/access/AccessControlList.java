@@ -120,7 +120,7 @@ public record AccessControlList(
     return isAllowed(
       subject.principals()
         .stream()
-        .filter(p -> p.isValid()) // TODO: test
+        .filter(p -> p.isValid())
         .map(p -> p.id())
         .collect(Collectors.toList()),
       this.entries, requiredAccessRights);

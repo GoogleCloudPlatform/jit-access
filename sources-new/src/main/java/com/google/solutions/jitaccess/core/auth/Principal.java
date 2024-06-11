@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.core.auth;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,12 @@ public record Principal(
   @NotNull PrincipalId id,
   @Nullable Instant expiry
   ) {
+  public Principal {
+    Preconditions.checkArgument(
+      expiry == null || !id.type().equals(UserId.TYPE),
+      "User principals cannot expire");
+  }
+
   public Principal(@NotNull PrincipalId id) {
     this(id, null);
   }
@@ -44,7 +51,7 @@ public record Principal(
     return this.expiry == null;
   }
 
-  public boolean isValid() { // TODO: test
+  public boolean isValid() {
     return this.expiry == null || Instant.now().isBefore(this.expiry);
   }
 }
