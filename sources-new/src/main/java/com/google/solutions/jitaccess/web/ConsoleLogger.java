@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.solutions.jitaccess.core.Logger;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.validation.constraints.Null;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,6 @@ import java.util.function.Function;
 public class ConsoleLogger implements Logger {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
   protected final @NotNull Appendable output;
-  private @Nullable String traceId;
 
   ConsoleLogger(@NotNull Appendable output) {
     this.output = output;
@@ -62,17 +62,14 @@ public class ConsoleLogger implements Logger {
     }
   }
 
-  protected Map<String, String> createLabels(String eventId) {
+  protected @NotNull Map<String, String> createLabels(String eventId) {
     var labels = new HashMap<String, String>();
     labels.put("event", eventId);
     return labels;
   }
 
-  /**
-   * Set Trace ID for current request.
-   */
-  public void setTraceId(String traceId) {
-    this.traceId = traceId;
+  protected @Nullable String traceId() {
+    return null;
   }
 
   //---------------------------------------------------------------------------
@@ -89,7 +86,7 @@ public class ConsoleLogger implements Logger {
       eventId,
       message,
       createLabels(eventId),
-      this.traceId));
+      traceId()));
   }
 
   @Override
@@ -102,7 +99,7 @@ public class ConsoleLogger implements Logger {
       eventId,
       message,
       createLabels(eventId),
-      this.traceId));
+      traceId()));
   }
 
   @Override
@@ -115,7 +112,7 @@ public class ConsoleLogger implements Logger {
       eventId,
       message,
       createLabels(eventId),
-      this.traceId));
+      traceId()));
   }
 
   @Override
@@ -129,7 +126,7 @@ public class ConsoleLogger implements Logger {
       eventId,
       String.format("%s: %s", message, exception.getMessage()),
       createLabels(eventId),
-      this.traceId));
+      traceId()));
   }
 
   //---------------------------------------------------------------------
@@ -141,23 +138,23 @@ public class ConsoleLogger implements Logger {
    */
   public class LogEntry {
     @JsonProperty("severity")
-    private final String severity;
+    private final  @NotNull String severity;
 
     @JsonProperty("message")
-    private final String message;
+    private final  @NotNull String message;
 
     @JsonProperty("logging.googleapis.com/labels")
     private final @NotNull Map<String, String> labels;
 
     @JsonProperty("logging.googleapis.com/trace")
-    private final String traceId;
+    private final @Nullable String traceId;
 
     private LogEntry(
-      String severity,
-      String eventId,
-      String message,
-      Map<String, String> labels,
-      String traceId
+      @NotNull String severity,
+      @NotNull String eventId,
+      @NotNull String message,
+      @NotNull Map<String, String> labels,
+      @Nullable String traceId
     ) {
       this.severity = severity;
       this.message = message;

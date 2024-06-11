@@ -22,7 +22,9 @@
 package com.google.solutions.jitaccess.web;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.validation.constraints.Null;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -33,6 +35,7 @@ import java.util.Map;
 @RequestScoped
 public class RequestContextLogger extends ConsoleLogger {
   private final @NotNull RequestContext requestContext;
+  private @Nullable String traceId;
 
   RequestContextLogger(
     @NotNull Appendable output,
@@ -46,6 +49,19 @@ public class RequestContextLogger extends ConsoleLogger {
     this(System.out, requestContext);
   }
 
+  /**
+   * Set Trace ID for current request.
+   */
+  void setTraceId(String traceId) {
+    this.traceId = traceId;
+  }
+
+  @Override
+  protected @Nullable String traceId() {
+    return this.traceId();
+  }
+
+  @Override
   protected Map<String, String> createLabels(String eventId) {
     var labels = super.createLabels(eventId);
 
