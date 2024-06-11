@@ -3,7 +3,7 @@ package com.google.solutions.jitaccess.web;
 import com.google.solutions.jitaccess.core.model.PrincipalId;
 import com.google.solutions.jitaccess.core.model.Subject;
 import com.google.solutions.jitaccess.core.model.UserId;
-import com.google.solutions.jitaccess.web.iap.DeviceInfo;
+import com.google.solutions.jitaccess.web.iap.IapDevice;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ public class RequestContext implements Subject {
   /**
    * Current user's device, if authenticated.
    */
-  private @Nullable DeviceInfo device;
+  private @Nullable IapDevice device;
 
   /**
    * Cached set of user principals, looked up lazily.
@@ -32,14 +32,14 @@ public class RequestContext implements Subject {
 
   public RequestContext() {
     this.user = ANONYMOUS_USER;
-    this.device = DeviceInfo.UNKNOWN;
+    this.device = IapDevice.UNKNOWN;
   }
 
   /**
    * Authenticate the request context using the IAP principal.
    * @param principal
    */
-  void authenticate(UserId user, DeviceInfo device) {
+  void authenticate(UserId user, IapDevice device) {
     if (isAuthenticated()) {
       throw new IllegalStateException(
         "Request context has been authenticated before");
@@ -52,7 +52,7 @@ public class RequestContext implements Subject {
     return this.user != ANONYMOUS_USER;
   }
 
-  public DeviceInfo device() {
+  public IapDevice device() {
     return this.device;
   }
 

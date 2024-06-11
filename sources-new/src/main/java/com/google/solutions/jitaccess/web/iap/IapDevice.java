@@ -22,6 +22,7 @@
 package com.google.solutions.jitaccess.web.iap;
 
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.core.model.Device;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -29,10 +30,10 @@ import java.util.List;
 /**
  * Information about the device of a user.
  */
-public record DeviceInfo(String deviceId, List<String> accessLevels) { // TODO: extract interface, move
-  public static final DeviceInfo UNKNOWN = new DeviceInfo("unknown", List.of());
+public record IapDevice(String deviceId, List<String> accessLevels) implements Device {
+  public static final IapDevice UNKNOWN = new IapDevice("unknown", List.of());
 
-  public DeviceInfo {
+  public IapDevice {
     Preconditions.checkNotNull(deviceId, "deviceId");
     Preconditions.checkNotNull(accessLevels, "accessLevels");
   }
@@ -50,7 +51,7 @@ public record DeviceInfo(String deviceId, List<String> accessLevels) { // TODO: 
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    var that = (DeviceInfo) o;
+    var that = (IapDevice) o;
     return deviceId.equals(that.deviceId) && accessLevels.equals(that.accessLevels);
   }
 }

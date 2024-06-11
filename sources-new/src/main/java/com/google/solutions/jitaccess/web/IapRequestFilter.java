@@ -24,7 +24,7 @@ package com.google.solutions.jitaccess.web;
 import com.google.auth.oauth2.TokenVerifier;
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.model.UserId;
-import com.google.solutions.jitaccess.web.iap.DeviceInfo;
+import com.google.solutions.jitaccess.web.iap.IapDevice;
 import com.google.solutions.jitaccess.web.iap.IapAssertion;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
@@ -135,7 +135,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
 
     this.requestContext.authenticate(
       new UserId(debugPrincipalName),
-      DeviceInfo.UNKNOWN);
+      IapDevice.UNKNOWN);
   }
 
   @Override

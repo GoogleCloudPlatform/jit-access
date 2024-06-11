@@ -52,7 +52,7 @@ public class IapAssertion {
   /**
    * Extract device information (if available)
    */
-  public @NotNull DeviceInfo device() {
+  public @NotNull IapDevice device() {
     String deviceId = "unknown";
     List<String> accessLevels = List.of();
 
@@ -71,6 +71,6 @@ public class IapAssertion {
       }
     }
 
-    return new DeviceInfo(deviceId, accessLevels);
+    return new IapDevice(deviceId, accessLevels);
   }
 }

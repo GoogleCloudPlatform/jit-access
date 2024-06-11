@@ -23,9 +23,7 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.gson.Gson;
 import com.google.solutions.jitaccess.core.model.UserId;
-import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.SecurityContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
 import org.jboss.resteasy.core.SynchronousExecutionContext;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
@@ -35,7 +33,6 @@ import org.jboss.resteasy.spi.Dispatcher;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
-import java.security.Principal;
 
 public class RestDispatcher<TResource> {
   private final Dispatcher dispatcher;

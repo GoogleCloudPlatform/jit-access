@@ -51,7 +51,7 @@ public class TestIapAssertion {
   public void whenGoogleClaimMissing_ThenGetDeviceInfoReturnsUnknownDevice() {
     var assertion = new IapAssertion(new JsonWebToken.Payload());
 
-    assertEquals(DeviceInfo.UNKNOWN, assertion.device());
+    assertEquals(IapDevice.UNKNOWN, assertion.device());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class TestIapAssertion {
     var assertion = new IapAssertion(new JsonWebToken.Payload()
       .set("google", Map.of()));
 
-    assertEquals(DeviceInfo.UNKNOWN, assertion.device());
+    assertEquals(IapDevice.UNKNOWN, assertion.device());
   }
 
   @Test

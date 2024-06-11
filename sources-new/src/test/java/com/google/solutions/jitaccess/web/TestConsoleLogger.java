@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.web;
 
 import com.google.solutions.jitaccess.core.model.UserId;
-import com.google.solutions.jitaccess.web.iap.DeviceInfo;
+import com.google.solutions.jitaccess.web.iap.IapDevice;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class TestConsoleLogger {
     var requestContext = new RequestContext();
     requestContext.authenticate(
       new UserId("id"),
-      new DeviceInfo("device-id", List.of()));
+      new IapDevice("device-id", List.of()));
     var logger = new ConsoleLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
 
@@ -55,7 +55,7 @@ public class TestConsoleLogger {
     var requestContext = new RequestContext();
     requestContext.authenticate(
       new UserId("id"),
-      new DeviceInfo("device-id", List.of("level-1", "level-2")));
+      new IapDevice("device-id", List.of("level-1", "level-2")));
     var logger = new ConsoleLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
 
