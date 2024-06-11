@@ -61,9 +61,12 @@ public class DiagnosticsResource {
       throw new ForbiddenException();
     }
 
-    return  new WhoamiResponseEntity(
+    return new WhoamiResponseEntity(
       requestContext.user().email,
-      requestContext.principals().stream().map(p -> p.value()).collect(Collectors.toList()));
+      requestContext.principals()
+        .stream()
+        .map(p -> p.id().value())
+        .collect(Collectors.toList()));
   }
 
   public record WhoamiResponseEntity(

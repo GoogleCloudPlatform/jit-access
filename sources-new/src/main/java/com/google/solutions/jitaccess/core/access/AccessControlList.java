@@ -117,7 +117,13 @@ public record AccessControlList(
   public boolean isAllowed(@NotNull Subject subject, int requiredAccessRights) {
     Preconditions.checkArgument(requiredAccessRights != 0, "requiredAccessRights");
 
-    return isAllowed(subject.principals(), this.entries, requiredAccessRights);
+    return isAllowed(
+      subject.principals()
+        .stream()
+        .filter(p -> p.isValid()) // TODO: test
+        .map(p -> p.id())
+        .collect(Collectors.toList()),
+      this.entries, requiredAccessRights);
   }
 
   //---------------------------------------------------------------------------

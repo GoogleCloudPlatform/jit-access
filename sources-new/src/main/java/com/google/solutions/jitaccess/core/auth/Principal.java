@@ -22,20 +22,29 @@
 package com.google.solutions.jitaccess.core.auth;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
+import java.time.Instant;
 
 /**
- * Represents an entity such as a user.
+ * Information about a principal.
+ *
+ * @param id unique principal Id.
+ * @param expiry optional expiry date.
  */
-public interface Subject {
-  /**
-   * @return Primary id.
-   */
-  @NotNull UserId user();
+public record Principal(
+  @NotNull PrincipalId id,
+  @Nullable Instant expiry
+  ) {
+  public Principal(@NotNull PrincipalId id) {
+    this(id, null);
+  }
 
-  /**
-   * @return full set of principals, including groups and roles.
-   */
-  @NotNull Set<Principal> principals();
+  public boolean isPermanent() {
+    return this.expiry == null;
+  }
+
+  public boolean isValid() { // TODO: test
+    return this.expiry == null || Instant.now().isBefore(this.expiry);
+  }
 }

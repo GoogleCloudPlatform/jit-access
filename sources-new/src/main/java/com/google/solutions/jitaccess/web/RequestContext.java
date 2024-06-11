@@ -1,9 +1,6 @@
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.auth.Device;
-import com.google.solutions.jitaccess.core.auth.PrincipalId;
-import com.google.solutions.jitaccess.core.auth.Subject;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.core.auth.*;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +24,7 @@ public class RequestContext implements Subject {
   /**
    * Cached set of user principals, looked up lazily.
    */
-  private @Nullable Set<PrincipalId> cachedPrincipals;
+  private @Nullable Set<Principal> cachedPrincipals;
   private @NotNull Object cachedPrincipalsLock = new Object();
 
   public RequestContext() {
@@ -62,9 +59,9 @@ public class RequestContext implements Subject {
   }
 
   @Override
-  public @NotNull Set<PrincipalId> principals() {
+  public @NotNull Set<Principal> principals() {
     if (!isAuthenticated()) {
-      return Set.of(ANONYMOUS_USER);
+      return Set.of(new Principal(ANONYMOUS_USER));
     }
 
     synchronized (this.cachedPrincipalsLock)
