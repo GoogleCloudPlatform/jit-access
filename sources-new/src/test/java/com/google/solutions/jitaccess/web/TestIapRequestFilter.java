@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.web;
 
+import com.google.solutions.jitaccess.core.Logger;
 import com.google.solutions.jitaccess.core.auth.SubjectResolver;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -44,7 +45,7 @@ public class TestIapRequestFilter {
     IapRequestFilter filter = new IapRequestFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
-    filter.logger = new RequestContextLogger(filter.requestContext);
+    filter.logger = Mockito.mock(Logger.class);
 
     ContainerRequestContext request = Mockito.mock(ContainerRequestContext.class);
     when(request.getHeaderString(anyString())).thenReturn(null);
@@ -63,7 +64,7 @@ public class TestIapRequestFilter {
     IapRequestFilter filter = new IapRequestFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
-    filter.logger = new RequestContextLogger(filter.requestContext);
+    filter.logger = Mockito.mock(Logger.class);
 
     ContainerRequestContext request = Mockito.mock(ContainerRequestContext.class);
     when(request.getHeaderString(anyString())).thenReturn("ey00");
@@ -82,7 +83,7 @@ public class TestIapRequestFilter {
     IapRequestFilter filter = new IapRequestFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
-    filter.logger = new RequestContextLogger(filter.requestContext);
+    filter.logger = Mockito.mock(Logger.class);
 
     // Random JWT that doesn't even come from IAP.
     String randomJwt =
@@ -108,7 +109,7 @@ public class TestIapRequestFilter {
     IapRequestFilter filter = new IapRequestFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
-    filter.logger = new RequestContextLogger(filter.requestContext);
+    filter.logger = Mockito.mock(Logger.class);
 
     ContainerRequestContext request = Mockito.mock(ContainerRequestContext.class);
     assertThrows(ForbiddenException.class, () -> filter.filter(request));
@@ -122,7 +123,7 @@ public class TestIapRequestFilter {
     IapRequestFilter filter = new IapRequestFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
-    filter.logger = new RequestContextLogger(filter.requestContext);
+    filter.logger = Mockito.mock(Logger.class);
 
     ContainerRequestContext request = Mockito.mock(ContainerRequestContext.class);
     when(request.getHeaderString(eq("x-debug-principal"))).thenReturn("bob");

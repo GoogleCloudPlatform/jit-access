@@ -23,6 +23,7 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.auth.oauth2.TokenVerifier;
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.core.Logger;
 import com.google.solutions.jitaccess.core.auth.UserId;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
@@ -50,7 +51,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
   private static final String DEBUG_PRINCIPAL_HEADER = "x-debug-principal";
 
   @Inject
-  RequestContextLogger logger;
+  Logger logger;
 
   @Inject
   RequestContext requestContext;

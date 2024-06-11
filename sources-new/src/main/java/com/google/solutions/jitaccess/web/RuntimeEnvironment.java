@@ -37,7 +37,6 @@ import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.core.clients.Diagnosable;
 import com.google.solutions.jitaccess.core.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.core.clients.HttpTransport;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.UriBuilder;
@@ -116,7 +115,7 @@ public class RuntimeEnvironment {
     // Create a log adapter. We can't rely on injection as the adapter
     // is request-scoped.
     //
-    var logger = new ConsoleLogger(System.out);
+    var logger = new JsonLogger(System.out);
 
     if (!this.configuration.isSmtpConfigured()) {
       logger.warn(

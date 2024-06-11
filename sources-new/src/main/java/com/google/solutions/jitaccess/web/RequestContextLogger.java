@@ -22,7 +22,6 @@
 package com.google.solutions.jitaccess.web;
 
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.validation.constraints.Null;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +32,7 @@ import java.util.Map;
  * from the current request context.
  */
 @RequestScoped
-public class RequestContextLogger extends ConsoleLogger {
+public class RequestContextLogger extends JsonLogger {
   private final @NotNull RequestContext requestContext;
   private @Nullable String traceId;
 

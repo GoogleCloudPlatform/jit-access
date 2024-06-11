@@ -24,25 +24,21 @@ package com.google.solutions.jitaccess.web;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.solutions.jitaccess.core.Logger;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.validation.constraints.Null;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
- * Basic logger implementation that writes JSON-structured
- * output to STDOUT.
+ * Basic logger implementation that writes JSON-structured output.
  */
-public class ConsoleLogger implements Logger {
+public class JsonLogger implements Logger {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
   protected final @NotNull Appendable output;
 
-  ConsoleLogger(@NotNull Appendable output) {
+  JsonLogger(@NotNull Appendable output) {
     this.output = output;
   }
 
@@ -83,7 +79,6 @@ public class ConsoleLogger implements Logger {
   ) {
     log(new LogEntry(
       "INFO",
-      eventId,
       message,
       createLabels(eventId),
       traceId()));
@@ -96,7 +91,6 @@ public class ConsoleLogger implements Logger {
   ) {
     log(new LogEntry(
       "WARN",
-      eventId,
       message,
       createLabels(eventId),
       traceId()));
@@ -109,7 +103,6 @@ public class ConsoleLogger implements Logger {
   ) {
     log(new LogEntry(
       "ERROR",
-      eventId,
       message,
       createLabels(eventId),
       traceId()));
@@ -123,7 +116,6 @@ public class ConsoleLogger implements Logger {
   ) {
     log(new LogEntry(
       "ERROR",
-      eventId,
       String.format("%s: %s", message, exception.getMessage()),
       createLabels(eventId),
       traceId()));
@@ -138,10 +130,10 @@ public class ConsoleLogger implements Logger {
    */
   public class LogEntry {
     @JsonProperty("severity")
-    private final  @NotNull String severity;
+    private final @NotNull String severity;
 
     @JsonProperty("message")
-    private final  @NotNull String message;
+    private final @NotNull String message;
 
     @JsonProperty("logging.googleapis.com/labels")
     private final @NotNull Map<String, String> labels;
@@ -151,7 +143,6 @@ public class ConsoleLogger implements Logger {
 
     private LogEntry(
       @NotNull String severity,
-      @NotNull String eventId,
       @NotNull String message,
       @NotNull Map<String, String> labels,
       @Nullable String traceId
@@ -160,17 +151,6 @@ public class ConsoleLogger implements Logger {
       this.message = message;
       this.traceId = traceId;
       this.labels = labels;
-    }
-
-    public @NotNull RequestContextLogger.LogEntry addLabel(String label, String value) {
-      assert !this.labels.containsKey(label);
-
-      this.labels.put(label, value);
-      return this;
-    }
-
-    public RequestContextLogger.LogEntry addLabels(@NotNull Function<RequestContextLogger.LogEntry, RequestContextLogger.LogEntry> func) {
-      return func.apply(this);
     }
   }
 }
