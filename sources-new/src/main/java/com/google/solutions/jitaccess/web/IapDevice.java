@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.web;
 
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.core.model.Device;
+import com.google.solutions.jitaccess.core.auth.Device;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

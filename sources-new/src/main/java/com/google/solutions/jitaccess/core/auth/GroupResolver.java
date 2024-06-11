@@ -19,15 +19,12 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.catalog;
+package com.google.solutions.jitaccess.core.auth;
 
 import com.google.api.services.cloudidentity.v1.model.Membership;
 import com.google.solutions.jitaccess.core.*;
 import com.google.solutions.jitaccess.core.clients.AccessException;
 import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
-import com.google.solutions.jitaccess.core.model.GroupId;
-import com.google.solutions.jitaccess.core.model.PrincipalId;
-import com.google.solutions.jitaccess.core.model.UserId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,16 +38,16 @@ import java.util.concurrent.Executor;
 /**
  * Expands group memberships.
  */
-public class GroupExpander {
+public class GroupResolver {
   private final @NotNull CloudIdentityGroupsClient groupsClient;
   private final @NotNull Executor executor;
 
-  public GroupExpander(CloudIdentityGroupsClient groupsClient, Executor executor) {
+  public GroupResolver(CloudIdentityGroupsClient groupsClient, Executor executor) {
     this.groupsClient = groupsClient;
     this.executor = executor;
   }
 
-  private static @Nullable PrincipalId tryGetPrincipalFromMembership(
+  private static @Nullable PrincipalId tryGetPrincipalFromMembership( // TODO: return Optional
     @NotNull Membership membership
   ) {
     if (UserId.TYPE.equalsIgnoreCase(membership.getType())) {

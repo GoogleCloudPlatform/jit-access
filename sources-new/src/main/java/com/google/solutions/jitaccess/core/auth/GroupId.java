@@ -1,5 +1,5 @@
 //
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,48 +19,78 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.auth;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
- * ID of a Google Cloud folder.
+ * Principal identifier for a group.
+ *
+ * NB. The ID looks like an email address, but it might not
+ *     be an actual email address.
  */
-public record FolderId(
-  @NotNull String id
-) implements Comparable<FolderId>, ResourceId {
-  public FolderId {
-    Preconditions.checkNotNull(id, "id");
-    assert !id.startsWith("//");
-    assert !id.contains("/");
+public class GroupId implements Comparable<GroupId>, PrincipalId {
+  public static final String TYPE = "group";
+  public final @NotNull String email;
+
+  public GroupId(@NotNull String email) {
+    Preconditions.checkNotNull(email, "email");
+    Preconditions.checkArgument(!email.isBlank());
+
+    //
+    // Use lower-case as canonical format.
+    //
+    this.email = email.toLowerCase();
   }
 
   @Override
   public String toString() {
-    return this.id;
+    return this.email;
   }
 
   // -------------------------------------------------------------------------
-  // Comparable.
+  // Equality.
   // -------------------------------------------------------------------------
 
   @Override
-  public int compareTo(@NotNull FolderId o) {
-    return this.id.compareTo(o.id);
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    GroupId groupId = (GroupId) o;
+    return email.equals(groupId.email);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(email);
+  }
+
+  @Override
+  public int compareTo(@NotNull GroupId o) {
+    return this.email.compareTo(o.email);
   }
 
   // -------------------------------------------------------------------------
-  // ResourceId.
+  // PrincipalId.
   // -------------------------------------------------------------------------
 
   @Override
   public @NotNull String type() {
-    return "folder";
+    return TYPE;
   }
 
   @Override
-  public @NotNull String path() {
-    return String.format("folders/%s", this.id);
+  public @NotNull String value() {
+    return this.email;
   }
 }

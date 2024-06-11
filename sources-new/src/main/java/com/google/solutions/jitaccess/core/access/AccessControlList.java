@@ -19,9 +19,11 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.access;
 
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.core.auth.PrincipalId;
+import com.google.solutions.jitaccess.core.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

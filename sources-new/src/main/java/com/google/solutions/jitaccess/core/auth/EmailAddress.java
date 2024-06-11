@@ -19,23 +19,18 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.auth;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
 /**
- * Represents an entity such as a user.
+ * A routable email address.
  */
-public interface Subject {
-  /**
-   * @return Primary id.
-   */
-  @NotNull UserId user();
-
-  /**
-   * @return full set of principals, including groups.
-   */
-  @NotNull Set<PrincipalId> principals();
+public record EmailAddress(
+  @NotNull String value
+) {
+  @Override
+  public String toString() {
+    return this.value;
+  }
 }

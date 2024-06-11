@@ -19,21 +19,21 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.auth;
 
-import java.util.Collection;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents the device a user is using.
+ * Identifier for a principal such as a user or group.
  */
-public interface Device {
+public interface PrincipalId {
   /**
-   * @return the device's ID
+   * Type of principal, for example user, serviceAccount, group.
    */
-  String deviceId();
+  @NotNull String type();
 
   /**
-   * @return list of satisfied ACM access levels.
+   * Name of principal.
    */
-  Collection<String> accessLevels();
+  @NotNull String value();
 }

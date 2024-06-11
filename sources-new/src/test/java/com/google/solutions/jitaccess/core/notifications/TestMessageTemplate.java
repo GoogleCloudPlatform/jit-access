@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.core.notifications;
 
 import com.google.common.html.HtmlEscapers;
-import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.core.auth.UserId;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

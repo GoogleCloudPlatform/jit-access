@@ -19,9 +19,9 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.access;
 
-import com.google.solutions.jitaccess.core.model.FolderId;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class TestFolderId {
 
   @Test
   public void toStringReturnsId() {
-    assertEquals("111", new FolderId("111").toString());
+    Assertions.assertEquals("111", new FolderId("111").toString());
   }
 
   // -------------------------------------------------------------------------

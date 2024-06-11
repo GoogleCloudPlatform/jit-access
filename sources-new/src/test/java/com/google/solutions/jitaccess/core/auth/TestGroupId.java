@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.auth;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -28,8 +28,9 @@ import com.google.api.services.cloudidentity.v1.model.*;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.*;
-import com.google.solutions.jitaccess.core.model.GroupId;
-import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.core.auth.GroupId;
+import com.google.solutions.jitaccess.core.auth.UserId;
+import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ import java.util.*;
 /**
  * Client for the Cloud Identity Groups API.
  */
-//TODO: @Singleton
+@Singleton
 public class CloudIdentityGroupsClient {
   public static final String OAUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
   private static final String LOCAL_USERS_AND_SERVICEACCOUNTS_ONLY =

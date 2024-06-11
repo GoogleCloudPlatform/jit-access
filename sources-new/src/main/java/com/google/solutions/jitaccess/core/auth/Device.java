@@ -19,18 +19,21 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.auth;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
 
 /**
- * A routable email address.
+ * Represents the device a user is using.
  */
-public record EmailAddress(
-  @NotNull String value
-) {
-  @Override
-  public String toString() {
-    return this.value;
-  }
+public interface Device {
+  /**
+   * @return the device's ID
+   */
+  String deviceId();
+
+  /**
+   * @return list of satisfied ACM access levels.
+   */
+  Collection<String> accessLevels();
 }

@@ -19,8 +19,13 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.access;
 
+import com.google.solutions.jitaccess.core.access.AccessControlList;
+import com.google.solutions.jitaccess.core.auth.GroupId;
+import com.google.solutions.jitaccess.core.auth.PrincipalId;
+import com.google.solutions.jitaccess.core.auth.Subject;
+import com.google.solutions.jitaccess.core.auth.UserId;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

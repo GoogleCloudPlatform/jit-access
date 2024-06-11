@@ -19,9 +19,9 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.access;
 
-import com.google.solutions.jitaccess.core.model.ProjectId;
+import com.google.solutions.jitaccess.core.access.ProjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

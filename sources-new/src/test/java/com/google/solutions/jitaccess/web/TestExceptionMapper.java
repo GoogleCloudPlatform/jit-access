@@ -25,7 +25,7 @@ import com.google.solutions.jitaccess.core.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.core.clients.AccessException;
 import com.google.solutions.jitaccess.core.clients.NotAuthenticatedException;
 import com.google.solutions.jitaccess.core.clients.ResourceNotFoundException;
-import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.core.auth.UserId;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;

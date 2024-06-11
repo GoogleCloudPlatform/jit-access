@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.core.notifications;
 
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.core.auth.UserId;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 

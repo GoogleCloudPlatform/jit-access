@@ -19,15 +19,11 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.catalog;
+package com.google.solutions.jitaccess.core.auth;
 
 import com.google.api.services.cloudidentity.v1.model.EntityKey;
 import com.google.api.services.cloudidentity.v1.model.Membership;
-import com.google.solutions.jitaccess.core.catalog.GroupExpander;
 import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
-import com.google.solutions.jitaccess.core.model.GroupId;
-import com.google.solutions.jitaccess.core.model.PrincipalId;
-import com.google.solutions.jitaccess.core.model.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-public class TestGroupExpander {
+public class TestGroupResolver {
   private static final UserId TEST_USER_1 = new UserId("test-1@example.com");
   private static final UserId TEST_USER_2 = new UserId("test-2@example.com");
   private static final GroupId TEST_GROUP_1 = new GroupId("group-1@example.com");
@@ -55,7 +51,7 @@ public class TestGroupExpander {
   @Test
   public void whenSetEmpty_ThenExpandReturnsEquivalentSet() throws Exception {
     var groupsClient = mock(CloudIdentityGroupsClient.class);
-    var expander = new GroupExpander(groupsClient, new SynchronousExecutor());
+    var expander = new GroupResolver(groupsClient, new SynchronousExecutor());
 
     var inputSet = Set.<PrincipalId>of();
     var outputSet = expander.expand(inputSet);
@@ -65,7 +61,7 @@ public class TestGroupExpander {
   @Test
   public void whenSetContainsNoGroups_ThenExpandReturnsEquivalentSet() throws Exception {
     var groupsClient = mock(CloudIdentityGroupsClient.class);
-    var expander = new GroupExpander(groupsClient, new SynchronousExecutor());
+    var expander = new GroupResolver(groupsClient, new SynchronousExecutor());
 
     var inputSet = Set.<PrincipalId>of(
       TEST_USER_1,
@@ -96,7 +92,7 @@ public class TestGroupExpander {
           .setType("GROUP")
           .setPreferredMemberKey(new EntityKey().setId(member2.email))));
 
-    var expander = new GroupExpander(groupsClient, new SynchronousExecutor());
+    var expander = new GroupResolver(groupsClient, new SynchronousExecutor());
 
     var inputSet = Set.<PrincipalId>of(
       TEST_USER_1,

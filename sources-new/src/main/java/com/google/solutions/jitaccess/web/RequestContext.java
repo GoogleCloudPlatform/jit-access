@@ -1,9 +1,9 @@
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.model.Device;
-import com.google.solutions.jitaccess.core.model.PrincipalId;
-import com.google.solutions.jitaccess.core.model.Subject;
-import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.core.auth.Device;
+import com.google.solutions.jitaccess.core.auth.PrincipalId;
+import com.google.solutions.jitaccess.core.auth.Subject;
+import com.google.solutions.jitaccess.core.auth.UserId;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
