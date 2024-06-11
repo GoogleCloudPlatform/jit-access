@@ -19,8 +19,9 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.web.iap;
+package com.google.solutions.jitaccess.web;
 
+import com.google.solutions.jitaccess.web.IapDevice;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

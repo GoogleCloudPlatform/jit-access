@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.web.iap;
+package com.google.solutions.jitaccess.web;
 
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.model.Device;
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Information about the device of a user.
  */
-public record IapDevice(String deviceId, List<String> accessLevels) implements Device {
+record IapDevice(String deviceId, List<String> accessLevels) implements Device {
   public static final IapDevice UNKNOWN = new IapDevice("unknown", List.of());
 
   public IapDevice {

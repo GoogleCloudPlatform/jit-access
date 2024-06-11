@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.web.iap;
+package com.google.solutions.jitaccess.web;
 
 import com.google.api.client.json.webtoken.JsonWebSignature;
 import com.google.api.client.json.webtoken.JsonWebToken;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class IapAssertion {
+class IapAssertion {
   private final JsonWebToken.Payload payload;
 
   public IapAssertion(JsonWebToken.Payload payload) {
