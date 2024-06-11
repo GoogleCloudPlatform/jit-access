@@ -1,5 +1,5 @@
 //
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,48 +19,21 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.access;
+package com.google.solutions.jitaccess.core.auth;
 
-import com.google.solutions.jitaccess.core.access.OrganizationId;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestOrganizationId {
-
-  @Test
-  public void toStringReturnsId() {
-    assertEquals("111", new OrganizationId("111").toString());
-  }
-
+public class TestRoleId {
   // -------------------------------------------------------------------------
-  // Type.
+  // toString.
   // -------------------------------------------------------------------------
 
   @Test
-  public void type() {
-    assertEquals("organization", new OrganizationId("111").type());
-  }
-
-  // -------------------------------------------------------------------------
-  // ID.
-  // -------------------------------------------------------------------------
-
-  @Test
-  public void id() {
-    assertEquals("111", new OrganizationId("111").id());
-  }
-
-  // -------------------------------------------------------------------------
-  // Path.
-  // -------------------------------------------------------------------------
-
-  @Test
-  public void path() {
-    assertEquals("organizations/111", new OrganizationId("111").path());
+  public void toStringReturnsPolicyAndName() {
+    Assertions.assertEquals("policy-name", new RoleId("policy", "name").toString());
   }
 
   // -------------------------------------------------------------------------
@@ -69,59 +42,74 @@ public class TestOrganizationId {
 
   @Test
   public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
-    OrganizationId id1 = new OrganizationId("111");
-    OrganizationId id2 = new OrganizationId("111");
+    RoleId id1 = new RoleId("policy", "name");
+    RoleId id2 = new RoleId("policy", "name");
 
     assertTrue(id1.equals(id2));
     assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
+  }
+
+  @Test
+  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+    RoleId id1 = new RoleId("policy", "name");
+    RoleId id2 = new RoleId("Policy", "Name");
+
+    assertTrue(id1.equals(id2));
+    assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectAreSame_ThenEqualsReturnsTrue() {
-    OrganizationId id1 = new OrganizationId("111");
+    RoleId id1 = new RoleId("policy", "name");
 
     assertTrue(id1.equals(id1));
+    assertEquals(0, id1.compareTo(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
-    OrganizationId id1 = new OrganizationId("111");
-    OrganizationId id2 = new OrganizationId("222");
+  public void whenRolesDiffer_ThenEqualsReturnsFalse() {
+    RoleId id1 = new RoleId("policy", "name-1");
+    RoleId id2 = new RoleId("policy", "name-2");
 
     assertFalse(id1.equals(id2));
     assertNotEquals(id1.hashCode(), id2.hashCode());
+    assertNotEquals(0, id1.compareTo(id2));
+  }
+
+  @Test
+  public void whenPoliciesDiffer_ThenEqualsReturnsFalse() {
+    RoleId id1 = new RoleId("policy-1", "name");
+    RoleId id2 = new RoleId("policy-2", "name");
+
+    assertFalse(id1.equals(id2));
+    assertNotEquals(id1.hashCode(), id2.hashCode());
+    assertNotEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectIsNull_ThenEqualsReturnsFalse() {
-    OrganizationId id1 = new OrganizationId("111");
+    RoleId id1 = new RoleId("policy", "name");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
   public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
-    OrganizationId id1 = new OrganizationId("111");
+    RoleId id1 = new RoleId("policy", "name");
 
     assertFalse(id1.equals(""));
   }
 
   // -------------------------------------------------------------------------
-  // Comparable.
+  // PrincipalId.
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenInTreeSet_ThenReturnsInExpectedOrder() {
-    var organizations = List.of(
-      new OrganizationId("333"),
-      new OrganizationId("111"),
-      new OrganizationId("222"));
-
-    assertIterableEquals(
-      List.of(
-        new OrganizationId("111"),
-        new OrganizationId("222"),
-        new OrganizationId("333")),
-      new TreeSet<>(organizations));
+  public void value() {
+    assertEquals(
+      "policy-name",
+      new RoleId("policy", "name").value());
   }
 }

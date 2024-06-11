@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.access;
+package com.google.solutions.jitaccess.cloud;
 
 import org.jetbrains.annotations.NotNull;
 

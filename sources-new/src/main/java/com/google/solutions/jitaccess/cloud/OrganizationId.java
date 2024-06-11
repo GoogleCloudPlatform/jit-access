@@ -19,18 +19,18 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.access;
+package com.google.solutions.jitaccess.cloud;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * ID of a Google Cloud folder.
+ * ID of a Google Cloud organization.
  */
-public record FolderId(
+public record OrganizationId(
   @NotNull String id
-) implements Comparable<FolderId>, ResourceId {
-  public FolderId {
+) implements Comparable<OrganizationId>, ResourceId {
+  public OrganizationId {
     Preconditions.checkNotNull(id, "id");
     assert !id.startsWith("//");
     assert !id.contains("/");
@@ -46,7 +46,7 @@ public record FolderId(
   // -------------------------------------------------------------------------
 
   @Override
-  public int compareTo(@NotNull FolderId o) {
+  public int compareTo(@NotNull OrganizationId o) {
     return this.id.compareTo(o.id);
   }
 
@@ -56,11 +56,11 @@ public record FolderId(
 
   @Override
   public @NotNull String type() {
-    return "folder";
+    return "organization";
   }
 
   @Override
-  public @NotNull String path() {
-    return String.format("folders/%s", this.id);
+  public String path() {
+    return String.format("organizations/%s", this.id);
   }
 }
