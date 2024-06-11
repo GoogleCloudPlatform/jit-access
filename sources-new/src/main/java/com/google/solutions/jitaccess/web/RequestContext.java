@@ -1,14 +1,19 @@
 package com.google.solutions.jitaccess.web;
 
 import com.google.solutions.jitaccess.core.auth.*;
+import com.google.solutions.jitaccess.core.clients.AccessException;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.Set;
 
 @RequestScoped
 public class RequestContext {
+  /**
+   * Pseudo-subject for unauthenticated users.
+   */
   private static final @NotNull Subject ANONYMOUS_SUBJECT = new Subject() {
     @Override
     public @NotNull UserId user() {
@@ -31,10 +36,12 @@ public class RequestContext {
    */
   private @NotNull Subject subject;
 
+  private @NotNull SubjectResolver subjectResolver;
 
-  public RequestContext() {
+  public RequestContext(@NotNull SubjectResolver subjectResolver) {
     this.subject = ANONYMOUS_SUBJECT;
     this.device = IapDevice.UNKNOWN;
+    this.subjectResolver = subjectResolver;
   }
 
   /**
@@ -63,8 +70,14 @@ public class RequestContext {
         synchronized (this.cachedPrincipalsLock)
         {
           if (this.cachedPrincipals == null) {
-            // TODO: lookup
-            throw new RuntimeException("NIY");
+            try {
+              this.cachedPrincipals = subjectResolver.resolve(this.user()).principals();
+            }
+            catch (AccessException | IOException e) {
+              throw new RuntimeException(
+                String.format("Resolving principals for user %s failed", this.user()),
+                e);
+            }
           }
 
           return this.cachedPrincipals;

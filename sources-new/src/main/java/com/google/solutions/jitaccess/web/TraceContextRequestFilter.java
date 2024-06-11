@@ -45,7 +45,7 @@ public class TraceContextRequestFilter implements ContainerRequestFilter {
   private static final String TRACE_CONTEXT_HEADER_NAME = "X-Cloud-Trace-Context";
 
   @Inject
-  ConsoleLogger logger;
+  RequestContextLogger logger;
 
   @Override
   public void filter(@NotNull ContainerRequestContext containerRequestContext) {

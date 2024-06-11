@@ -21,22 +21,24 @@
 
 package com.google.solutions.jitaccess.web;
 
+import com.google.solutions.jitaccess.core.auth.SubjectResolver;
 import com.google.solutions.jitaccess.core.auth.UserId;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestConsoleLogger {
+public class TestRequestContextLogger {
   @Test
   public void whenTraceIdAndUserIdSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var requestContext = new RequestContext();
+    var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     requestContext.authenticate(
       new UserId("id"),
       new IapDevice("device-id", List.of()));
-    var logger = new ConsoleLogger(buffer, requestContext);
+    var logger = new RequestContextLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
 
     logger.info("event-1", "message-1");
@@ -51,11 +53,11 @@ public class TestConsoleLogger {
   @Test
   public void whenTraceIdAndAccessLevelsSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var requestContext = new RequestContext();
+    var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     requestContext.authenticate(
       new UserId("id"),
       new IapDevice("device-id", List.of("level-1", "level-2")));
-    var logger = new ConsoleLogger(buffer, requestContext);
+    var logger = new RequestContextLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
 
     logger.info("event-1", "message-1");
@@ -71,8 +73,8 @@ public class TestConsoleLogger {
   @Test
   public void whenNotAuthenticated_ThenWriteLogSucceeds() {
     var buffer = new StringBuilder();
-    var requestContext = new RequestContext();
-    var logger = new ConsoleLogger(buffer, requestContext);
+    var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
+    var logger = new RequestContextLogger(buffer, requestContext);
     logger.error("event-1", "message-1");
 
     assertEquals(

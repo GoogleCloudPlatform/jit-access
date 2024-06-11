@@ -116,7 +116,7 @@ public class RuntimeEnvironment {
     // Create a log adapter. We can't rely on injection as the adapter
     // is request-scoped.
     //
-    var logger = new ConsoleLogger(new RequestContext());
+    var logger = new ConsoleLogger(System.out);
 
     if (!this.configuration.isSmtpConfigured()) {
       logger.warn(
@@ -260,7 +260,6 @@ public class RuntimeEnvironment {
   // Producers.
   //---------------------------------------------------------------------------
 
-
   @Produces
   @Singleton
   public @NotNull Diagnosable produceDevModeDiagnosable() {
@@ -302,8 +301,7 @@ public class RuntimeEnvironment {
   }
 
   @Produces
-  @RequestScoped
-  public @NotNull ConsoleLogger produceLogger(RequestContext context) {
-    return new ConsoleLogger(context);
+  public @NotNull RequestContextLogger produceLogger(RequestContext context) {
+    return new RequestContextLogger(context);
   }
 }

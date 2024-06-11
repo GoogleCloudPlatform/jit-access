@@ -34,26 +34,16 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Logger that emits JSON-structured messages to STDOUT.
+ * Basic logger implementation that writes JSON-structured
+ * output to STDOUT.
  */
-@RequestScoped
 public class ConsoleLogger implements Logger {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
-  private final @NotNull Appendable output;
-
-  private final @NotNull RequestContext requestContext;
+  protected final @NotNull Appendable output;
   private @Nullable String traceId;
 
-  ConsoleLogger(
-    @NotNull Appendable output,
-    @NotNull RequestContext requestContext
-  ) {
+  ConsoleLogger(@NotNull Appendable output) {
     this.output = output;
-    this.requestContext = requestContext;
-  }
-
-  public ConsoleLogger(@NotNull RequestContext requestContext) {
-    this(System.out, requestContext);
   }
 
   /**
@@ -70,6 +60,12 @@ public class ConsoleLogger implements Logger {
       catch (IOException ignored) {
       }
     }
+  }
+
+  protected Map<String, String> createLabels(String eventId) {
+    var labels = new HashMap<String, String>();
+    labels.put("event", eventId);
+    return labels;
   }
 
   /**
@@ -92,7 +88,7 @@ public class ConsoleLogger implements Logger {
       "INFO",
       eventId,
       message,
-      this.requestContext,
+      createLabels(eventId),
       this.traceId));
   }
 
@@ -105,34 +101,34 @@ public class ConsoleLogger implements Logger {
       "WARN",
       eventId,
       message,
-      this.requestContext,
+      createLabels(eventId),
       this.traceId));
   }
 
   @Override
   public void error(
-    @NotNull String eventId, 
+    @NotNull String eventId,
     @NotNull String message
   ) {
     log(new LogEntry(
       "ERROR",
       eventId,
       message,
-      this.requestContext,
+      createLabels(eventId),
       this.traceId));
   }
 
   @Override
   public void error(
-    @NotNull String eventId, 
-    @NotNull String message, 
+    @NotNull String eventId,
+    @NotNull String message,
     @NotNull Exception exception
   ) {
     log(new LogEntry(
       "ERROR",
       eventId,
       String.format("%s: %s", message, exception.getMessage()),
-      this.requestContext,
+      createLabels(eventId),
       this.traceId));
   }
 
@@ -160,32 +156,23 @@ public class ConsoleLogger implements Logger {
       String severity,
       String eventId,
       String message,
-      RequestContext requestContext,
+      Map<String, String> labels,
       String traceId
     ) {
       this.severity = severity;
       this.message = message;
       this.traceId = traceId;
-
-      this.labels = new HashMap<>();
-      this.labels.put("event", eventId);
-
-      if (requestContext.isAuthenticated()) {
-        this.labels.put("user_id", requestContext.user().email);
-        this.labels.put("device_id", requestContext.device().deviceId());
-        this.labels.put("device_access_levels",
-          String.join(", ", requestContext.device().accessLevels()));
-      }
+      this.labels = labels;
     }
 
-    public @NotNull LogEntry addLabel(String label, String value) {
+    public @NotNull RequestContextLogger.LogEntry addLabel(String label, String value) {
       assert !this.labels.containsKey(label);
 
       this.labels.put(label, value);
       return this;
     }
 
-    public LogEntry addLabels(@NotNull Function<LogEntry, LogEntry> func) {
+    public RequestContextLogger.LogEntry addLabels(@NotNull Function<RequestContextLogger.LogEntry, RequestContextLogger.LogEntry> func) {
       return func.apply(this);
     }
   }

@@ -50,7 +50,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
   private static final String DEBUG_PRINCIPAL_HEADER = "x-debug-principal";
 
   @Inject
-  ConsoleLogger logger;
+  RequestContextLogger logger;
 
   @Inject
   RequestContext requestContext;
