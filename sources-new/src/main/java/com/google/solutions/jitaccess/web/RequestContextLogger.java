@@ -31,8 +31,7 @@ import java.util.Map;
  * Logger that augments log messages using information
  * from the current request context.
  */
-@RequestScoped
-public class RequestContextLogger extends JsonLogger {
+class RequestContextLogger extends JsonLogger {
   private final @NotNull RequestContext requestContext;
   private @Nullable String traceId;
 
@@ -57,7 +56,7 @@ public class RequestContextLogger extends JsonLogger {
 
   @Override
   protected @Nullable String traceId() {
-    return this.traceId();
+    return this.traceId;
   }
 
   @Override
