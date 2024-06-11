@@ -24,7 +24,8 @@ package com.google.solutions.jitaccess.web;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.web.iap.IapPrincipal;
+import com.google.solutions.jitaccess.core.model.UserId;
+import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,15 +42,20 @@ import java.util.function.Function;
 public class ConsoleLogger implements Logger {
   private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
   private final @NotNull Appendable output;
-  private @Nullable String traceId;
-  private @Nullable IapPrincipal principal;
 
-  public ConsoleLogger(@NotNull Appendable output) {
+  private final @NotNull RequestContext requestContext;
+  private @Nullable String traceId;
+
+  public ConsoleLogger(
+    @NotNull Appendable output,
+    @NotNull RequestContext requestContext
+  ) {
     this.output = output;
+    this.requestContext = requestContext;
   }
 
-  public ConsoleLogger() {
-    this(System.out);
+  public ConsoleLogger(@NotNull RequestContext requestContext) {
+    this(System.out, requestContext);
   }
 
   /**
@@ -75,14 +81,6 @@ public class ConsoleLogger implements Logger {
     this.traceId = traceId;
   }
 
-
-  /**
-   * Set principal for current request.
-   */
-  public void setPrincipal(IapPrincipal principal) {
-    this.principal = principal;
-  }
-
   //---------------------------------------------------------------------------
   // Logger.
   //---------------------------------------------------------------------------
@@ -96,7 +94,7 @@ public class ConsoleLogger implements Logger {
       "INFO",
       eventId,
       message,
-      this.principal,
+      this.requestContext,
       this.traceId));
   }
 
@@ -109,7 +107,7 @@ public class ConsoleLogger implements Logger {
       "WARN",
       eventId,
       message,
-      this.principal,
+      this.requestContext,
       this.traceId));
   }
 
@@ -122,7 +120,7 @@ public class ConsoleLogger implements Logger {
       "ERROR",
       eventId,
       message,
-      this.principal,
+      this.requestContext,
       this.traceId));
   }
 
@@ -136,7 +134,7 @@ public class ConsoleLogger implements Logger {
       "ERROR",
       eventId,
       String.format("%s: %s", message, exception.getMessage()),
-      this.principal,
+      this.requestContext,
       this.traceId));
   }
 
@@ -164,7 +162,7 @@ public class ConsoleLogger implements Logger {
       String severity,
       String eventId,
       String message,
-      @Nullable IapPrincipal principal,
+      RequestContext requestContext,
       String traceId
     ) {
       this.severity = severity;
@@ -174,12 +172,11 @@ public class ConsoleLogger implements Logger {
       this.labels = new HashMap<>();
       this.labels.put("event", eventId);
 
-      if (principal != null) {
-        this.labels.put("user", principal.email().email);
-        this.labels.put("user_id", principal.subjectId());
-        this.labels.put("device_id", principal.device().deviceId());
+      if (requestContext.isAuthenticated()) {
+        this.labels.put("user_id", requestContext.user().email);
+        this.labels.put("device_id", requestContext.device().deviceId());
         this.labels.put("device_access_levels",
-          String.join(", ", principal.device().accessLevels()));
+          String.join(", ", requestContext.device().accessLevels()));
       }
     }
 

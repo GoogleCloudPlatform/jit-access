@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class IapAssertion implements IapPrincipal {
+public class IapAssertion {
   private final JsonWebToken.Payload payload;
 
   public IapAssertion(JsonWebToken.Payload payload) {
@@ -47,11 +47,6 @@ public class IapAssertion implements IapPrincipal {
    */
   public @NotNull UserId email() {
     return new UserId(this.payload.get("email").toString());
-  }
-
-  @Override
-  public String subjectId() {
-    return this.payload.get("sub").toString();
   }
 
   /**
@@ -77,10 +72,5 @@ public class IapAssertion implements IapPrincipal {
     }
 
     return new DeviceInfo(deviceId, accessLevels);
-  }
-
-  @Override
-  public String getName() {
-    return email().toString();
   }
 }

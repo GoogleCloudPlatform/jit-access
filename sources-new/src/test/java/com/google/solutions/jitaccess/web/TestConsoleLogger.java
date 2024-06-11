@@ -23,7 +23,6 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.solutions.jitaccess.core.model.UserId;
 import com.google.solutions.jitaccess.web.iap.DeviceInfo;
-import com.google.solutions.jitaccess.web.iap.IapPrincipal;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,82 +33,47 @@ public class TestConsoleLogger {
   @Test
   public void whenTraceIdAndUserIdSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var logger = new ConsoleLogger(buffer);
+    var requestContext = new RequestContext();
+    requestContext.authenicate(
+      new UserId("id"),
+      new DeviceInfo("device-id", List.of()));
+    var logger = new ConsoleLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
-    logger.setPrincipal(
-      new IapPrincipal() {
-        @Override
-        public UserId email() {
-          return new UserId("email");
-        }
-
-        @Override
-        public String subjectId() {
-          return "id";
-        }
-
-        @Override
-        public DeviceInfo device() {
-          return new DeviceInfo("device-id", List.of());
-        }
-
-        @Override
-        public String getName() {
-          return "-";
-        }
-      });
 
     logger.info("event-1", "message-1");
 
     assertEquals(
       "{\"severity\":\"INFO\",\"message\":\"message-1\",\"logging.googleapis.com/labels\":" +
-        "{\"device_id\":\"device-id\",\"user_id\":\"id\",\"event\":\"event-1\",\"user\":" +
-        "\"email\",\"device_access_levels\":\"\"},\"logging.googleapis.com/trace\":\"trace-1\"}\n",
+        "{\"device_id\":\"device-id\",\"user_id\":\"id\",\"event\":\"event-1\"," +
+        "\"device_access_levels\":\"\"},\"logging.googleapis.com/trace\":\"trace-1\"}\n",
       buffer.toString());
   }
 
   @Test
   public void whenTraceIdAndAccessLevelsSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
-    var logger = new ConsoleLogger(buffer);
+    var requestContext = new RequestContext();
+    requestContext.authenicate(
+      new UserId("id"),
+      new DeviceInfo("device-id", List.of("level-1", "level-2")));
+    var logger = new ConsoleLogger(buffer, requestContext);
     logger.setTraceId("trace-1");
-    logger.setPrincipal(
-      new IapPrincipal() {
-        @Override
-        public UserId email() {
-          return new UserId("email");
-        }
-
-        @Override
-        public String subjectId() {
-          return "id";
-        }
-
-        @Override
-        public DeviceInfo device() {
-          return new DeviceInfo("device-id", List.of("level-1", "level-2"));
-        }
-
-        @Override
-        public String getName() {
-          return "-";
-        }
-      });
 
     logger.info("event-1", "message-1");
 
     assertEquals(
       "{\"severity\":\"INFO\",\"message\":\"message-1\",\"logging.googleapis.com/labels\":" +
-        "{\"device_id\":\"device-id\",\"user_id\":\"id\",\"event\":\"event-1\",\"user\":" +
-        "\"email\",\"device_access_levels\":\"level-1, level-2\"}," +
+        "{\"device_id\":\"device-id\",\"user_id\":\"id\",\"event\":\"event-1\"," +
+        "\"device_access_levels\":\"level-1, level-2\"}," +
         "\"logging.googleapis.com/trace\":\"trace-1\"}\n",
       buffer.toString());
   }
 
   @Test
-  public void whenTraceIdAndPrincipalNotSet_ThenWriteLogSucceeds() {
+  public void whenNotAuthenticated_ThenWriteLogSucceeds() {
     var buffer = new StringBuilder();
-    var logger = new ConsoleLogger(buffer);
+    var requestContext = new RequestContext();
+    var logger = new ConsoleLogger(buffer, requestContext);
     logger.error("event-1", "message-1");
 
     assertEquals(

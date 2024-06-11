@@ -115,7 +115,7 @@ public class RuntimeEnvironment {
     // Create a log adapter. We can't rely on injection as the adapter
     // is request-scoped.
     //
-    var logger = new ConsoleLogger();
+    var logger = new ConsoleLogger(new RequestContext());
 
     if (!this.configuration.isSmtpConfigured()) {
       logger.warn(

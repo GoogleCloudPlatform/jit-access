@@ -26,7 +26,6 @@ import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.model.UserId;
 import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import com.google.solutions.jitaccess.web.iap.IapAssertion;
-import com.google.solutions.jitaccess.web.iap.IapPrincipal;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -39,6 +38,10 @@ import jakarta.ws.rs.ext.Provider;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.Principal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Verifies that requests have a valid IAP assertion, and makes the assertion available as
@@ -57,6 +60,9 @@ public class IapRequestFilter implements ContainerRequestFilter {
 
   @Inject
   ConsoleLogger logger;
+
+  @Inject
+  RequestContext requestContext;
 
   @Inject
   RuntimeEnvironment runtimeEnvironment;
@@ -81,7 +87,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
   /**
    * Authenticate request using IAP assertion.
    */
-  private @NotNull IapPrincipal authenticateIapRequest(@NotNull ContainerRequestContext requestContext) {
+  private @NotNull void authenticateIapRequest(@NotNull ContainerRequestContext requestContext) {
     //
     // Read IAP assertion header and validate it.
     //
@@ -105,11 +111,9 @@ public class IapRequestFilter implements ContainerRequestFilter {
           .build()
           .verify(assertion));
 
-      //
-      // Associate the token with the request so that controllers
-      // can access it.
-      //
-      return verifiedAssertion;
+      this.requestContext.authenicate(
+        verifiedAssertion.email(),
+        verifiedAssertion.device());
     }
     catch (TokenVerifier.VerificationException | IllegalArgumentException e) {
       this.logger.error(
@@ -127,35 +131,17 @@ public class IapRequestFilter implements ContainerRequestFilter {
   /**
    * Pseudo-authenticate request using debug header. Only used in debug mode.
    */
-  private @NotNull IapPrincipal authenticateDebugRequest(@NotNull ContainerRequestContext requestContext) {
+  private @NotNull void authenticateDebugRequest(@NotNull ContainerRequestContext context) {
     assert this.runtimeEnvironment.isDebugModeEnabled();
 
-    var debugPrincipalName = requestContext.getHeaderString(DEBUG_PRINCIPAL_HEADER);
+    var debugPrincipalName = context.getHeaderString(DEBUG_PRINCIPAL_HEADER);
     if (debugPrincipalName == null || debugPrincipalName.isEmpty()) {
       throw new ForbiddenException(DEBUG_PRINCIPAL_HEADER + " not set");
     }
 
-    return new IapPrincipal() {
-      @Override
-      public @NotNull String getName() {
-        return debugPrincipalName;
-      }
-
-      @Override
-      public @NotNull UserId email() {
-        return new UserId(debugPrincipalName);
-      }
-
-      @Override
-      public String subjectId() {
-        return "debug";
-      }
-
-      @Override
-      public @NotNull DeviceInfo device() {
-        return DeviceInfo.UNKNOWN;
-      }
-    };
+    this.requestContext.authenicate(
+      new UserId(debugPrincipalName),
+      DeviceInfo.UNKNOWN);
   }
 
   @Override
@@ -163,34 +149,12 @@ public class IapRequestFilter implements ContainerRequestFilter {
     Preconditions.checkNotNull(this.logger, "logger");
     Preconditions.checkNotNull(this.runtimeEnvironment, "runtimeEnvironment");
 
-    var principal = this.runtimeEnvironment.isDebugModeEnabled()
-      ? authenticateDebugRequest(requestContext)
-      : authenticateIapRequest(requestContext);
-
-    this.logger.setPrincipal(principal);
-
-    requestContext.setSecurityContext(
-      new SecurityContext() {
-        @Override
-        public @NotNull Principal getUserPrincipal() {
-          return principal;
-        }
-
-        @Override
-        public boolean isUserInRole(String s) {
-          return false;
-        }
-
-        @Override
-        public boolean isSecure() {
-          return true;
-        }
-
-        @Override
-        public @NotNull String getAuthenticationScheme() {
-          return "IAP";
-        }
-      });
+    if (this.runtimeEnvironment.isDebugModeEnabled()) {
+      authenticateDebugRequest(requestContext);
+    }
+    else {
+      authenticateIapRequest(requestContext);
+    }
 
     this.logger.info(EVENT_AUTHENTICATE, "Authenticated IAP principal");
   }

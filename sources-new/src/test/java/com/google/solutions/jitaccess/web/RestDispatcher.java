@@ -24,7 +24,6 @@ package com.google.solutions.jitaccess.web;
 import com.google.gson.Gson;
 import com.google.solutions.jitaccess.core.model.UserId;
 import com.google.solutions.jitaccess.web.iap.DeviceInfo;
-import com.google.solutions.jitaccess.web.iap.IapPrincipal;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
 import org.jboss.resteasy.core.SynchronousDispatcher;
@@ -51,53 +50,6 @@ public class RestDispatcher<TResource> {
     for (var mapper : ExceptionMappers.ALL) {
       dispatcher.getProviderFactory().registerProvider(mapper);
     }
-
-    //
-    // Inject @Context objects.
-    //
-    dispatcher.getDefaultContextObjects().put(
-      SecurityContext.class,
-      new SecurityContext() {
-        @Override
-        public Principal getUserPrincipal() {
-          return new IapPrincipal() {
-            @Override
-            public UserId email() {
-              return userId;
-            }
-
-            @Override
-            public String subjectId() {
-              return "mock";
-            }
-
-            @Override
-            public DeviceInfo device() {
-              return DeviceInfo.UNKNOWN;
-            }
-
-            @Override
-            public String getName() {
-              return "mock@example.com";
-            }
-          };
-        }
-
-        @Override
-        public boolean isUserInRole(String s) {
-          return false;
-        }
-
-        @Override
-        public boolean isSecure() {
-          return true;
-        }
-
-        @Override
-        public String getAuthenticationScheme() {
-          return "Mock";
-        }
-      });
   }
 
   private <TResponse> Response<TResponse> invoke(

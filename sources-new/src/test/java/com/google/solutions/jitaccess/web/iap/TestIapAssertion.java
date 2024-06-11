@@ -40,7 +40,6 @@ public class TestIapAssertion {
       .setSubject("subject-1")
       .set("email", "email-1"));
 
-    assertEquals("subject-1", assertion.subjectId());
     assertEquals("email-1", assertion.email().email);
   }
 

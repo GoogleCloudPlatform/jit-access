@@ -19,11 +19,15 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.model;
+package com.google.solutions.jitaccess.core.catalog;
 
 import com.google.api.services.cloudidentity.v1.model.EntityKey;
 import com.google.api.services.cloudidentity.v1.model.Membership;
+import com.google.solutions.jitaccess.core.catalog.GroupExpander;
 import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
+import com.google.solutions.jitaccess.core.model.GroupId;
+import com.google.solutions.jitaccess.core.model.PrincipalId;
+import com.google.solutions.jitaccess.core.model.UserId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
