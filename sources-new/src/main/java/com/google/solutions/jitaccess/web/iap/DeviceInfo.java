@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Information about the device of a user.
  */
-public record DeviceInfo(String deviceId, List<String> accessLevels) {
+public record DeviceInfo(String deviceId, List<String> accessLevels) { // TODO: extract interface, move
   public static final DeviceInfo UNKNOWN = new DeviceInfo("unknown", List.of());
 
   public DeviceInfo {

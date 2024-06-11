@@ -30,12 +30,17 @@ public class RequestContext implements Subject {
   private @Nullable Set<PrincipalId> cachedPrincipals;
   private @NotNull Object cachedPrincipalsLock = new Object();
 
+  public RequestContext() {
+    this.user = ANONYMOUS_USER;
+    this.device = DeviceInfo.UNKNOWN;
+  }
+
   /**
    * Authenticate the request context using the IAP principal.
    * @param principal
    */
-  void authenicate(UserId user, DeviceInfo device) {
-    if (this.user != null || this.device != null) {
+  void authenticate(UserId user, DeviceInfo device) {
+    if (isAuthenticated()) {
       throw new IllegalStateException(
         "Request context has been authenticated before");
     }
@@ -44,21 +49,21 @@ public class RequestContext implements Subject {
   }
 
   boolean isAuthenticated() {
-    return this.user != null;
+    return this.user != ANONYMOUS_USER;
   }
 
   public DeviceInfo device() {
-    return this.device != null ? this.device : DeviceInfo.UNKNOWN;
+    return this.device;
   }
 
   @Override
   public @NotNull UserId user() {
-    return this.user != null ? this.user : ANONYMOUS_USER;
+    return this.user;
   }
 
   @Override
   public @NotNull Set<PrincipalId> principals() {
-    if (this.user == null) {
+    if (!isAuthenticated()) {
       return Set.of(ANONYMOUS_USER);
     }
 

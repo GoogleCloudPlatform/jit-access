@@ -34,7 +34,7 @@ public class TestConsoleLogger {
   public void whenTraceIdAndUserIdSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
     var requestContext = new RequestContext();
-    requestContext.authenicate(
+    requestContext.authenticate(
       new UserId("id"),
       new DeviceInfo("device-id", List.of()));
     var logger = new ConsoleLogger(buffer, requestContext);
@@ -53,7 +53,7 @@ public class TestConsoleLogger {
   public void whenTraceIdAndAccessLevelsSet_ThenWriteLogIncludesFields() {
     var buffer = new StringBuilder();
     var requestContext = new RequestContext();
-    requestContext.authenicate(
+    requestContext.authenticate(
       new UserId("id"),
       new DeviceInfo("device-id", List.of("level-1", "level-2")));
     var logger = new ConsoleLogger(buffer, requestContext);

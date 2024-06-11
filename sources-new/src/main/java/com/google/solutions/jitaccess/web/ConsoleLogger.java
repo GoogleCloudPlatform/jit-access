@@ -24,8 +24,6 @@ package com.google.solutions.jitaccess.web;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.core.model.UserId;
-import com.google.solutions.jitaccess.web.iap.DeviceInfo;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +44,7 @@ public class ConsoleLogger implements Logger {
   private final @NotNull RequestContext requestContext;
   private @Nullable String traceId;
 
-  public ConsoleLogger(
+  ConsoleLogger(
     @NotNull Appendable output,
     @NotNull RequestContext requestContext
   ) {

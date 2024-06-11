@@ -37,6 +37,7 @@ import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.core.clients.Diagnosable;
 import com.google.solutions.jitaccess.core.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.core.clients.HttpTransport;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.UriBuilder;
@@ -298,5 +299,11 @@ public class RuntimeEnvironment {
       this.configuration.backendConnectTimeout.getValue(),
       this.configuration.backendReadTimeout.getValue(),
       this.configuration.backendWriteTimeout.getValue());
+  }
+
+  @Produces
+  @RequestScoped
+  public @NotNull ConsoleLogger produceLogger(RequestContext context) {
+    return new ConsoleLogger(context);
   }
 }

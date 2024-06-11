@@ -33,15 +33,8 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import org.jetbrains.annotations.NotNull;
-
-import java.security.Principal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Verifies that requests have a valid IAP assertion, and makes the assertion available as
@@ -66,6 +59,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
 
   @Inject
   RuntimeEnvironment runtimeEnvironment;
+
   //
   // For AppEngine, we can derive the expected audience
   // from the project number and name.
@@ -111,7 +105,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
           .build()
           .verify(assertion));
 
-      this.requestContext.authenicate(
+      this.requestContext.authenticate(
         verifiedAssertion.email(),
         verifiedAssertion.device());
     }
@@ -139,7 +133,7 @@ public class IapRequestFilter implements ContainerRequestFilter {
       throw new ForbiddenException(DEBUG_PRINCIPAL_HEADER + " not set");
     }
 
-    this.requestContext.authenicate(
+    this.requestContext.authenticate(
       new UserId(debugPrincipalName),
       DeviceInfo.UNKNOWN);
   }
