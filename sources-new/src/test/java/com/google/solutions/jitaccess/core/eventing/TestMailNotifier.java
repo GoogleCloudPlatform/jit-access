@@ -39,8 +39,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestMailNotificationService {
-  private static class TestNotification extends NotificationService.Notification {
+public class TestMailNotifier {
+  private static class TestNotification extends Notifier.Notification {
     private final String templateId;
 
     protected TestNotification(
@@ -70,10 +70,10 @@ public class TestMailNotificationService {
   @Test
   public void whenTemplateNotFound_ThenSendNotificationDoesNotSendMail() throws Exception {
     var mailAdapter = Mockito.mock(SmtpClient.class);
-    var service = new MailNotificationService(
+    var service = new MailNotifier(
       mailAdapter,
       new EmailMapping(),
-      new MailNotificationService.Options(MailNotificationService.Options.DEFAULT_TIMEZONE));
+      new MailNotifier.Options(MailNotifier.Options.DEFAULT_TIMEZONE));
 
     service.sendNotification(new TestNotification(
       new UserId("user@example.com"),
@@ -92,10 +92,10 @@ public class TestMailNotificationService {
   @Test
   public void whenTemplateFound_ThenSendNotificationSendsMail() throws Exception {
     var mailAdapter = Mockito.mock(SmtpClient.class);
-    var service = new MailNotificationService(
+    var service = new MailNotifier(
       mailAdapter,
       new EmailMapping(),
-      new MailNotificationService.Options(MailNotificationService.Options.DEFAULT_TIMEZONE));
+      new MailNotifier.Options(MailNotifier.Options.DEFAULT_TIMEZONE));
 
     service.sendNotification(new TestNotification(
       new UserId("user@example.com"),
@@ -118,6 +118,6 @@ public class TestMailNotificationService {
   @Test
   public void whenTemplateNotFound_ThenLoadResourceReturnsNull() throws Exception
   {
-    assertNull(MailNotificationService.loadResource("doesnotexist"));
+    assertNull(MailNotifier.loadResource("doesnotexist"));
   }
 }

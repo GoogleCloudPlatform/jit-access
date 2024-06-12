@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 /**
  * Concrete class that delivers notifications over Pub/Sub.
  */
-public class PubSubNotificationService extends NotificationService {
+public class PubSubNotifier extends Notifier {
   private final @NotNull PubSubClient adapter;
   private final @NotNull Options options;
 
-  public PubSubNotificationService(
+  public PubSubNotifier(
     @NotNull PubSubClient adapter,
     @NotNull Options options
   ) {

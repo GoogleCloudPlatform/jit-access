@@ -36,13 +36,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestPubSubNotificationService {
+public class TestPubSubNotifier {
 
   // -------------------------------------------------------------------------
   // sendNotification.
   // -------------------------------------------------------------------------
 
-  private class SampleNotification extends NotificationService.Notification {
+  private class SampleNotification extends Notifier.Notification {
 
     protected SampleNotification(
       Collection<UserId> toRecipients,
@@ -67,9 +67,9 @@ public class TestPubSubNotificationService {
   public void sendNotificationPublishesToPubSub() throws Exception {
     var adapter = Mockito.mock(PubSubClient.class);
     var topic = new PubSubTopic("project-1", "topic-1");
-    var service = new PubSubNotificationService(
+    var service = new PubSubNotifier(
       adapter,
-      new PubSubNotificationService.Options(topic));
+      new PubSubNotifier.Options(topic));
 
     service.sendNotification(
       new SampleNotification(

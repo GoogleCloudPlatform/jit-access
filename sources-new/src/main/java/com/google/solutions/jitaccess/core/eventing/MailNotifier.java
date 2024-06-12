@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Concrete class that delivers notifications over SMTP.
  */
-public class MailNotificationService extends NotificationService {
+public class MailNotifier extends Notifier {
   private final @NotNull Options options;
   private final @NotNull EmailMapping emailMapping;
   private final @NotNull SmtpClient smtpClient;
@@ -53,7 +53,7 @@ public class MailNotificationService extends NotificationService {
    * @return null if not found.
    */
   public static @Nullable String loadResource(String resourceName) throws NotificationException{
-    try (var stream = NotificationService.class
+    try (var stream = Notifier.class
       .getClassLoader()
       .getResourceAsStream(resourceName)) {
 
@@ -82,7 +82,7 @@ public class MailNotificationService extends NotificationService {
     }
   }
 
-  public MailNotificationService(
+  public MailNotifier(
     @NotNull SmtpClient smtpClient,
     @NotNull EmailMapping emailMapping,
     @NotNull Options options
@@ -176,7 +176,7 @@ public class MailNotificationService extends NotificationService {
       this.escaper = escaper;
     }
 
-    public String format(@NotNull NotificationService.Notification notification) {
+    public String format(@NotNull Notifier.Notification notification) {
       Preconditions.checkNotNull(notification, "notification");
 
       //

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * Service for notifying users about activation requests.
  */
 @Singleton
-public abstract class NotificationService {
+public abstract class Notifier {
   public abstract void sendNotification(Notification notification) throws NotificationException;
 
   public abstract boolean canSendNotifications();
@@ -48,10 +48,10 @@ public abstract class NotificationService {
   /**
    * Concrete class that prints notifications to STDOUT. Useful for local development only.
    */
-  public static class SilentNotificationService extends NotificationService {
+  public static class SilentNotifier extends Notifier {
     private final boolean printToConsole;
 
-    public SilentNotificationService(boolean printToConsole) {
+    public SilentNotifier(boolean printToConsole) {
       this.printToConsole = printToConsole;
     }
 
