@@ -19,9 +19,8 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.access;
+package com.google.solutions.jitaccess.core.policy;
 
-import com.google.solutions.jitaccess.core.access.AccessControlList;
 import com.google.solutions.jitaccess.core.auth.*;
 import org.junit.jupiter.api.Test;
 

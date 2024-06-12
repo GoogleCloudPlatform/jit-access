@@ -19,7 +19,7 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.core.access;
+package com.google.solutions.jitaccess.core.policy;
 
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.core.auth.PrincipalId;
