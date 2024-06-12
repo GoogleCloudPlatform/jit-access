@@ -22,4 +22,8 @@ public interface Constraint {
    * @return intent to which this constraint applies.
    */
   Intent intent();
+
+  // required input {CEL datatype, name}, like setting
+
+  // evaluate(subject, role, intent, userinput)
 }

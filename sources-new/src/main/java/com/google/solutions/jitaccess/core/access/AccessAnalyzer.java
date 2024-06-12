@@ -1,14 +1,13 @@
-package com.google.solutions.jitaccess.core.analysis;
+package com.google.solutions.jitaccess.core.access;
 
-import com.google.common.collect.ImmutableList;
 import com.google.solutions.jitaccess.core.auth.RoleId;
-import com.google.solutions.jitaccess.core.policy.AccessRights;
+import com.google.solutions.jitaccess.core.auth.Subject;
 import com.google.solutions.jitaccess.core.policy.constraints.Intent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class PolicyAnalyzer {
+public class AccessAnalyzer {
 
   // - request constraints: conditions (on subject, request) that must be met to allow a request
   //     - 2sv, report, justification
@@ -18,23 +17,24 @@ public class PolicyAnalyzer {
   // some constraints are built-in, extensible using CEL
 
 
-  /**
-   *
-   */
-  public @NotNull Collection<RoleAnalysis> analyzeRoles(
-    @NotNull Intent intent
-  ) {
-    // check access, constraints based on intent
-    throw new RuntimeException();
-  }
+  // redundant
+  // public @NotNull Collection<RoleAnalysis> analyzeRoles(
+  //   @NotNull Intent intent
+  // ) {
+  //   // check access, constraints based on intent
+  //   throw new RuntimeException();
+  // }
 
   /**
    *
    */
-  public @NotNull RoleAnalysis analyzeRole(
+  public @NotNull RoleAnalysis analyze(
+    @NotNull Subject subject,
     @NotNull RoleId role,
     @NotNull Intent intent
   ) {
     throw new RuntimeException();
   }
+
+  // list users?!
 }
