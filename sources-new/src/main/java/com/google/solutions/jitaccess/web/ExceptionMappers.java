@@ -21,9 +21,9 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.clients.AccessException;
-import com.google.solutions.jitaccess.core.clients.NotAuthenticatedException;
-import com.google.solutions.jitaccess.core.clients.ResourceNotFoundException;
+import com.google.solutions.jitaccess.apis.clients.AccessException;
+import com.google.solutions.jitaccess.apis.clients.NotAuthenticatedException;
+import com.google.solutions.jitaccess.apis.clients.ResourceNotFoundException;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotAllowedException;

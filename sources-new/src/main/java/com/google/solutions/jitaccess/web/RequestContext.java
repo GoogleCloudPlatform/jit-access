@@ -1,7 +1,7 @@
 package com.google.solutions.jitaccess.web;
 
 import com.google.solutions.jitaccess.core.auth.*;
-import com.google.solutions.jitaccess.core.clients.AccessException;
+import com.google.solutions.jitaccess.apis.clients.AccessException;
 import jakarta.enterprise.context.RequestScoped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

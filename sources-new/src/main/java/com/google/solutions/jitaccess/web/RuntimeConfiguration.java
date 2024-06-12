@@ -21,10 +21,10 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
-import com.google.solutions.jitaccess.core.clients.IamCredentialsClient;
-import com.google.solutions.jitaccess.core.clients.ResourceManagerClient;
-import com.google.solutions.jitaccess.core.clients.SecretManagerClient;
+import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
+import com.google.solutions.jitaccess.apis.clients.IamCredentialsClient;
+import com.google.solutions.jitaccess.apis.clients.ResourceManagerClient;
+import com.google.solutions.jitaccess.apis.clients.SecretManagerClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;

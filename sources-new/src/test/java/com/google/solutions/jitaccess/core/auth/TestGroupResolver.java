@@ -23,7 +23,7 @@ package com.google.solutions.jitaccess.core.auth;
 
 import com.google.api.services.cloudidentity.v1.model.EntityKey;
 import com.google.api.services.cloudidentity.v1.model.Membership;
-import com.google.solutions.jitaccess.core.clients.CloudIdentityGroupsClient;
+import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
