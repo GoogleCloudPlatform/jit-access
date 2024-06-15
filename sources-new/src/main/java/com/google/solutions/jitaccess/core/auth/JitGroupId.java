@@ -28,27 +28,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 
 /**
- * Principal identifier for an active role.
+ * Identifier of a JIT group.
  */
-public class RoleId implements Comparable<RoleId>, PrincipalId {
+public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   public static final String TYPE = "role";
 
+  // TODO: + environment
   private final @NotNull String policyName;
 
-  private final @NotNull String roleName;
+  private final @NotNull String name;
 
 
-  public RoleId(@NotNull String policyName, @NotNull String roleName) {
+  public JitGroupId(@NotNull String policyName, @NotNull String name) {
     Preconditions.checkNotNull(policyName, "policyName");
-    Preconditions.checkNotNull(roleName, "roleName");
+    Preconditions.checkNotNull(name, "roleName");
     Preconditions.checkArgument(!policyName.isBlank());
-    Preconditions.checkArgument(!roleName.isBlank());
+    Preconditions.checkArgument(!name.isBlank());
 
     //
     // Use lower-case as canonical format.
     //
     this.policyName = policyName.toLowerCase();
-    this.roleName = roleName.toLowerCase();
+    this.name = name.toLowerCase();
   }
 
   @Override
@@ -70,22 +71,22 @@ public class RoleId implements Comparable<RoleId>, PrincipalId {
       return false;
     }
 
-    var that = (RoleId)o;
+    var that = (JitGroupId)o;
     return
       this.policyName.equals(that.policyName) &&
-      this.roleName.equals(that.roleName);
+      this.name.equals(that.name);
   }
 
   @Override
   public int hashCode() {
-    return this.policyName.hashCode() ^ this.roleName.hashCode();
+    return this.policyName.hashCode() ^ this.name.hashCode();
   }
 
   @Override
-  public int compareTo(@NotNull RoleId o) {
+  public int compareTo(@NotNull JitGroupId o) {
     return Comparator
-      .comparing((RoleId r) -> r.policyName)
-      .thenComparing(r -> r.roleName)
+      .comparing((JitGroupId r) -> r.policyName)
+      .thenComparing(r -> r.name)
       .compare(this, o);
   }
 
@@ -100,6 +101,6 @@ public class RoleId implements Comparable<RoleId>, PrincipalId {
 
   @Override
   public @NotNull String value() {
-    return String.format("%s-%s", this.policyName, this.roleName);
+    return String.format("%s-%s", this.policyName, this.name);
   }
 }

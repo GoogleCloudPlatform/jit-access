@@ -1,11 +1,9 @@
 package com.google.solutions.jitaccess.core.access;
 
-import com.google.solutions.jitaccess.core.auth.RoleId;
+import com.google.solutions.jitaccess.core.auth.JitGroupId;
 import com.google.solutions.jitaccess.core.auth.Subject;
 import com.google.solutions.jitaccess.core.policy.constraints.Intent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 public class AccessAnalyzer {
 
@@ -26,11 +24,11 @@ public class AccessAnalyzer {
   // }
 
   /**
-   *
+   * 
    */
-  public @NotNull RoleAnalysis analyze(
+  public @NotNull AccessAnalysis analyze(
     @NotNull Subject subject,
-    @NotNull RoleId role,
+    @NotNull JitGroupId role,
     @NotNull Intent intent
   ) {
     throw new RuntimeException();

@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestRoleId {
+public class TestJitGroupId {
   // -------------------------------------------------------------------------
   // toString.
   // -------------------------------------------------------------------------
 
   @Test
   public void toStringReturnsPolicyAndName() {
-    Assertions.assertEquals("policy-name", new RoleId("policy", "name").toString());
+    Assertions.assertEquals("policy-name", new JitGroupId("policy", "name").toString());
   }
 
   // -------------------------------------------------------------------------
@@ -42,8 +42,8 @@ public class TestRoleId {
 
   @Test
   public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
-    RoleId id1 = new RoleId("policy", "name");
-    RoleId id2 = new RoleId("policy", "name");
+    JitGroupId id1 = new JitGroupId("policy", "name");
+    JitGroupId id2 = new JitGroupId("policy", "name");
 
     assertTrue(id1.equals(id2));
     assertEquals(id1.hashCode(), id2.hashCode());
@@ -52,8 +52,8 @@ public class TestRoleId {
 
   @Test
   public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
-    RoleId id1 = new RoleId("policy", "name");
-    RoleId id2 = new RoleId("Policy", "Name");
+    JitGroupId id1 = new JitGroupId("policy", "name");
+    JitGroupId id2 = new JitGroupId("Policy", "Name");
 
     assertTrue(id1.equals(id2));
     assertEquals(id1.hashCode(), id2.hashCode());
@@ -62,7 +62,7 @@ public class TestRoleId {
 
   @Test
   public void whenObjectAreSame_ThenEqualsReturnsTrue() {
-    RoleId id1 = new RoleId("policy", "name");
+    JitGroupId id1 = new JitGroupId("policy", "name");
 
     assertTrue(id1.equals(id1));
     assertEquals(0, id1.compareTo(id1));
@@ -70,8 +70,8 @@ public class TestRoleId {
 
   @Test
   public void whenRolesDiffer_ThenEqualsReturnsFalse() {
-    RoleId id1 = new RoleId("policy", "name-1");
-    RoleId id2 = new RoleId("policy", "name-2");
+    JitGroupId id1 = new JitGroupId("policy", "name-1");
+    JitGroupId id2 = new JitGroupId("policy", "name-2");
 
     assertFalse(id1.equals(id2));
     assertNotEquals(id1.hashCode(), id2.hashCode());
@@ -80,8 +80,8 @@ public class TestRoleId {
 
   @Test
   public void whenPoliciesDiffer_ThenEqualsReturnsFalse() {
-    RoleId id1 = new RoleId("policy-1", "name");
-    RoleId id2 = new RoleId("policy-2", "name");
+    JitGroupId id1 = new JitGroupId("policy-1", "name");
+    JitGroupId id2 = new JitGroupId("policy-2", "name");
 
     assertFalse(id1.equals(id2));
     assertNotEquals(id1.hashCode(), id2.hashCode());
@@ -90,14 +90,14 @@ public class TestRoleId {
 
   @Test
   public void whenObjectIsNull_ThenEqualsReturnsFalse() {
-    RoleId id1 = new RoleId("policy", "name");
+    JitGroupId id1 = new JitGroupId("policy", "name");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
   public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
-    RoleId id1 = new RoleId("policy", "name");
+    JitGroupId id1 = new JitGroupId("policy", "name");
 
     assertFalse(id1.equals(""));
   }
@@ -110,6 +110,6 @@ public class TestRoleId {
   public void value() {
     assertEquals(
       "policy-name",
-      new RoleId("policy", "name").value());
+      new JitGroupId("policy", "name").value());
   }
 }

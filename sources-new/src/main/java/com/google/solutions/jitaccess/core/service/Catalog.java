@@ -1,17 +1,13 @@
 package com.google.solutions.jitaccess.core.service;
 
-import com.google.solutions.jitaccess.core.access.AccessAnalyzer;
-import com.google.solutions.jitaccess.core.access.RoleAnalysis;
-import com.google.solutions.jitaccess.core.auth.RoleId;
-import com.google.solutions.jitaccess.core.policy.constraints.Intent;
+import com.google.solutions.jitaccess.core.access.AccessAnalysis;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Map;
 
 public interface Catalog {
   // list requestable roles, analyze each
-  @NotNull Collection<RoleAnalysis> listAvailableRolesForSelf();
+  @NotNull Collection<AccessAnalysis> listAvailableRolesForSelf();
 
   // @NotNull Collection<UserAnalysis> listUsers(
   //   @NotNull RoleId role);
