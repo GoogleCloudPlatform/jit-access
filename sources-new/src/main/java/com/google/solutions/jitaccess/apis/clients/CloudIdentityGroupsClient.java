@@ -28,8 +28,8 @@ import com.google.api.services.cloudidentity.v1.model.*;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.ApplicationVersion;
-import com.google.solutions.jitaccess.core.auth.GroupId;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.catalog.auth.GroupId;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
 import jakarta.inject.Singleton;
 import org.jetbrains.annotations.NotNull;
 

@@ -21,8 +21,8 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.core.ThrowingCompletableFuture;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.ThrowingCompletableFuture;
 import com.google.solutions.jitaccess.apis.clients.Diagnosable;
 import com.google.solutions.jitaccess.web.LogEvents;
 import com.google.solutions.jitaccess.web.RuntimeEnvironment;

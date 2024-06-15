@@ -19,32 +19,22 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.apis.clients;
+package com.google.solutions.jitaccess.catalog.auth;
 
-import com.google.solutions.jitaccess.catalog.auth.UserId;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestGroupKey {
-
-  // -------------------------------------------------------------------------
-  // Constructor.
-  // -------------------------------------------------------------------------
-
-  @Test
-  public void whenIdHasPrefix_ThenConstructorStripsPrefix() {
-    assertEquals("1", new GroupKey("1").id);
-    assertEquals("1", new GroupKey("groups/1").id);
-  }
-
+public class TestGroupId {
   // -------------------------------------------------------------------------
   // toString.
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsPrefixedId() {
-    assertEquals("groups/1", new GroupKey("1").toString());
+  public void toStringReturnsEmailInLowerCase() {
+    Assertions.assertEquals("test@example.com", new GroupId("test@example.com").toString());
+    Assertions.assertEquals("test@example.com", new GroupId("Test@Example.com").toString());
   }
 
   // -------------------------------------------------------------------------
@@ -53,41 +43,64 @@ public class TestGroupKey {
 
   @Test
   public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
-    GroupKey id1 = new GroupKey("group-1");
-    GroupKey id2 = new GroupKey("group-1");
+    GroupId id1 = new GroupId("group@example.com");
+    GroupId id2 = new GroupId("group@example.com");
 
     assertTrue(id1.equals(id2));
     assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
+  }
+
+  @Test
+  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+    GroupId id1 = new GroupId("Group@Example.com");
+    GroupId id2 = new GroupId("group@example.com");
+
+    assertTrue(id1.equals(id2));
+    assertEquals(id1.hashCode(), id2.hashCode());
+    assertEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectAreSame_ThenEqualsReturnsTrue() {
-    GroupKey id1 = new GroupKey("group-1");
+    GroupId id1 = new GroupId("group@example.com");
 
     assertTrue(id1.equals(id1));
+    assertEquals(0, id1.compareTo(id1));
   }
 
   @Test
   public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
-    GroupKey id1 = new GroupKey("id-1");
-    GroupKey id2 = new GroupKey("id-2");
+    GroupId id1 = new GroupId("alice@example.com");
+    GroupId id2 = new GroupId("group@example.com");
 
     assertFalse(id1.equals(id2));
     assertNotEquals(id1.hashCode(), id2.hashCode());
+    assertNotEquals(0, id1.compareTo(id2));
   }
 
   @Test
   public void whenObjectIsNull_ThenEqualsReturnsFalse() {
-    GroupKey id1 = new GroupKey("group-1");
+    GroupId id1 = new GroupId("group@example.com");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
   public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
-    var id = new GroupKey("group-1");
-    var email = new UserId("group-1@example.com");
+    GroupId id1 = new GroupId("group@example.com");
 
-    assertFalse(id.equals(email));
+    assertFalse(id1.equals(""));
+  }
+
+  // -------------------------------------------------------------------------
+  // PrincipalId.
+  // -------------------------------------------------------------------------
+
+  @Test
+  public void value() {
+    assertEquals(
+      "group@example.com",
+      new GroupId("group@example.com").value());
   }
 }

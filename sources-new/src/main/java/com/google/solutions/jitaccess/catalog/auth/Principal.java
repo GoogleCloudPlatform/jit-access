@@ -1,5 +1,5 @@
 //
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -19,39 +19,39 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.web;
+package com.google.solutions.jitaccess.catalog.auth;
 
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.catalog.auth.Device;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.time.Instant;
 
 /**
- * Information about the device of a user.
+ * Information about a principal.
+ *
+ * @param id unique principal Id.
+ * @param expiry optional expiry date.
  */
-record IapDevice(String deviceId, List<String> accessLevels) implements Device {
-  public static final IapDevice UNKNOWN = new IapDevice("unknown", List.of());
-
-  public IapDevice {
-    Preconditions.checkNotNull(deviceId, "deviceId");
-    Preconditions.checkNotNull(accessLevels, "accessLevels");
+public record Principal(
+  @NotNull PrincipalId id,
+  @Nullable Instant expiry
+  ) {
+  public Principal {
+    Preconditions.checkArgument(
+      expiry == null || !id.type().equals(UserId.TYPE),
+      "User principals cannot expire");
   }
 
-  @Override
-  public String toString() {
-    return this.deviceId;
+  public Principal(@NotNull PrincipalId id) {
+    this(id, null);
   }
 
-  @Override
-  public boolean equals(@Nullable Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    var that = (IapDevice) o;
-    return deviceId.equals(that.deviceId) && accessLevels.equals(that.accessLevels);
+  public boolean isPermanent() {
+    return this.expiry == null;
+  }
+
+  public boolean isValid() {
+    return this.expiry == null || Instant.now().isBefore(this.expiry);
   }
 }

@@ -23,7 +23,7 @@ package com.google.solutions.jitaccess.web;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.solutions.jitaccess.core.Logger;
+import com.google.solutions.jitaccess.catalog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

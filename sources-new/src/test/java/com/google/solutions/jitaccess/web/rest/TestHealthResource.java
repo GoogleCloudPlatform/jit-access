@@ -21,8 +21,8 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.apis.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.web.MockitoUtils;
 import com.google.solutions.jitaccess.web.RestDispatcher;

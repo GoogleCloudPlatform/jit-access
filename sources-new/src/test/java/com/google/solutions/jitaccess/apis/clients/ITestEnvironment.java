@@ -25,9 +25,7 @@ import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.common.base.Strings;
-import com.google.solutions.jitaccess.apis.clients.PubSubTopic;
-import com.google.solutions.jitaccess.apis.clients.ResourceManagerClient;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.apis.ProjectId;
 
 import java.io.File;

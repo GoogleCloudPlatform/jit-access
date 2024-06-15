@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.apis.clients;
 
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.core.auth.EmailAddress;
+import com.google.solutions.jitaccess.catalog.auth.EmailAddress;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;

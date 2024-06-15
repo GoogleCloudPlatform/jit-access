@@ -32,7 +32,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.solutions.jitaccess.ApplicationVersion;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.apis.clients.Diagnosable;
 import com.google.solutions.jitaccess.apis.clients.DiagnosticsResult;

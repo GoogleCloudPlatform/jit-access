@@ -21,8 +21,8 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.core.auth.SubjectResolver;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.auth.SubjectResolver;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import org.junit.jupiter.api.Test;

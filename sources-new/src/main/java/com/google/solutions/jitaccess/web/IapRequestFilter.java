@@ -23,8 +23,8 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.auth.oauth2.TokenVerifier;
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.core.Logger;
-import com.google.solutions.jitaccess.core.auth.UserId;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
