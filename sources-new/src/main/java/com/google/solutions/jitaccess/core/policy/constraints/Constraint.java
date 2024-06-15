@@ -1,5 +1,7 @@
 package com.google.solutions.jitaccess.core.policy.constraints;
 
+import com.google.solutions.jitaccess.core.access.Request;
+
 /**
  * A constraint that a request, approval, or activation must satisfy.
  *
@@ -18,12 +20,9 @@ public interface Constraint {
    */
   String displayName();
 
-  /**
-   * @return intent to which this constraint applies.
-   */
-  Intent intent();
+  boolean isApplicableTo(Request request);
 
-  // required input {CEL datatype, name}, like setting
+  boolean isSatisfiedFor(Request request);
 
-  // evaluate(subject, role, intent, userinput)
+  // required input {CEL datatype, name}, like setting ("property")
 }

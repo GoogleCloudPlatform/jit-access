@@ -1,13 +1,14 @@
 package com.google.solutions.jitaccess.core.service;
 
 import com.google.solutions.jitaccess.core.access.AccessAnalysis;
+import com.google.solutions.jitaccess.core.policy.JitGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
 public interface Catalog {
   // list requestable roles, analyze each
-  @NotNull Collection<AccessAnalysis> listAvailableRolesForSelf();
+  @NotNull Collection<JoinableJitGroup> listJoinableGroups();
 
   // @NotNull Collection<UserAnalysis> listUsers(
   //   @NotNull RoleId role);
@@ -20,3 +21,8 @@ public interface Catalog {
 
   // approve(Request)
 }
+
+record JoinableJitGroup(
+  @NotNull JitGroup group,
+  @NotNull AccessAnalysis access
+  ) {}

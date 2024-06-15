@@ -1,8 +1,5 @@
 package com.google.solutions.jitaccess.core.access;
 
-import com.google.solutions.jitaccess.core.auth.JitGroupId;
-import com.google.solutions.jitaccess.core.auth.Subject;
-import com.google.solutions.jitaccess.core.policy.constraints.Intent;
 import org.jetbrains.annotations.NotNull;
 
 public class AccessAnalyzer {
@@ -24,13 +21,14 @@ public class AccessAnalyzer {
   // }
 
   /**
-   * 
+   *
    */
   public @NotNull AccessAnalysis analyze(
-    @NotNull Subject subject,
-    @NotNull JitGroupId role,
-    @NotNull Intent intent
+    @NotNull Request request
   ) {
+    // lookup group details, constraints
+    // check acl
+    // evaluate constraints
     throw new RuntimeException();
   }
 
