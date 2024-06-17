@@ -23,7 +23,6 @@ package com.google.solutions.jitaccess.web;
 
 import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.apis.clients.IamCredentialsClient;
-import com.google.solutions.jitaccess.apis.clients.ResourceManagerClient;
 import com.google.solutions.jitaccess.apis.clients.SecretManagerClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -187,7 +186,6 @@ class RuntimeConfiguration {
 
   @NotNull Set<String> getRequiredOauthScopes() {
     return new HashSet<>(List.of(
-      ResourceManagerClient.OAUTH_SCOPE,
       IamCredentialsClient.OAUTH_SCOPE,
       SecretManagerClient.OAUTH_SCOPE,
       CloudIdentityGroupsClient.OAUTH_SCOPE));

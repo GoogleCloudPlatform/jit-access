@@ -23,7 +23,7 @@ public interface Constraint {
   /**
    * Prepare a check.
    */
-  ConstraintCheck createCheck(@NotNull Map<String, Property> input);
+  ConstraintCheck createCheck();
 
   /**
    * @return input properties required to perform a check.

@@ -1,3 +1,24 @@
+//
+// Copyright 2024 Google LLC
+//
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+
 package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.api.client.json.GenericJson;
@@ -18,7 +39,7 @@ import java.util.Map;
 /**
  * Constraint that executes a CEL expression.
  */
-public class CelConstraint implements Constraint { // TODO: test
+public class CelConstraint implements Constraint {
   private static final CelRuntime CEL_RUNTIME =
     CelRuntimeFactory
       .standardCelRuntimeBuilder()
@@ -71,36 +92,20 @@ public class CelConstraint implements Constraint { // TODO: test
   }
 
   @Override
-  public ConstraintCheck createCheck(
-    @NotNull Map<String, Property> inputProperties
-  ) {
-    Preconditions.checkArgument(
-      requiredInput.keySet().stream().allMatch(k -> inputProperties.containsKey(k)),
-      "One or more required input properties are missing");
-
-    var check = new Check();
-
-    //
-    // Copy input properties into a JSON object.
-    //
-    var input = check.add("input");
-    for (var entry : inputProperties.entrySet()) {
-      input.add(entry.getKey(), entry.getValue().value());
-    }
-
-    return check;
+  public ConstraintCheck createCheck() {
+    return new Check();
   }
 
   private class Check implements ConstraintCheck {
     private final @NotNull Map<String, GenericJson> variables = new HashMap<>();
 
     @Override
-    public Context add(@NotNull String name) {
+    public Context addContext(@NotNull String name) {
       var json = new GenericJson();
       this.variables.put(name, json);
       return new Context() {
         @Override
-        public Context add(@NotNull String name, @NotNull Object value) {
+        public Context set(@NotNull String name, @NotNull Object value) {
           json.set(name, value);
           return this;
         }
@@ -125,15 +130,15 @@ public class CelConstraint implements Constraint { // TODO: test
           .eval(this.variables);
 
       } catch (CelValidationException | CelEvaluationException e) {
-        throw new InvalidCelConstraintException(
+        throw new InvalidExpressionException(
           "The CEL expression is invalid",
           e);
       }
     }
   }
 
-  class InvalidCelConstraintException extends ConstraintException {
-    InvalidCelConstraintException(String message, Throwable cause) {
+  class InvalidExpressionException extends ConstraintException {
+    InvalidExpressionException(String message, Throwable cause) {
       super(message, cause);
     }
   }

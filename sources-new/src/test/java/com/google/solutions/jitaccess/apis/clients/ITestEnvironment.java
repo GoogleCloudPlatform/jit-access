@@ -175,7 +175,7 @@ public class ITestEnvironment {
       serviceAccount,
       null,
       Set.of(
-        ResourceManagerClient.OAUTH_SCOPE
+        CloudIdentityGroupsClient.OAUTH_SCOPE
       ).stream().toList(),
       0);
   }

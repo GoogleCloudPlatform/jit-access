@@ -92,6 +92,18 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
     this.name = name.toLowerCase();
   }
 
+  public String environment() {
+    return environment;
+  }
+
+  public String system() {
+    return system;
+  }
+
+  public String name() {
+    return name;
+  }
+
   @Override
   public String toString() {
     return this.value();

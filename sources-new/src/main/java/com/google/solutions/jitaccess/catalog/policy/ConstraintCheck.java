@@ -10,7 +10,7 @@ public interface ConstraintCheck {
    * Add additional input that might be needed to
    * perform the check.
    */
-  Context add(@NotNull String name);
+  Context addContext(@NotNull String name);
 
   /**
    * Perform the actual check, taking all additional
@@ -19,6 +19,6 @@ public interface ConstraintCheck {
   boolean execute() throws ConstraintException;
 
   interface  Context {
-    Context add(@NotNull String name, @NotNull Object val);
+    Context set(@NotNull String name, @NotNull Object val);
   }
 }
