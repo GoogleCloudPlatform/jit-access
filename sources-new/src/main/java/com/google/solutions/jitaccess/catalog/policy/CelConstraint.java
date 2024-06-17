@@ -49,7 +49,6 @@ public class CelConstraint implements Constraint {
   private final @NotNull String name;
   private final @NotNull String displayName;
   private final @NotNull Map<String, Property> requiredInput;
-
   private final @NotNull String expression;
 
   public CelConstraint(
@@ -87,7 +86,7 @@ public class CelConstraint implements Constraint {
   }
 
   @Override
-  public @NotNull Map<String, Property> requiredInput() {
+  public @NotNull Map<String, Property> expectedInput() {
     return this.requiredInput;
   }
 

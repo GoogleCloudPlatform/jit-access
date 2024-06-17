@@ -28,7 +28,7 @@ public abstract class AccessRequest {
    * Check if the request satisfies a constraint.
    */
   public boolean checkConstraint(Constraint c) throws ConstraintException {
-    if (!c.requiredInput().keySet().stream().allMatch(k -> this.input().containsKey(k))) {
+    if (!c.expectedInput().keySet().stream().allMatch(k -> this.input().containsKey(k))) {
       throw new InsufficientInputException("One or more required input properties are missing");
     }
 

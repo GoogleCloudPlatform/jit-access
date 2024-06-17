@@ -22,30 +22,29 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
-import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-/**
- * Metadata for a JIT group.
- *
- * @param groupId ID of the group
- * @param description description for the group
- * @param acl access control list
- * @param joinConstraints constraints for joining the group
- * @param approvalConstraints constraints for approving join requests
- * @param membershipConstraints constraints for retaining membership
- */
-public record JitGroup (
-  @NotNull JitGroupId groupId,
-  @NotNull String description,
-  @NotNull AccessControlList acl,
-  @NotNull List<Constraint> joinConstraints,
-  @NotNull List<Constraint> approvalConstraints,
-  @NotNull List<Constraint> membershipConstraints
-) {
-  @Override
-  public String toString() {
-    return this.groupId.toString();
+import static org.junit.jupiter.api.Assertions.*;
+
+public class TestJitGroup {
+  //---------------------------------------------------------------------------
+  // toString.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void toStringReturnsId() {
+    var group = new JitGroup(
+      new JitGroupId("environment", "system", "name"),
+      "description",
+      new AccessControlList(List.of()),
+      List.of(),
+      List.of(),
+      List.of());
+
+    assertEquals(
+      "environment-system-name",
+      group.toString());
   }
 }
