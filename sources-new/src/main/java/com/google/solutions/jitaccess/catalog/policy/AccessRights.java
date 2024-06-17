@@ -24,6 +24,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * Right to perform a certain action, intended to be used
@@ -36,7 +37,7 @@ public class AccessRights {
   /**
    * Request to activate a role.
    */
-  public static final AccessRights REQUEST =  new AccessRights(1);
+  public static final AccessRights REQUEST = new AccessRights(1);
 
   /**
    * Approve activation requests from other users.
@@ -64,6 +65,10 @@ public class AccessRights {
     return this.mask;
   }
 
+  boolean hasFlag(int flag) {
+    return (this.mask & flag) != 0;
+  }
+
   static AccessRights parse(@NotNull String s) {
     var elements = s.split(",");
     if (elements.length == 1) {
@@ -86,5 +91,24 @@ public class AccessRights {
         .map(ar -> ar.mask)
         .reduce(0, (lhs, rhs) -> lhs | rhs));
     }
+  }
+
+  @Override
+  public String toString() {
+    var elements = new LinkedList<String>();
+
+    if (hasFlag(REQUEST.mask)) {
+      elements.add("REQUEST");
+    }
+
+    if (hasFlag(APPROVE_OTHERS.mask)) {
+      elements.add("APPROVE_OTHERS");
+    }
+
+    if (hasFlag(APPROVE_SELF.mask)) {
+      elements.add("APPROVE_SELF");
+    }
+
+    return String.join(",", elements);
   }
 }

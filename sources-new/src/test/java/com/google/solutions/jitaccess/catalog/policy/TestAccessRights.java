@@ -29,4 +29,18 @@ public class TestAccessRights {
       AccessRights.REQUEST.mask() | AccessRights.APPROVE_SELF.mask(),
       AccessRights.parse("Request,approve_self,,  ").mask());
   }
+
+  //---------------------------------------------------------------------------
+  // toString.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void toStringReturnsCanonicalFormat() {
+    assertEquals("REQUEST", AccessRights.REQUEST.toString());
+    assertEquals(
+      "REQUEST,APPROVE_OTHERS,APPROVE_SELF",
+      AccessRights
+        .parse("Request,approve_self,,approve_self,approve_others  ")
+        .toString());
+  }
 }
