@@ -31,24 +31,64 @@ import java.util.Comparator;
  * Identifier of a JIT group.
  */
 public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
-  public static final String TYPE = "role";
+  public static final String TYPE = "jit-group";
 
-  // TODO: + environment, enforce length limithrome
-  private final @NotNull String policyName;
+  public static final int MAX_ENVIRONMENT_LENGTH = 16;
+  public static final int MAX_SYSTEM_LENGTH = 16;
+  public static final int MAX_NAME_LENGTH = 24;
 
+  /**
+   * Environment that this group applies to.
+   */
+  private final @NotNull String environment;
+
+  /**
+   * System that this group applies to.
+   *
+   * A "system" is a set of resources that are managed
+   * jointly and form a logical unit. Examples include:
+   *
+   * - "Foo application backend"
+   * - CI/CD system
+   * - Data warehouse for the Bar app
+   */
+  private final @NotNull String system;
+
+  /**
+   * Name of the group.
+   */
   private final @NotNull String name;
 
+  public JitGroupId(
+    @NotNull String environment,
+    @NotNull String system,
+    @NotNull String name
+  ) {
+    Preconditions.checkArgument(!environment.isBlank(), "environment must not be blank");
+    Preconditions.checkArgument(!system.isBlank(), "system must not be blank");
+    Preconditions.checkArgument(!name.isBlank(), "name must not be blank");
 
-  public JitGroupId(@NotNull String policyName, @NotNull String name) {
-    Preconditions.checkNotNull(policyName, "policyName");
-    Preconditions.checkNotNull(name, "roleName");
-    Preconditions.checkArgument(!policyName.isBlank());
-    Preconditions.checkArgument(!name.isBlank());
+    Preconditions.checkArgument(
+      environment.length() <= MAX_ENVIRONMENT_LENGTH,
+      String.format(
+        "environment must not exceed %d characters in length",
+        MAX_ENVIRONMENT_LENGTH));
+    Preconditions.checkArgument(
+      system.length() <= MAX_SYSTEM_LENGTH,
+      String.format(
+        "system must not exceed %d characters in length",
+        MAX_SYSTEM_LENGTH));
+    Preconditions.checkArgument(
+      name.length() <= MAX_NAME_LENGTH,
+      String.format(
+        "name must not exceed %d characters in length",
+        MAX_NAME_LENGTH));
 
     //
     // Use lower-case as canonical format.
     //
-    this.policyName = policyName.toLowerCase();
+    this.environment = environment.toLowerCase();
+    this.system = system.toLowerCase();
     this.name = name.toLowerCase();
   }
 
@@ -73,19 +113,24 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
 
     var that = (JitGroupId)o;
     return
-      this.policyName.equals(that.policyName) &&
+      this.environment.equals(that.environment) &&
+      this.system.equals(that.system) &&
       this.name.equals(that.name);
   }
 
   @Override
   public int hashCode() {
-    return this.policyName.hashCode() ^ this.name.hashCode();
+    return
+      this.environment.hashCode() ^
+      this.system.hashCode() ^
+      this.name.hashCode();
   }
 
   @Override
   public int compareTo(@NotNull JitGroupId o) {
     return Comparator
-      .comparing((JitGroupId r) -> r.policyName)
+      .comparing((JitGroupId r) -> r.environment)
+      .thenComparing(r -> r.system)
       .thenComparing(r -> r.name)
       .compare(this, o);
   }
@@ -101,6 +146,10 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
 
   @Override
   public @NotNull String value() {
-    return String.format("%s-%s", this.policyName, this.name);
+    return String.format(
+      "%s-%s-%s",
+      this.environment,
+      this.system,
+      this.name);
   }
 }
