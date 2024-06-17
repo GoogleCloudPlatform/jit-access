@@ -21,22 +21,21 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
-import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestJitGroup {
+public class TestJitGroupPolicy {
   //---------------------------------------------------------------------------
   // toString.
   //---------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsId() {
-    var group = new JitGroup(
-      new JitGroupId("environment", "system", "name"),
+  public void toStringReturnsName() {
+    var group = new JitGroupPolicy(
+      "name",
       "description",
       new AccessControlList(List.of()),
       List.of(),
@@ -44,7 +43,7 @@ public class TestJitGroup {
       List.of());
 
     assertEquals(
-      "environment-system-name",
+      "name",
       group.toString());
   }
 }

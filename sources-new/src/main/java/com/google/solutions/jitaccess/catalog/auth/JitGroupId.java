@@ -33,10 +33,6 @@ import java.util.Comparator;
 public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   public static final String TYPE = "jit-group";
 
-  public static final int MAX_ENVIRONMENT_LENGTH = 16;
-  public static final int MAX_SYSTEM_LENGTH = 16;
-  public static final int MAX_NAME_LENGTH = 24;
-
   /**
    * Environment that this group applies to.
    */
@@ -44,13 +40,6 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
 
   /**
    * System that this group applies to.
-   *
-   * A "system" is a set of resources that are managed
-   * jointly and form a logical unit. Examples include:
-   *
-   * - "Foo application backend"
-   * - CI/CD system
-   * - Data warehouse for the Bar app
    */
   private final @NotNull String system;
 
@@ -67,22 +56,6 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
     Preconditions.checkArgument(!environment.isBlank(), "environment must not be blank");
     Preconditions.checkArgument(!system.isBlank(), "system must not be blank");
     Preconditions.checkArgument(!name.isBlank(), "name must not be blank");
-
-    Preconditions.checkArgument(
-      environment.length() <= MAX_ENVIRONMENT_LENGTH,
-      String.format(
-        "environment must not exceed %d characters in length",
-        MAX_ENVIRONMENT_LENGTH));
-    Preconditions.checkArgument(
-      system.length() <= MAX_SYSTEM_LENGTH,
-      String.format(
-        "system must not exceed %d characters in length",
-        MAX_SYSTEM_LENGTH));
-    Preconditions.checkArgument(
-      name.length() <= MAX_NAME_LENGTH,
-      String.format(
-        "name must not exceed %d characters in length",
-        MAX_NAME_LENGTH));
 
     //
     // Use lower-case as canonical format.

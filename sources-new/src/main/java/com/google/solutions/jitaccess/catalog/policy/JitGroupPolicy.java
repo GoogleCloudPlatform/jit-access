@@ -21,13 +21,14 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Metadata for a JIT group.
+ * Policy for a JIT group.
  *
  * @param groupId ID of the group
  * @param description description for the group
@@ -36,16 +37,38 @@ import java.util.List;
  * @param approvalConstraints constraints for approving join requests
  * @param membershipConstraints constraints for retaining membership
  */
-public record JitGroup (
-  @NotNull JitGroupId groupId,
+public record JitGroupPolicy(
+  @NotNull SystemPolicy parent,
+  @NotNull String name,
   @NotNull String description,
   @NotNull AccessControlList acl,
   @NotNull List<Constraint> joinConstraints,
   @NotNull List<Constraint> approvalConstraints,
   @NotNull List<Constraint> membershipConstraints
 ) {
+  /**
+   * Maximum length for names, in characters.
+   */
+  static final int NAME_MAX_LENGTH = 24;
+
+  public JitGroupPolicy {
+    Preconditions.checkNotNull(name, "Name must not be null");
+    Preconditions.checkArgument(
+      name.length() <= NAME_MAX_LENGTH,
+      String.format(
+        "JIT group names must not exceed %d characters in length",
+        NAME_MAX_LENGTH));
+  }
+
+  public JitGroupId id() { // TODO: test
+    return new JitGroupId(
+      this.parent.parent().name(),
+      this.parent.name(),
+      this.name);
+  }
+
   @Override
   public String toString() {
-    return this.groupId.toString();
+    return this.name;
   }
 }
