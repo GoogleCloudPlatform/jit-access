@@ -29,8 +29,6 @@ import com.google.api.services.cloudresourcemanager.v3.model.GetIamPolicyRequest
 import com.google.api.services.cloudresourcemanager.v3.model.GetPolicyOptions;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.solutions.jitaccess.cel.IamCondition;
-import com.google.solutions.jitaccess.cel.TemporaryIamCondition;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;

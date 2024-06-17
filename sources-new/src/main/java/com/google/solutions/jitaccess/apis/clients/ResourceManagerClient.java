@@ -32,8 +32,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.ApplicationVersion;
-import com.google.solutions.jitaccess.cel.IamCondition;
-import com.google.solutions.jitaccess.cel.TemporaryIamCondition;
 import com.google.solutions.jitaccess.apis.FolderId;
 import com.google.solutions.jitaccess.apis.OrganizationId;
 import com.google.solutions.jitaccess.apis.ProjectId;
