@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public record JitGroup (
+public record JitGroup (//TODO: test
   @NotNull JitGroupId groupId,
   @NotNull String description,
   @NotNull Map<Class<? extends AccessRequest>, List<Constraint>> constraints,

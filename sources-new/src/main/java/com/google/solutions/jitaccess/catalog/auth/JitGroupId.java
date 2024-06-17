@@ -33,7 +33,7 @@ import java.util.Comparator;
 public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   public static final String TYPE = "role";
 
-  // TODO: + environment
+  // TODO: + environment, enforce length limithrome
   private final @NotNull String policyName;
 
   private final @NotNull String name;

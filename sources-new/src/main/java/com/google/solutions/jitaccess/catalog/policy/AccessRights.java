@@ -3,7 +3,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 /**
  * Right, or combination of rights on a role. Used in ACLs.
  */
-public enum AccessRights {
+public enum AccessRights {//TODO: test
   /**
    * Request to activate a role.
    */
