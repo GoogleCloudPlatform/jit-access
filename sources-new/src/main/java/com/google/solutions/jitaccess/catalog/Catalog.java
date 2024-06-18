@@ -1,14 +1,8 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.catalog.analysis.AccessAnalysis;
-import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
-import com.google.solutions.jitaccess.catalog.policy.AccessRights;
-import com.google.solutions.jitaccess.catalog.policy.CatalogPolicy;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 public class Catalog {
 //  private final CatalogPolicy policy;

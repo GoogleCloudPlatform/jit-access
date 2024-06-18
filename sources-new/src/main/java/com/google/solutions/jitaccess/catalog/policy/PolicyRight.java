@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-public enum PolicyAction {
+public enum PolicyRight {
   /**
    * Join a group.
    */
@@ -44,14 +44,14 @@ public enum PolicyAction {
 
   private int value;
 
-  PolicyAction(int value) {
+  PolicyRight(int value) {
     this.value = value;
   }
 
   /**
    * @return bit field representation.
    */
-  public static int toMask(@NotNull EnumSet<PolicyAction> actions) {
+  public static int toMask(@NotNull EnumSet<PolicyRight> actions) {
     int mask = 0;
     for (var action : actions) {
       mask |= action.value;
@@ -59,14 +59,14 @@ public enum PolicyAction {
     return mask;
   }
 
-  public static EnumSet<PolicyAction> parse(@NotNull String list) {
+  public static EnumSet<PolicyRight> parse(@NotNull String list) {
     return EnumSet.copyOf(
       Arrays.asList(list.split(","))
         .stream()
         .map(String::trim)
         .map(String::toUpperCase)
         .filter(s -> !s.isBlank())
-        .map(PolicyAction::valueOf)
+        .map(PolicyRight::valueOf)
         .toList());
   }
 }

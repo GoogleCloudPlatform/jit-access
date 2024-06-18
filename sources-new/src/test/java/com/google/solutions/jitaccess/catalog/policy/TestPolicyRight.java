@@ -22,33 +22,43 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-public class TestAccessRights {
+import java.util.EnumSet;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class TestPolicyRight {
   //---------------------------------------------------------------------------
   // parse.
   //---------------------------------------------------------------------------
 
   @Test
-  public void parseRequest() {
-    assertEquals(AccessRights.REQUEST, AccessRights.parse("Request  "));
+  public void parseJoin() {
+    assertEquals(
+      EnumSet.of(PolicyRight.JOIN),
+      PolicyRight.parse("Join  "));
   }
 
   @Test
   public void parseApproveSelf() {
-    assertEquals(AccessRights.APPROVE_SELF, AccessRights.parse(" approve_self  "));
+    assertEquals(
+      EnumSet.of(PolicyRight.APPROVE_SELF),
+      PolicyRight.parse(" approve_self  "));
   }
 
   @Test
   public void parseApproveOthers() {
-    assertEquals(AccessRights.APPROVE_OTHERS, AccessRights.parse("APPROVE_OTHERS"));
+    assertEquals(
+      EnumSet.of(PolicyRight.APPROVE_OTHERS),
+      PolicyRight.parse("APPROVE_OTHERS"));
   }
 
   @Test
   public void parseList() {
     assertEquals(
-      AccessRights.REQUEST.mask() | AccessRights.APPROVE_SELF.mask(),
-      AccessRights.parse("Request,approve_self,,  ").mask());
+      EnumSet.of(PolicyRight.JOIN, PolicyRight.APPROVE_SELF),
+      PolicyRight.parse("Join,approve_self,,  "));
   }
 
   //---------------------------------------------------------------------------
@@ -57,11 +67,11 @@ public class TestAccessRights {
 
   @Test
   public void toStringReturnsCanonicalFormat() {
-    assertEquals("REQUEST", AccessRights.REQUEST.toString());
+    assertEquals("JOIN", PolicyRight.JOIN.toString());
     assertEquals(
-      "REQUEST,APPROVE_OTHERS,APPROVE_SELF",
-      AccessRights
-        .parse("Request,approve_self,,approve_self,approve_others  ")
+      "[JOIN, APPROVE_OTHERS, APPROVE_SELF]",
+      PolicyRight
+        .parse("JOIN,approve_self,,approve_self,approve_others  ")
         .toString());
   }
 }

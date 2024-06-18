@@ -6,5 +6,5 @@ import java.util.Optional;
 public interface Policy {
   Optional<Policy> parent();
   AccessControlList acl();
-  List<Constraint> constraints(Policy action);
+  List<Constraint> constraints();
 }
