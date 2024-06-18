@@ -39,7 +39,7 @@ public record CatalogPolicy(
       "Environment name must match key");
   }
 
-  public Optional<EnvironmentPolicy> environment(@NotNull String name) { // TODO: test
+  public Optional<EnvironmentPolicy> environment(@NotNull String name) {
     var policy = this.environments.get(name);
     return policy != null
       ? Optional.of(policy)

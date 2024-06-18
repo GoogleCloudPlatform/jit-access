@@ -61,7 +61,7 @@ public class AccessRights {
   /**
    * @return bit field representation.
    */
-  int mask() {
+  public int mask() {
     return this.mask;
   }
 

@@ -2,18 +2,19 @@ package com.google.solutions.jitaccess.catalog.analysis;
 
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
-import com.google.solutions.jitaccess.catalog.policy.AccessRights;
-import com.google.solutions.jitaccess.catalog.policy.Constraint;
-import com.google.solutions.jitaccess.catalog.policy.ConstraintException;
-import com.google.solutions.jitaccess.catalog.policy.Property;
+import com.google.solutions.jitaccess.catalog.policy.*;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 public abstract class AccessRequest {
-  abstract Subject subject();
-
-  abstract JitGroupId group();
-  abstract AccessRights requiredRights();
+  public abstract @NotNull Subject subject();
+  public abstract @NotNull JitGroupId groupId();
+  protected abstract @NotNull AccessControlList acl();
+  protected abstract @NotNull AccessRights requiredRights();
+  protected abstract @NotNull Collection<Constraint> constraints();
 
   final void execute() {
     // check access, etc.
@@ -53,12 +54,48 @@ public abstract class AccessRequest {
       .toList());
 
     var group = check.addContext("group");
-    group.set("environment", this.group().environment());
-    group.set("system", this.group().system());
-    group.set("name", this.group().name());
+    group.set("environment", this.groupId().environment());
+    group.set("system", this.groupId().system());
+    group.set("name", this.groupId().name());
 
     return check.execute();
   }
+//
+//  public @NotNull AccessAnalysis analyze() {
+//    //
+//    // Check if the ACL permits the required access.
+//    //
+//    var aclAccessGranted = this.acl().isAllowed(
+//      this.subject(),
+//      requiredRights().mask());
+//
+//    //
+//    // Check if the current user has the principal, i.e.,
+//    // has joined this group before.
+//    //
+//    var currentlyActive = this.subject()
+//      .principals()
+//      .stream()
+//      .filter(p -> p.isValid())
+//      .anyMatch(p -> p.id().equals(this.groupId()));
+//
+//    var satisfiedConstraints = new LinkedList<Constraint>();
+//    var unsatisfiedConstraints = new LinkedList<Constraint>();
+//    for (var constraint : this.constraints()) {
+//      if (checkConstraint(constraint)) {
+//        satisfiedConstraints.add(constraint);
+//      }
+//      else {
+//        unsatisfiedConstraints.add(constraint);
+//      }
+//    }
+//
+//    return new AccessAnalysis(
+//      aclAccessGranted,
+//      currentlyActive,
+//      satisfiedConstraints,
+//      unsatisfiedConstraints);
+//  }
 
   class InsufficientInputException extends ConstraintException {
     public InsufficientInputException(String message) {

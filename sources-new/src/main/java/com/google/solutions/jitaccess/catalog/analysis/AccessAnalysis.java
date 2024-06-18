@@ -7,14 +7,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public record AccessAnalysis(
-  @NotNull AccessRequest request,
   boolean accessGranted,
   boolean active,
   @NotNull Collection<Constraint> satisfiedConstraints,
   @NotNull Collection<Constraint> unsatisfiedConstraints
   ) {
 
-  public boolean isGranted() {
+  /**
+   * Check if access is allowed based on the analysis results.
+   */
+  public boolean isAllowed() {
     return this.active ||
         (this.accessGranted && this.unsatisfiedConstraints.isEmpty());
   }
