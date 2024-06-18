@@ -21,16 +21,15 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
-import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.junit.jupiter.api.Assertions.*;
+public class TestEnvironmentPolicy {
 
-public class TestJitGroupPolicy {
   //---------------------------------------------------------------------------
   // Constructor.
   //---------------------------------------------------------------------------
@@ -38,22 +37,13 @@ public class TestJitGroupPolicy {
   @ParameterizedTest
   @ValueSource(strings = {
     " ",
-    "123456789_123456789_12345",
+    "123456789_1234567",
     "with spaces",
     "?"})
   public void whenNameInvalid_ThenConstructorThrowsException(String name) {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     assertThrows(
       IllegalArgumentException.class,
-      () -> new JitGroupPolicy(
-        system,
-        name,
-        "description",
-        new AccessControlList(List.of()),
-        List.of(),
-        List.of(),
-        List.of()) );
+      () -> new EnvironmentPolicy(name, "description"));
   }
 
   //---------------------------------------------------------------------------
@@ -63,40 +53,6 @@ public class TestJitGroupPolicy {
   @Test
   public void toStringReturnsName() {
     var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
-    var group = new JitGroupPolicy(
-      system,
-      "group-1",
-      "description",
-      new AccessControlList(List.of()),
-      List.of(),
-      List.of(),
-      List.of());
-
-    assertEquals(
-      "group-1",
-      group.toString());
-  }
-
-  //---------------------------------------------------------------------------
-  // id.
-  //---------------------------------------------------------------------------
-
-  @Test
-  public void id() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
-    var group = new JitGroupPolicy(
-      system,
-      "group-1",
-      "description",
-      new AccessControlList(List.of()),
-      List.of(),
-      List.of(),
-      List.of());
-
-    assertEquals(
-      new JitGroupId("env", "system-1", "group-1"),
-      group.id());
+    assertEquals("env", environment.toString());
   }
 }

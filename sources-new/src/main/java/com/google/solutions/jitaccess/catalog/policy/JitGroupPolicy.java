@@ -30,7 +30,6 @@ import java.util.List;
 /**
  * Policy for a JIT group.
  *
- * @param groupId ID of the group
  * @param description description for the group
  * @param acl access control list
  * @param joinConstraints constraints for joining the group
@@ -50,6 +49,7 @@ public record JitGroupPolicy(
    * Maximum length for names, in characters.
    */
   static final int NAME_MAX_LENGTH = 24;
+  static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
   public JitGroupPolicy {
     Preconditions.checkNotNull(name, "Name must not be null");
@@ -58,6 +58,11 @@ public record JitGroupPolicy(
       String.format(
         "JIT group names must not exceed %d characters in length",
         NAME_MAX_LENGTH));
+    Preconditions.checkArgument(
+      name.matches(NAME_PATTERN),
+      "JIT group names must only contain letters, numbers, and hyphens");
+
+    parent.groups().add(this);
   }
 
   public JitGroupId id() { // TODO: test
