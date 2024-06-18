@@ -1,6 +1,6 @@
 package com.google.solutions.jitaccess.catalog;
 
-import com.google.solutions.jitaccess.catalog.analysis.AccessAnalysis;
+import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,5 +62,5 @@ public class Catalog {
 
 record JoinableJitGroup(
   @NotNull JitGroupPolicy group,
-  @NotNull AccessAnalysis access
+  @NotNull AccessCheck.Result access
   ) {}

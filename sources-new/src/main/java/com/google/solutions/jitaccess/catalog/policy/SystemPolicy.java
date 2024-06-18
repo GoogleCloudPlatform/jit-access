@@ -25,7 +25,6 @@ import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,11 +39,11 @@ import java.util.Set;
  * - Data warehouse for the Bar app
  */
 public record SystemPolicy(
-  @NotNull EnvironmentPolicy parent,
+  @NotNull EnvironmentPolicy environment,
   @NotNull String name,
   @NotNull String description,
   @NotNull Set<JitGroupPolicy> groups
-  ) {
+  ) implements Policy {
 
   /**
    * Maximum length for names, in characters.
@@ -63,7 +62,7 @@ public record SystemPolicy(
       name.matches(NAME_PATTERN),
       "System names must only contain letters, numbers, and hyphens");
 
-    parent.systems().add(this);
+    environment.systems().add(this);
   }
 
   public SystemPolicy(
@@ -84,5 +83,15 @@ public record SystemPolicy(
   @Override
   public String toString() {
     return this.name;
+  }
+
+  @Override
+  public Optional<Policy> parent() {
+    return Optional.of(this.environment);
+  }
+
+  @Override
+  public Optional<AccessControlList> accessControlList() {
+    return Optional.empty();
   }
 }

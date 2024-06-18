@@ -23,28 +23,26 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
+import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Policy for a JIT group.
  *
  * @param description description for the group
  * @param acl access control list
- * @param joinConstraints constraints for joining the group
- * @param approvalConstraints constraints for approving join requests
- * @param membershipConstraints constraints for retaining membership
  */
-public record JitGroupPolicy(
-  @NotNull SystemPolicy parent,
+public record JitGroupPolicy( // TODO: Drop suffix
+  @NotNull SystemPolicy system,
   @NotNull String name,
   @NotNull String description,
   @NotNull AccessControlList acl,
-  @NotNull List<Constraint> joinConstraints,
-  @NotNull List<Constraint> approvalConstraints,
-  @NotNull List<Constraint> membershipConstraints
-) {
+  @NotNull Map<LifecycleAction, Constraint> constraints
+) implements Policy {
   /**
    * Maximum length for names, in characters.
    */
@@ -62,18 +60,45 @@ public record JitGroupPolicy(
       name.matches(NAME_PATTERN),
       "JIT group names must only contain letters, numbers, and hyphens");
 
-    parent.groups().add(this);
+    system.groups().add(this);
   }
 
   public JitGroupId id() {
     return new JitGroupId(
-      this.parent.parent().name(),
-      this.parent.name(),
+      this.system.environment().name(),
+      this.system.name(),
       this.name);
+  }
+
+  public @NotNull AccessCheck createAccessCheck(
+    @NotNull Subject subject,
+    @NotNull EnumSet<PolicyRight> requiredRights
+  ) {
+    return new AccessCheck(
+      this,
+      subject,
+      id(),
+      requiredRights);
   }
 
   @Override
   public String toString() {
     return this.name;
+  }
+
+  @Override
+  public Optional<Policy> parent() {
+    return Optional.of(this.system);
+  }
+
+  @Override
+  public Optional<AccessControlList> accessControlList() {
+    return Optional.of(this.acl);
+  }
+
+  public enum LifecycleAction {
+    JOIN,
+    APPROVE,
+    RECERTIFY
   }
 }

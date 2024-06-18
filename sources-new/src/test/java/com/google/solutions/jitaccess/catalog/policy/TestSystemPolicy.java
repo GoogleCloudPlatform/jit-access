@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,9 +77,7 @@ public class TestSystemPolicy {
       "group-1",
       "description",
       new AccessControlList(List.of()),
-      List.of(),
-      List.of(),
-      List.of());
+      Map.of());
 
     assertTrue(system.group("group-1").isPresent());
     assertFalse(system.group("group-2").isPresent());

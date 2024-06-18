@@ -36,7 +36,7 @@ public record EnvironmentPolicy(
   @NotNull String name,
   @NotNull String description,
   @NotNull Set<SystemPolicy> systems
-) {
+) implements Policy {
   /**
    * Maximum length for names, in characters.
    */
@@ -72,5 +72,15 @@ public record EnvironmentPolicy(
   @Override
   public String toString() {
     return this.name;
+  }
+
+  @Override
+  public Optional<Policy> parent() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<AccessControlList> accessControlList() {
+    return Optional.empty();
   }
 }

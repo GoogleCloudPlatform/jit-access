@@ -649,7 +649,7 @@ public class CloudIdentityGroupsClient {
   ) {
     Preconditions.checkArgument(groupNamePrefix.indexOf('\'') < 0);
 
-    return String.format("parent == 'customers/%s' && group_key.startsWith('%s')",
+    return String.format("environment == 'customers/%s' && group_key.startsWith('%s')",
       this.options.customerId,
       groupNamePrefix);
   }

@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,9 +52,7 @@ public class TestJitGroupPolicy {
         name,
         "description",
         new AccessControlList(List.of()),
-        List.of(),
-        List.of(),
-        List.of()) );
+        Map.of()));
   }
 
   //---------------------------------------------------------------------------
@@ -69,9 +68,7 @@ public class TestJitGroupPolicy {
       "group-1",
       "description",
       new AccessControlList(List.of()),
-      List.of(),
-      List.of(),
-      List.of());
+      Map.of());
 
     assertEquals(
       "group-1",
@@ -91,9 +88,7 @@ public class TestJitGroupPolicy {
       "group-1",
       "description",
       new AccessControlList(List.of()),
-      List.of(),
-      List.of(),
-      List.of());
+      Map.of());
 
     assertEquals(
       new JitGroupId("env", "system-1", "group-1"),
