@@ -21,28 +21,27 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Optional;
 
-public record CatalogPolicy(
-  @NotNull Map<String, EnvironmentPolicy> environments
-  ) {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-  public CatalogPolicy {
-    Preconditions.checkArgument(
-      environments.entrySet()
-        .stream()
-        .allMatch(e -> e.getKey().equals(e.getValue().name())),
-      "Environment name must match key");
-  }
+public class TestCatalogPolicy {
 
-  public Optional<EnvironmentPolicy> environment(@NotNull String name) { // TODO: test
-    var policy = this.environments.get(name);
-    return policy != null
-      ? Optional.of(policy)
-      : Optional.empty();
+  //---------------------------------------------------------------------------
+  // environment.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void system() {
+    var catalog = new CatalogPolicy(
+      Map.of(
+        "env-1", new EnvironmentPolicy("env-1", ""),
+        "env-2", new EnvironmentPolicy("env-2", "")));
+
+    assertTrue(catalog.environment("env-1").isPresent());
+    assertFalse(catalog.environment("env-3").isPresent());
   }
 }

@@ -62,7 +62,7 @@ public record EnvironmentPolicy(
     this(name, description, new HashSet<>());
   }
 
-  public Optional<SystemPolicy> system(String name) {
+  public Optional<SystemPolicy> system(@NotNull String name) {
     return this.systems
       .stream()
       .filter(s -> s.name().equals(name))

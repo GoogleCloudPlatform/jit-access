@@ -74,7 +74,7 @@ public record SystemPolicy(
     this(parent, name, description, new HashSet<>());
   }
 
-  public Optional<JitGroupPolicy> group(String name) {
+  public Optional<JitGroupPolicy> group(@NotNull String name) {
     return this.groups
       .stream()
       .filter(s -> s.name().equals(name))
