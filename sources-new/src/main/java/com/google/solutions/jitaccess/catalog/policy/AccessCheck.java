@@ -106,7 +106,7 @@ public class AccessCheck { // TODO: test
     //
     if (policy.accessControlList().isPresent())
     {
-      resultAccumulator.accessGranted &= policy.accessControlList()
+      resultAccumulator.satisfiedAcl &= policy.accessControlList()
         .get()
         .isAllowed(this.subject, PolicyRight.toMask(this.requiredRights));
     }
@@ -145,22 +145,22 @@ public class AccessCheck { // TODO: test
   }
 
   public class Result {
-    private boolean accessGranted;
+    private boolean satisfiedAcl;
     private boolean active;
     private @NotNull LinkedList<Constraint> satisfiedConstraints;
     private @NotNull LinkedList<Constraint> unsatisfiedConstraints;
     private @NotNull Map<Constraint, Exception> failedConstraints;
 
-    public Result(boolean accessGranted) {
-      this.accessGranted = accessGranted;
+    public Result(boolean satisfiedAcl) {
+      this.satisfiedAcl = satisfiedAcl;
       this.active = false;
       this.satisfiedConstraints = new LinkedList<>();
       this.unsatisfiedConstraints = new LinkedList<>();
       this.failedConstraints = new HashMap<>();
     }
 
-    public boolean accessGranted() {
-      return accessGranted;
+    public boolean satisfiedAcl() {
+      return satisfiedAcl;
     }
 
     public boolean active() {
@@ -189,7 +189,7 @@ public class AccessCheck { // TODO: test
      */
     public boolean isAllowed() {
       return this.active ||
-        (this.accessGranted && this.unsatisfiedConstraints.isEmpty());
+        (this.satisfiedAcl && this.unsatisfiedConstraints.isEmpty());
     }
   }
 }

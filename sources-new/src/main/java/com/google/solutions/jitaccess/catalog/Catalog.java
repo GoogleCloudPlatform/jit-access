@@ -1,41 +1,64 @@
 package com.google.solutions.jitaccess.catalog;
 
+import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
+import com.google.solutions.jitaccess.catalog.policy.CatalogPolicy;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
+import com.google.solutions.jitaccess.catalog.policy.PolicyRight;
+import jakarta.enterprise.context.Dependent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.LinkedList;
+import java.util.Map;
+
+@Dependent
 public class Catalog {
-//  private final CatalogPolicy policy;
-//
-//
-//  // list requestable roles, analyze each
-//  public @NotNull Collection<JoinableJitGroup> listJoinableGroups(
-//    @NotNull String environmentName
-//  ) {
-//    var environment = this.policy.environment(environmentName)
-//      .orElseThrow(() -> new IllegalArgumentException(
-//        String.format("The environment '%s' does not exist", environmentName)));
-//
-//    var joinables = new LinkedList<JoinableJitGroup>();
-//    for (var system : environment.systems()) {
-//      for (var group : system.groups()) {
-//        //
-//        // Perform a basic access check to verify that we're ok
-//        // to surface this group.
-//        //
-//        //TODO: groupPolicy.acl().isAllowed()
-//
-//        //
-//        // Perform a deeper access check to see what constraints
-//        // the current subject would or wouldn't meet.
-//        //
-//        AccessAnalysis analysis = null; //TODO: create request, analyze
-//        joinables.add(new JoinableJitGroup(group, analysis));
-//      }
-//    }
-//
-//    return joinables;
-//  }
+  private final @NotNull CatalogPolicy policy;
+  private final @NotNull Subject subject;
+
+  public Catalog(@NotNull CatalogPolicy policy, @NotNull Subject subject) {
+    this.policy = policy;
+    this.subject = subject;
+  }
+
+  // list requestable roles, analyze each
+  public @NotNull Collection<JoinableJitGroup> listJoinableGroups(
+    @NotNull String environmentName
+  ) {
+    var environment = this.policy.environment(environmentName)
+      .orElseThrow(() -> new IllegalArgumentException(
+        String.format("The environment '%s' does not exist", environmentName)));
+
+    var joinables = new LinkedList<JoinableJitGroup>();
+    for (var system : environment.systems()) {
+      for (var group : system.groups()) {
+
+        //
+        // Perform an access check to see what constraints
+        // the current subject would or wouldn't meet.
+        //
+        var access = group.createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+          .applyConstraints(
+            group.constraints(JitGroupPolicy.LifecycleAction.JOIN),
+            Map.of())
+          .execute();
+
+        if (access.satisfiedAcl()) {
+          //
+          // At least one ACL check failed, so we can't even
+          // surface this group.
+          //
+        }
+        else {
+          joinables.add(new JoinableJitGroup(group, access));
+        }
+      }
+    }
+
+    return joinables;
+  }
 //
 //   public @NotNull Collection<AccessAnalysis> listUsers(@NotNull JitGroupId groupId) {
 //     var groupPolicy = this.policy

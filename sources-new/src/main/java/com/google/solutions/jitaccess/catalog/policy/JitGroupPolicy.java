@@ -26,9 +26,7 @@ import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Policy for a JIT group.
@@ -41,7 +39,7 @@ public record JitGroupPolicy( // TODO: Drop suffix
   @NotNull String name,
   @NotNull String description,
   @NotNull AccessControlList acl,
-  @NotNull Map<LifecycleAction, Constraint> constraints
+  @NotNull Map<LifecycleAction, Collection<Constraint>> constraints
 ) implements Policy {
   /**
    * Maximum length for names, in characters.
@@ -79,6 +77,13 @@ public record JitGroupPolicy( // TODO: Drop suffix
       subject,
       id(),
       requiredRights);
+  }
+
+  public Collection<Constraint> constraints(LifecycleAction action) { // TODO: test
+    var constraints = this.constraints.get(action);
+    return constraints != null
+      ? constraints
+      : List.of();
   }
 
   @Override
