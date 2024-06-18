@@ -62,6 +62,8 @@ public record SystemPolicy(
     Preconditions.checkArgument(
       name.matches(NAME_PATTERN),
       "System names must only contain letters, numbers, and hyphens");
+
+    parent.systems().add(this);
   }
 
   public SystemPolicy(
@@ -72,7 +74,7 @@ public record SystemPolicy(
     this(parent, name, description, new HashSet<>());
   }
 
-  public Optional<JitGroupPolicy> group(String name) { // TODO: test
+  public Optional<JitGroupPolicy> group(String name) {
     return this.groups
       .stream()
       .filter(s -> s.name().equals(name))

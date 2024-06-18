@@ -25,8 +25,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestEnvironmentPolicy {
 
@@ -54,5 +56,18 @@ public class TestEnvironmentPolicy {
   public void toStringReturnsName() {
     var environment = new EnvironmentPolicy("env", "");
     assertEquals("env", environment.toString());
+  }
+
+  //---------------------------------------------------------------------------
+  // system.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void system() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy(environment, "system-1", "");
+
+    assertTrue(environment.system("system-1").isPresent());
+    assertFalse(environment.system("system-2").isPresent());
   }
 }

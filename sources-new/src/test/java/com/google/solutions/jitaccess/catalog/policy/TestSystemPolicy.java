@@ -27,8 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestSystemPolicy {
 
@@ -62,5 +61,26 @@ public class TestSystemPolicy {
     var system = new SystemPolicy(environment, "system-1", "");
 
     assertEquals("system-1", system.toString());
+  }
+
+  //---------------------------------------------------------------------------
+  // group.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void group() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy(environment, "system-1", "");
+    var group = new JitGroupPolicy(
+      system,
+      "group-1",
+      "description",
+      new AccessControlList(List.of()),
+      List.of(),
+      List.of(),
+      List.of());
+
+    assertTrue(system.group("group-1").isPresent());
+    assertFalse(system.group("group-2").isPresent());
   }
 }

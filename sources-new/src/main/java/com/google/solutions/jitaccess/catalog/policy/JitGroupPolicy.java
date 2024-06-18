@@ -65,7 +65,7 @@ public record JitGroupPolicy(
     parent.groups().add(this);
   }
 
-  public JitGroupId id() { // TODO: test
+  public JitGroupId id() {
     return new JitGroupId(
       this.parent.parent().name(),
       this.parent.name(),
