@@ -32,11 +32,17 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.solutions.jitaccess.ApplicationVersion;
+import com.google.solutions.jitaccess.catalog.Catalog;
+import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.apis.clients.Diagnosable;
 import com.google.solutions.jitaccess.apis.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.apis.clients.HttpTransport;
+import com.google.solutions.jitaccess.catalog.policy.AccessControlList;
+import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
+import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
+import com.google.solutions.jitaccess.catalog.policy.SystemPolicy;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.UriBuilder;
@@ -47,6 +53,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides access to runtime configuration (AppEngine, local). To be injected using CDI.
@@ -302,5 +309,27 @@ public class RuntimeEnvironment {
   @Produces
   public @NotNull RequestContextLogger produceLogger(RequestContext context) {
     return new RequestContextLogger(context);
+  }
+
+  @Produces
+  public @NotNull Subject produceSubject(RequestContext context) {
+    return context.subject();
+  }
+
+  @Produces
+  public  @NotNull Catalog produceCatalog(@NotNull Subject subject) {
+    // TODO: load YAML
+    var environment = new EnvironmentPolicy("test", "Test policy");
+    var system = new SystemPolicy(environment, "test-system", "Test policy");
+    var group = new JitGroupPolicy(
+      system,
+      "test-group",
+      "Test group",
+      new AccessControlList(List.of()),
+      Map.of());
+
+    return new Catalog(
+      subject,
+      Map.of(environment.name(), environment));
   }
 }

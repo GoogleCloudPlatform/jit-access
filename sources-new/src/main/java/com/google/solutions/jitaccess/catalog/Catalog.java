@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@Dependent
 public class Catalog {
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
@@ -18,7 +17,7 @@ public class Catalog {
     return env != null ? Optional.of(env) : Optional.empty();
   }
 
-  private @NotNull JitGroupPolicy group(@NotNull JitGroupId groupId) {
+  private @NotNull JitGroupPolicy lookupGroupWithouAclCheck(@NotNull JitGroupId groupId) {
     return this.environment(groupId.environment())
       .flatMap(env -> env.system(groupId.system()))
       .flatMap(sys -> sys.group(groupId.name()))
@@ -34,14 +33,28 @@ public class Catalog {
     this.environments = environments;
   }
 
-  public @NotNull Collection<JitGroupPolicy> listGroups(
+  /**
+   * @return list of environments.
+   */
+  public @NotNull Collection<EnvironmentPolicy> environments() {
+    //
+    // NB. No access check requires.
+    //
+    return this.environments.values();
+  }
+
+  /**
+   * @return groups in the environment that the subject might be
+   * allowed to join
+   */
+  public @NotNull SortedSet<JitGroupPolicy> joinableGroups(
     @NotNull String environmentName
   ) {
     var environment = this.environment(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
-    var groups = new LinkedList<JitGroupPolicy>();
+    var groups = new TreeSet<JitGroupPolicy>();
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
         //
