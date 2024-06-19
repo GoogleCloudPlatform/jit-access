@@ -173,7 +173,9 @@ public class CelConstraint implements Constraint {
     private static final String NAME_PATTERN = "[A-Za-z\\_]+";
 
     public Variable {
-      Preconditions.checkArgument(name.matches(NAME_PATTERN), "Variable names must be alphanumeric");
+      Preconditions.checkArgument(
+        name.matches(NAME_PATTERN),
+        "Variable names must be alphanumeric");
       Preconditions.checkArgument(
         type == String.class || type == int.class || type == boolean.class,
         "Variable must be of type String, int, or boolean");

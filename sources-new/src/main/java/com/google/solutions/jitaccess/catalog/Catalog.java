@@ -1,83 +1,113 @@
 package com.google.solutions.jitaccess.catalog;
 
+import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.*;
 import jakarta.enterprise.context.Dependent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.LinkedList;
+import java.util.*;
 
 @Dependent
 public class Catalog {
-  private final @NotNull CatalogPolicy policy;
+  private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
 
-  public Catalog(@NotNull CatalogPolicy policy, @NotNull Subject subject) {
-    this.policy = policy;
-    this.subject = subject;
+  private Optional<EnvironmentPolicy> environment(@NotNull String name) {
+    var env = this.environments.get(name);
+    return env != null ? Optional.of(env) : Optional.empty();
   }
 
-  // list requestable roles, analyze each
-  public @NotNull Collection<JoinableJitGroup> listJoinableGroups(//TODO: paging
+  private @NotNull JitGroupPolicy group(@NotNull JitGroupId groupId) {
+    return this.environment(groupId.environment())
+      .flatMap(env -> env.system(groupId.system()))
+      .flatMap(sys -> sys.group(groupId.name()))
+      .orElseThrow(() -> new IllegalArgumentException(
+        String.format("The group '%s' does not exist", groupId)));
+  }
+
+  public Catalog(
+    @NotNull Subject subject,
+    @NotNull Map<String, EnvironmentPolicy> environments
+  ) {
+    this.subject = subject;
+    this.environments = environments;
+  }
+
+  public @NotNull Collection<JitGroupPolicy> listGroups(
     @NotNull String environmentName
   ) {
-    var environment = this.policy.environment(environmentName)
+    var environment = this.environment(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
-    var joinables = new LinkedList<JoinableJitGroup>();
+    var groups = new LinkedList<JitGroupPolicy>();
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
-
         //
-        // Perform an access check to see what constraints
-        // the current subject would or wouldn't meet.
+        // Check ACL to ensure that we'e ok to return the group.
+        // At this point, it doesn't matter if any of the constraints
+        // isn't satisfied.
         //
-        var access = group.createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
-          .applyConstraints(Policy.ConstraintClass.JOIN)
-          .execute();
-
-        if (access.isSubjectInAcl()) {
-          //
-          // At least one ACL check failed, so we can't even
-          // surface this group.
-          //
-        }
-        else {
-          joinables.add(new JoinableJitGroup(group, access));
+        if (group
+          .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+          .execute()
+          .isSubjectInAcl()) {
+          groups.add(group);
         }
       }
     }
 
-    return joinables;
+    return groups;
   }
 //
-//   public @NotNull Collection<AccessAnalysis> listUsers(@NotNull JitGroupId groupId) {
-//     var groupPolicy = this.policy
-//       .environment(groupId.environment())
-//       .flatMap(env -> env.system(groupId.system()))
-//       .flatMap(sys -> sys.group(groupId.name()))
-//       .orElseThrow(() -> new IllegalArgumentException(
-//         String.format("The JIT group '%s' does not exist", groupId)));
+//  @NotNull JoinOperation join(@NotNull JitGroupId groupId) {
+//    var group = getGroupWithoutAclCheck(groupId);
+//    group
+//      .createAccessCheck(
+//        this.subject,
+//        EnumSet.of(PolicyRight.JOIN, PolicyRight.APPROVE_SELF))
+//      .applyConstraints(Policy.ConstraintClass.JOIN);
+//  }
 //
-//     //TODO: groupPolicy.acl().isAllowed()
-//     //TODO: groupPolicy.acl().allowedPrincipals(AccessRights.APPROVE_OTHERS)
+//  @NotNull RequestJoinOperation requestJoin(@NotNull JitGroupId groupId) {
 //
-//    throw new RuntimeException("NIY");
-//   }
-  //
-  // @NotNull Request createJoinRequest(
-  //   @NotNull RoleId role),
-  //   @NotNull Map<String, String> userInput,
-  // Map<  Constraint -> user input>
-  // );
-
-  // createApproveRequest
+//  }
+//
+//  @NotNull ApproveJoinOperation approveJoin(@NotNull DelegationToken token) {
+//
+//  }
 }
 
-record JoinableJitGroup(
-  @NotNull JitGroupPolicy group,
-  @NotNull AccessCheck.Result access
-  ) {}
+//abstract class CatalogOperation<T>  {
+//  private final @NotNull JitGroupId groupId;
+//  private final @NotNull AccessCheck accessCheck;
+//
+//  public @NotNull List<Property> input() {
+//    return this.accessCheck.input();
+//  }
+//
+//  protected abstract T executeCore();
+//
+//  public final T execute() {
+//    var accessResult = this.accessCheck.execute();
+//    if (!accessResult.isAllowed()) {
+//      // TODO: handle error...
+//    }
+//
+//    return executeCore();
+//  }
+//}
+//
+//class JoinOperation extends CatalogOperation<Principal> {
+//
+//}
+//
+//class RequestJoinOperation extends CatalogOperation<DelegationToken> {
+//  // toToken
+//}
+//
+//class ApproveJoinOperation extends CatalogOperation<Principal> {
+//}
+//
+//class DelegationToken {}

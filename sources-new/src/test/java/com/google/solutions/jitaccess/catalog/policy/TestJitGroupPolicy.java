@@ -43,7 +43,7 @@ public class TestJitGroupPolicy {
     "123456789_123456789_12345",
     "with spaces",
     "?"})
-  public void whenNameInvalid_ThenConstructorThrowsException(String name) {
+  public void constructor_whenNameInvalid_throwsException(String name) {
     var environment = new EnvironmentPolicy("env", "");
     var system = new SystemPolicy(environment, "system-1", "");
     assertThrows(

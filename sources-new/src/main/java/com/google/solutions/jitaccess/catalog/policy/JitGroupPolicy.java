@@ -34,7 +34,7 @@ import java.util.*;
  * @param description description for the group
  * @param acl access control list
  */
-public record JitGroupPolicy( // TODO: Drop suffix
+public record JitGroupPolicy(
   @NotNull SystemPolicy system,
   @NotNull String name,
   @NotNull String description,
