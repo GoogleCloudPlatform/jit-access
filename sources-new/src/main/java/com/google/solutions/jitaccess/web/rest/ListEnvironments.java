@@ -20,18 +20,18 @@ public class ListEnvironments {//TODO: test
   public @NotNull Response execute() {
     var environments = this.catalog.environments()
       .stream()
-      .map(env -> new Environment(env.name(), env.description()))
+      .map(env -> new EnvironmentInfo(env.name(), env.description()))
       .collect(Collectors.toList());
 
     return new Response(environments);
   }
 
   public record Response(
-    @NotNull List<Environment> environments
+    @NotNull List<EnvironmentInfo> environments
   ) {
   }
 
-  public record Environment(
+  public record EnvironmentInfo(
     @NotNull String name,
     @NotNull String description
   ) {}

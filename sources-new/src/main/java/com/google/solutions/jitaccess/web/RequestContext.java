@@ -26,21 +26,11 @@ public class RequestContext {
     }
   };
 
-  /**
-   * Current user's device.
-   */
-  private @NotNull Device device;
-
-  /**
-   * Current subject.
-   */
-  private @NotNull Subject subject;
-
-  private @NotNull SubjectResolver subjectResolver;
+  private final @NotNull AuthenticationContext authenticationContext;
+  private final @NotNull SubjectResolver subjectResolver;
 
   public RequestContext(@NotNull SubjectResolver subjectResolver) {
-    this.subject = ANONYMOUS_SUBJECT;
-    this.device = IapDevice.UNKNOWN;
+    this.authenticationContext = new AuthenticationContext();
     this.subjectResolver = subjectResolver;
   }
 
@@ -53,7 +43,7 @@ public class RequestContext {
         "Request context has been authenticated before");
     }
 
-    this.subject = new Subject() {
+    this.authenticationContext.subject = new Subject() {
       private @Nullable Set<Principal> cachedPrincipals;
       private final @NotNull Object cachedPrincipalsLock = new Object();
 
@@ -84,22 +74,38 @@ public class RequestContext {
         }
       }
     };
-    this.device = device;
+    this.authenticationContext.device = device;
   }
 
-  boolean isAuthenticated() {
-    return this.subject != ANONYMOUS_SUBJECT;
+  boolean isAuthenticated() { // TODO: test
+    return this.authenticationContext.subject != ANONYMOUS_SUBJECT;
   }
 
   public @NotNull Device device() {
-    return this.device;
+    return this.authenticationContext.device;
   }
 
   public @NotNull Subject subject() {
-    return this.subject;
+    return this.authenticationContext;
   }
 
   public @NotNull UserId user() {
-    return this.subject.user();
+    return this.authenticationContext.user();
+  }
+
+  private static class AuthenticationContext implements Subject {
+    private Subject subject = ANONYMOUS_SUBJECT;
+    private @NotNull Device device = IapDevice.UNKNOWN;
+
+
+    @Override
+    public @NotNull UserId user() {
+      return this.subject.user();
+    }
+
+    @Override
+    public @NotNull Set<Principal> principals() {
+      return this.subject.principals();
+    }
   }
 }

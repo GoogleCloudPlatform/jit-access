@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Dependent
@@ -26,7 +25,19 @@ public class ListGroups {//TODO: test
 
     var groups = this.catalog.joinableGroups(environment)
       .stream()
-      .map(group -> new Group(group.id().toString(), group.name(), group.description()))
+      .map(g -> {
+        var analysis = g.accessAnalysis();
+        return new GroupInfo(
+          g.group().id().toString(),
+          g.group().name(),
+          g.group().description(),
+          analysis.satisfiedConstraints().stream()
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .toList(),
+          analysis.unsatisfiedConstraints().stream()
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .toList());
+      })
       .collect(Collectors.toList());
 
     // TODO: access check details
@@ -35,13 +46,21 @@ public class ListGroups {//TODO: test
   }
 
   public record Response(
-    @NotNull List<Group> groups
+    @NotNull List<GroupInfo> groups
   ) {
   }
 
-  public record Group(
+  public record GroupInfo(
     @NotNull String id,
     @NotNull String name,
-    @NotNull String description
+    @NotNull String description,
+
+    @NotNull List<ConstraintInfo> satisfiedConstraints,
+    @NotNull List<ConstraintInfo> unsatisfiedConstraints
+  ) {}
+
+  public record ConstraintInfo(
+    @NotNull String name,
+    @NotNull String displayName
   ) {}
 }

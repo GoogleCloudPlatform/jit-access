@@ -22,6 +22,8 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
+import org.antlr.v4.runtime.tree.Tree;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -40,8 +42,8 @@ public record SystemPolicy(
   @NotNull EnvironmentPolicy environment,
   @NotNull String name,
   @NotNull String description,
-  @NotNull Set<JitGroupPolicy> groups
-  ) implements Policy {
+  @NotNull SortedSet<JitGroupPolicy> groups
+  ) implements Policy, Comparable<SystemPolicy> {
 
   /**
    * Maximum length for names, in characters.
@@ -68,7 +70,7 @@ public record SystemPolicy(
     @NotNull String name,
     @NotNull String description
   ) {
-    this(parent, name, description, new HashSet<>());
+    this(parent, name, description, new TreeSet<>());
   }
 
   public Optional<JitGroupPolicy> group(@NotNull String name) {
@@ -96,5 +98,14 @@ public record SystemPolicy(
   @Override
   public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
     return List.of();
+  }
+
+  @Override
+  public int compareTo(@NotNull SystemPolicy o) {
+    if (o.name == null) {
+      return -1;
+    }
+
+    return this.name.compareTo(o.name);
   }
 }

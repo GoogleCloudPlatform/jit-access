@@ -47,32 +47,53 @@ public class Catalog {
    * @return groups in the environment that the subject might be
    * allowed to join
    */
-  public @NotNull SortedSet<JitGroupPolicy> joinableGroups(
+  public @NotNull Collection<JoinableGroup> joinableGroups(
     @NotNull String environmentName
   ) {
     var environment = this.environment(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
-    var groups = new TreeSet<JitGroupPolicy>();
+    var groups = new LinkedList<JoinableGroup>();
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
-        //
-        // Check ACL to ensure that we'e ok to return the group.
-        // At this point, it doesn't matter if any of the constraints
-        // isn't satisfied.
-        //
         if (group
           .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
           .execute()
           .isSubjectInAcl()) {
-          groups.add(group);
+          //
+          // User in ACL, so we're ok to return this group. The
+          // user might not satisfy all constraints though, which is ok.
+          //
+          groups.add(new JoinableGroup() {
+            @Override
+            public @NotNull JitGroupPolicy group() {
+              return group;
+            }
+
+            @Override
+            public @NotNull AccessCheck.Result accessAnalysis() {
+              //
+              // Check constraints.
+              //
+              return group
+                .createAccessCheck(Catalog.this.subject, EnumSet.of(PolicyRight.JOIN))
+                .applyConstraints(Policy.ConstraintClass.JOIN)
+                .execute();
+            }
+          });
         }
       }
     }
 
     return groups;
   }
+
+  public interface JoinableGroup {
+    @NotNull JitGroupPolicy group();
+    @NotNull AccessCheck.Result accessAnalysis();
+  }
+
 //
 //  @NotNull JoinOperation join(@NotNull JitGroupId groupId) {
 //    var group = getGroupWithoutAclCheck(groupId);

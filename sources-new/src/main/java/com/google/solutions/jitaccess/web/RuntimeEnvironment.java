@@ -325,7 +325,8 @@ public class RuntimeEnvironment {
       system,
       "test-group",
       "Test group",
-      new AccessControlList(List.of()),
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
       Map.of());
 
     return new Catalog(

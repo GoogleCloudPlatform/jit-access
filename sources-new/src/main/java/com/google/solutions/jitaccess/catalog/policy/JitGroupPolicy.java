@@ -40,7 +40,7 @@ public record JitGroupPolicy(
   @NotNull String description,
   @NotNull AccessControlList acl,
   @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
-) implements Policy {
+) implements Policy, Comparable<JitGroupPolicy> {
   /**
    * Maximum length for names, in characters.
    */
@@ -100,5 +100,14 @@ public record JitGroupPolicy(
     return constraints != null
       ? constraints
       : List.of();
+  }
+
+  @Override
+  public int compareTo(@NotNull JitGroupPolicy o) {
+    if (o.name == null) {
+      return -1;
+    }
+
+    return this.name.compareTo(o.name);
   }
 }
