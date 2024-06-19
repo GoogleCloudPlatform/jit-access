@@ -24,7 +24,7 @@ public class Catalog {
   }
 
   // list requestable roles, analyze each
-  public @NotNull Collection<JoinableJitGroup> listJoinableGroups(
+  public @NotNull Collection<JoinableJitGroup> listJoinableGroups(//TODO: paging
     @NotNull String environmentName
   ) {
     var environment = this.policy.environment(environmentName)
@@ -45,7 +45,7 @@ public class Catalog {
             Map.of())
           .execute();
 
-        if (access.satisfiedAcl()) {
+        if (access.isSubjectInAcl()) {
           //
           // At least one ACL check failed, so we can't even
           // surface this group.

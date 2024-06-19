@@ -51,6 +51,13 @@ public enum PolicyRight {
   /**
    * @return bit field representation.
    */
+  int toMask() {
+    return this.value;
+  }
+
+  /**
+   * @return bit field representation.
+   */
   public static int toMask(@NotNull EnumSet<PolicyRight> actions) {
     int mask = 0;
     for (var action : actions) {
