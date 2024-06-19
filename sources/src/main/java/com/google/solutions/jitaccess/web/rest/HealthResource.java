@@ -21,10 +21,11 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.solutions.jitaccess.core.ThrowingCompletableFuture;
-import com.google.solutions.jitaccess.core.clients.Diagnosable;
-import com.google.solutions.jitaccess.web.LogAdapter;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.ThrowingCompletableFuture;
+import com.google.solutions.jitaccess.apis.clients.Diagnosable;
 import com.google.solutions.jitaccess.web.LogEvents;
+import com.google.solutions.jitaccess.web.RuntimeEnvironment;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -55,7 +56,10 @@ public class HealthResource {
   Instance<Diagnosable> diagnosables;
 
   @Inject
-  LogAdapter logAdapter;
+  Logger logger;
+
+  @Inject
+  RuntimeEnvironment runtimeEnvironment;
 
   /**
    * Check if the application is alive.
@@ -108,11 +112,7 @@ public class HealthResource {
 
     for (var result : results) {
       if (!result.successful()) {
-        this.logAdapter
-          .newWarningEntry(
-            LogEvents.API_HEALTH,
-            result.toString())
-          .write();
+        this.logger.warn(LogEvents.API_HEALTH, result.toString());
       }
     }
 

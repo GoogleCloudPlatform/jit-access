@@ -45,11 +45,11 @@ public class TraceContextRequestFilter implements ContainerRequestFilter {
   private static final String TRACE_CONTEXT_HEADER_NAME = "X-Cloud-Trace-Context";
 
   @Inject
-  LogAdapter log;
+  RequestContextLogger logger;
 
   @Override
   public void filter(@NotNull ContainerRequestContext containerRequestContext) {
-    Preconditions.checkNotNull(this.log, "log");
+    Preconditions.checkNotNull(this.logger, "logger");
 
     var traceId = containerRequestContext.getHeaderString(TRACE_CONTEXT_HEADER_NAME);
     if (traceId != null && !traceId.isEmpty()) {
@@ -57,7 +57,7 @@ public class TraceContextRequestFilter implements ContainerRequestFilter {
       // Associate the trace ID with the current request so that
       // subsequent logs can be correlated.
       //
-      this.log.setTraceId(traceId);
+      this.logger.setTraceId(traceId);
     }
   }
 }

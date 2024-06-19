@@ -21,13 +21,14 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.solutions.jitaccess.core.auth.UserId;
-import com.google.solutions.jitaccess.core.clients.DiagnosticsResult;
-import com.google.solutions.jitaccess.web.LogAdapter;
+import com.google.solutions.jitaccess.catalog.Logger;
+import com.google.solutions.jitaccess.catalog.auth.UserId;
+import com.google.solutions.jitaccess.apis.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.web.MockitoUtils;
 import com.google.solutions.jitaccess.web.RestDispatcher;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,7 @@ public class TestHealthResource {
   @Test
   public void whenChecksSucceed_thenCheckReadinessReturns200() throws Exception {
     var resource = new HealthResource();
-    resource.logAdapter = new LogAdapter();
+    resource.logger = Mockito.mock(Logger.class);
     resource.executor = new Executor() {
       @Override
       public void execute(@NotNull Runnable command) {
@@ -80,7 +81,7 @@ public class TestHealthResource {
   @Test
   public void whenAnyCheckFails_thenCheckReadinessReturns503() throws Exception {
     var resource = new HealthResource();
-    resource.logAdapter = new LogAdapter();
+    resource.logger = Mockito.mock(Logger.class);
     resource.executor = new Executor() {
       @Override
       public void execute(@NotNull Runnable command) {
