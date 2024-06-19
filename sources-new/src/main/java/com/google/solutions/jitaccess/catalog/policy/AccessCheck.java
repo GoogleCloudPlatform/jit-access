@@ -87,13 +87,6 @@ public class AccessCheck {
     }
   }
 
-//  @TestOnly
-//  Result evaluateConstraint(@NotNull Constraint c) {
-//    var result = new Result(false);
-//    evaluateConstraint(c, result);
-//    return result;
-//  }
-
   private void evaluateAclAndConstraints(
     @NotNull Policy policy,
     @NotNull Result resultAccumulator
@@ -139,7 +132,7 @@ public class AccessCheck {
   /**
    * @return input required to evaluate constraints.
    */
-  public @NotNull Collection<Property> input() {
+  public @NotNull List<Property> input() {
     return this.constraintChecks.stream()
       .flatMap(c -> c.input().stream())
       .toList();

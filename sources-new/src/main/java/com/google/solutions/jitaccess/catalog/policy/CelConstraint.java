@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,7 +90,7 @@ public class CelConstraint implements Constraint {
 
   private class Check implements Constraint.Check {
     private final @NotNull Map<String, GenericJson> variables = new HashMap<>();
-    private final Collection<Property> input;
+    private final List<Property> input;
 
     public Check() {
       var json = new GenericJson();
@@ -106,7 +107,7 @@ public class CelConstraint implements Constraint {
     }
 
     @Override
-    public @NotNull Collection<Property> input() {
+    public @NotNull List<Property> input() {
       return this.input;
     }
 
@@ -125,10 +126,10 @@ public class CelConstraint implements Constraint {
 
     @Override
     public boolean execute() throws ConstraintException {
-      for (var declaration : variableDeclarations) {
-        if (!this.input.contains(declaration.name)) {
+      for (var input : this.input) {
+        if (input.value() == null) {
           throw new IllegalArgumentException(
-            String.format("Input missing for '%s'", declaration.displayName));
+            String.format("Input missing for '%s'", input.displayName()));
         }
       }
 
@@ -173,7 +174,9 @@ public class CelConstraint implements Constraint {
 
     public Variable {
       Preconditions.checkArgument(name.matches(NAME_PATTERN), "Variable names must be alphanumeric");
-      Preconditions.checkArgument(type.isPrimitive(), "Variable must use a primitive type");
+      Preconditions.checkArgument(
+        type == String.class || type == int.class || type == boolean.class,
+        "Variable must be of type String, int, or boolean");
     }
 
     private Property bind(@NotNull GenericJson json) {
@@ -195,8 +198,15 @@ public class CelConstraint implements Constraint {
 
         @Override
         public void set(String s) {
-          //TODO: convert type
-          json.set(name, s);
+          if (this.type() == int.class) {
+            json.set(name, Integer.parseInt(s));
+          }
+          else if (this.type() == boolean.class) {
+            json.set(name, Boolean.parseBoolean(s));
+          }
+          else if (this.type() == String.class) {
+            json.set(name, s);
+          }
         }
 
         @Override

@@ -23,6 +23,8 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.solutions.jitaccess.catalog.auth.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.util.*;
@@ -218,13 +220,24 @@ public class TestAccessCheck {
     assertTrue(result.failedConstraints().isEmpty());
   }
 
-  @Test
-  public void constraints_whenConstraintSatisfied() {
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "subject.email=='user@example.com'",
+    "size(subject.principals) > 0",
+    "group.environment == 'env-1'",
+    "group.system == 'system-1'",
+    "group.name == 'group-1'",
+    "input.testInt == 42",
+    "input.testString == 'sample'"
+  })
+  public void constraints_whenConstraintSatisfied(String expression) {
     var constraint = new CelConstraint(
       "cel",
       "",
-      List.of(),
-      "true");
+      List.of(
+        new CelConstraint.Variable("testInt", "", int.class),
+        new CelConstraint.Variable("testString", "", String.class)),
+      expression);
 
     var policy = Mockito.mock(Policy.class);
     when(policy.parent()).thenReturn(Optional.empty());
@@ -236,6 +249,9 @@ public class TestAccessCheck {
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
     check.applyConstraints(List.of(constraint));
+    check.input().get(0).set("42");
+    check.input().get(1).set("sample");
+
     var result = check.execute();
 
     assertEquals(1, result.satisfiedConstraints().size());

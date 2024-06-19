@@ -34,17 +34,17 @@ public class TestCelConstraint {
   //---------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsName() {
+  public void toString_returnsName() {
     var constraint = new CelConstraint("name", "display name", List.of(), "?");
     assertEquals("name [?]", constraint.toString());
   }
 
   //---------------------------------------------------------------------------
-  // createCheck.
+  // Context variables.
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenExpressionInvalid_ThenCheckThrowsException() throws Exception {
+  public void execute_whenExpressionInvalid_throwsException() throws Exception {
     var constraint = new CelConstraint(
       "name",
       "display name",
@@ -57,7 +57,7 @@ public class TestCelConstraint {
   }
 
   @Test
-  public void whenContextVariableSet_ThenCheckCanAccessVariable() throws Exception {
+  public void execute_whenContextVariableSet_returnsFalse() throws Exception {
     var constraint = new CelConstraint(
       "name",
       "display name",
@@ -74,7 +74,7 @@ public class TestCelConstraint {
   }
 
   @Test
-  public void whenExpressionContainsExtractCall_ThenCheckSucceeds() throws Exception {
+  public void execute_whenExpressionContainsExtractCall_returnsTrue() throws Exception {
     var constraint = new CelConstraint(
       "name",
       "display name",
@@ -84,5 +84,36 @@ public class TestCelConstraint {
     var positive = constraint.createCheck();
     positive.addContext("my").set("name", "test");
     assertTrue(positive.execute());
+  }
+
+  //---------------------------------------------------------------------------
+  // Input variables.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void execute_whenInputMissing_throwsException() throws Exception {
+    var constraint = new CelConstraint(
+      "name",
+      "display name",
+      List.of(new CelConstraint.Variable("test", "Test variable", String.class)),
+      "has(input.test)");
+
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> constraint.createCheck().execute());
+  }
+
+  @Test
+  public void execute_whenInputSet_thenValueIsAvailable() throws Exception {
+    var constraint = new CelConstraint(
+      "name",
+      "display name",
+      List.of(new CelConstraint.Variable("test", "Test variable", String.class)),
+      "has(input.test) && input.test == 'some value'");
+
+    var check = constraint.createCheck();
+    check.input().get(0).set("some value");
+
+    assertTrue(check.execute());
   }
 }
