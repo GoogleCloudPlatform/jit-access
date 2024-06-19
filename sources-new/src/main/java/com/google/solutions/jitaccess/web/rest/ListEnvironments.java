@@ -1,12 +1,10 @@
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.Catalog;
 import jakarta.enterprise.context.Dependent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Dependent

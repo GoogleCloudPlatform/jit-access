@@ -40,8 +40,6 @@ public class ListGroups {//TODO: test
       })
       .collect(Collectors.toList());
 
-    // TODO: access check details
-
     return new Response(groups);
   }
 

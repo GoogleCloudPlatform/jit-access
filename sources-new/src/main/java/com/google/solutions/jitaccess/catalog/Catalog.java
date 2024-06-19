@@ -3,12 +3,11 @@ package com.google.solutions.jitaccess.catalog;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.*;
-import jakarta.enterprise.context.Dependent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Catalog {
+public class Catalog {//TODO: test
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
 
@@ -89,8 +88,18 @@ public class Catalog {
     return groups;
   }
 
+  /**
+   * Group that a user could join.
+   */
   public interface JoinableGroup {
+    /**
+     * @return group details.
+     */
     @NotNull JitGroupPolicy group();
+
+    /**
+     * @return details about possibly unmet constraints.
+     */
     @NotNull AccessCheck.Result accessAnalysis();
   }
 
