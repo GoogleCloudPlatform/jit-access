@@ -25,6 +25,7 @@ import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class TestJitGroupPolicy {
   }
 
   //---------------------------------------------------------------------------
-  // id.
+  // properties.
   //---------------------------------------------------------------------------
 
   @Test
@@ -93,5 +94,48 @@ public class TestJitGroupPolicy {
     assertEquals(
       new JitGroupId("env", "system-1", "group-1"),
       group.id());
+  }
+
+  @Test
+  public void accessControlList() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy(environment, "system-1", "");
+    var group = new JitGroupPolicy(
+      system,
+      "group-1",
+      "description",
+      new AccessControlList(List.of()),
+      Map.of());
+
+    assertTrue(group.accessControlList().isPresent());
+    assertSame(group.acl(), group.accessControlList().get());
+  }
+
+  @Test
+  public void constraints_whenPolicyHasConstraints_returnsList() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy(environment, "system-1", "");
+    var group = new JitGroupPolicy(
+      system,
+      "group-1",
+      "description",
+      new AccessControlList(List.of()),
+      Map.of(Policy.ConstraintClass.JOIN, List.of(Mockito.mock(Constraint.class))));
+
+    assertFalse(group.constraints().isEmpty());
+  }
+
+  @Test
+  public void constraints_whenPolicyHasNoConstraints_returnsEmpty() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy(environment, "system-1", "");
+    var group = new JitGroupPolicy(
+      system,
+      "group-1",
+      "description",
+      new AccessControlList(List.of()),
+      Map.of());
+
+    assertTrue(group.constraints().isEmpty());
   }
 }

@@ -95,7 +95,7 @@ public record JitGroupPolicy( // TODO: Drop suffix
   }
 
   @Override
-  public @NotNull Collection<Constraint> constraints(ConstraintClass c) { // TODO: test
+  public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
     var constraints = this.constraints.get(c);
     return constraints != null
       ? constraints
