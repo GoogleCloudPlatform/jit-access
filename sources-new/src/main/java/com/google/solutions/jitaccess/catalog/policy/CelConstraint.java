@@ -49,22 +49,18 @@ public class CelConstraint implements Constraint {
 
   private final @NotNull String name;
   private final @NotNull String displayName;
-  private final @NotNull Collection<Property> requiredInput;
+  private final @NotNull Collection<Variable> variableDeclarations;
   private final @NotNull String expression;
 
   public CelConstraint(
     @NotNull String name,
     @NotNull String displayName,
-    @NotNull Collection<Property> requiredInput,
+    @NotNull Collection<Variable> variables,
     @NotNull String expression
   ) {
-    Preconditions.checkArgument(
-      requiredInput.stream().allMatch(p -> p.type().isPrimitive()),
-      "Input properties must be of a primitive type");
-
     this.name = name;
     this.displayName = displayName;
-    this.requiredInput = requiredInput;
+    this.variableDeclarations = variables;
     this.expression = expression;
   }
 
@@ -87,17 +83,32 @@ public class CelConstraint implements Constraint {
   }
 
   @Override
-  public @NotNull Collection<Property> expectedInput() {
-    return this.requiredInput;
-  }
-
-  @Override
   public Constraint.Check createCheck() {
     return new Check();
   }
 
   private class Check implements Constraint.Check {
     private final @NotNull Map<String, GenericJson> variables = new HashMap<>();
+    private final Collection<Property> input;
+
+    public Check() {
+      var json = new GenericJson();
+      this.variables.put("input", json);
+
+      this.input = variableDeclarations.stream()
+        .map(v -> v.bind(json))
+        .toList();
+    }
+
+    @Override
+    public @NotNull Constraint constraint() {
+      return CelConstraint.this;
+    }
+
+    @Override
+    public @NotNull Collection<Property> input() {
+      return this.input;
+    }
 
     @Override
     public Constraint.Context addContext(@NotNull String name) {
@@ -114,6 +125,13 @@ public class CelConstraint implements Constraint {
 
     @Override
     public boolean execute() throws ConstraintException {
+      for (var declaration : variableDeclarations) {
+        if (!this.input.contains(declaration.name)) {
+          throw new IllegalArgumentException(
+            String.format("Input missing for '%s'", declaration.displayName));
+        }
+      }
+
       var compiler = CelCompilerFactory.standardCelCompilerBuilder()
         .setStandardMacros(CelStandardMacro.STANDARD_MACROS)
         .addFunctionDeclarations(ExtractFunction.DECLARATION);
@@ -137,9 +155,55 @@ public class CelConstraint implements Constraint {
     }
   }
 
-  class InvalidExpressionException extends ConstraintException {
+  static class InvalidExpressionException extends ConstraintException {
     InvalidExpressionException(String message, Throwable cause) {
       super(message, cause);
+    }
+  }
+
+  public record Variable(
+    @NotNull String name,
+    @NotNull String displayName,
+    @NotNull Class<?> type
+  ) {
+    /**
+     * Pattern for variable names in CEL.
+     */
+    private static final String NAME_PATTERN = "[A-Za-z\\_]+";
+
+    public Variable {
+      Preconditions.checkArgument(name.matches(NAME_PATTERN), "Variable names must be alphanumeric");
+      Preconditions.checkArgument(type.isPrimitive(), "Variable must use a primitive type");
+    }
+
+    private Property bind(@NotNull GenericJson json) {
+      return new Property() {
+        @Override
+        public String displayName() {
+          return displayName;
+        }
+
+        @Override
+        public String name() {
+          return name;
+        }
+
+        @Override
+        public Class<?> type() {
+          return type;
+        }
+
+        @Override
+        public void set(String s) {
+          //TODO: convert type
+          json.set(name, s);
+        }
+
+        @Override
+        public Object value() {
+          return json.get(name);
+        }
+      };
     }
   }
 }

@@ -235,7 +235,7 @@ public class TestAccessCheck {
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint), Map.of());
+    check.applyConstraints(List.of(constraint));
     var result = check.execute();
 
     assertEquals(1, result.satisfiedConstraints().size());
@@ -260,7 +260,7 @@ public class TestAccessCheck {
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint), Map.of());
+    check.applyConstraints(List.of(constraint));
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());
@@ -285,7 +285,7 @@ public class TestAccessCheck {
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint), Map.of());
+    check.applyConstraints(List.of(constraint));
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());

@@ -26,7 +26,6 @@ import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
 
@@ -36,8 +35,9 @@ public class AccessCheck {
   private final @NotNull Policy policy;
   private final @NotNull EnumSet<PolicyRight> requiredRights;
 
-  private @Nullable Collection<Constraint> constraints;
-  private @Nullable Map<String, Property> input;
+  private @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
+
+  private boolean executed = false;
 
   AccessCheck(
     @NotNull Policy policy,
@@ -55,29 +55,10 @@ public class AccessCheck {
     this.requiredRights = requiredRights;
   }
 
-  private void evaluateConstraint(
-    @NotNull Constraint c,
+  private void evaluateConstraintCheck(
+    @NotNull Constraint.Check check,
     @NotNull Result resultAccumulator
   ) {
-//    if (!c.expectedInput().stream().allMatch(k -> this.input.containsKey(k))) {
-//      resultAccumulator.unsatisfiedConstraints.add(c);
-//      resultAccumulator.failedConstraints.put(
-//        c,
-//        new IllegalArgumentException("One or more required input properties are missing"));
-//
-//      return;
-//    }
-
-    var check = c.createCheck();
-
-    //
-    // Copy input properties.
-    //
-    var input = check.addContext("input");
-    for (var entry : this.input.entrySet()) {
-      input.set(entry.getKey(), entry.getValue().value());
-    }
-
     //
     // Copy request properties.
     //
@@ -95,23 +76,23 @@ public class AccessCheck {
 
     try {
       if (check.execute()) {
-        resultAccumulator.satisfiedConstraints.add(c);
+        resultAccumulator.satisfiedConstraints.add(check.constraint());
       }
       else {
-        resultAccumulator.unsatisfiedConstraints.add(c);
+        resultAccumulator.unsatisfiedConstraints.add(check.constraint());
       }
     } catch (ConstraintException e) {
-      resultAccumulator.unsatisfiedConstraints.add(c);
-      resultAccumulator.failedConstraints.put(c, e);
+      resultAccumulator.unsatisfiedConstraints.add(check.constraint());
+      resultAccumulator.failedConstraints.put(check.constraint(), e);
     }
   }
 
-  @TestOnly
-  Result evaluateConstraint(@NotNull Constraint c) {
-    var result = new Result(false);
-    evaluateConstraint(c, result);
-    return result;
-  }
+//  @TestOnly
+//  Result evaluateConstraint(@NotNull Constraint c) {
+//    var result = new Result(false);
+//    evaluateConstraint(c, result);
+//    return result;
+//  }
 
   private void evaluateAclAndConstraints(
     @NotNull Policy policy,
@@ -136,23 +117,41 @@ public class AccessCheck {
         .isAllowed(this.subject, PolicyRight.toMask(this.requiredRights));
     }
 
-    if (this.constraints != null) {
-      for (var constraint : this.constraints) {
-        evaluateConstraint(constraint, resultAccumulator);
-      }
+    for (var constraintCheck : this.constraintChecks) {
+      evaluateConstraintCheck(constraintCheck, resultAccumulator);
     }
   }
 
+  /**
+   * Add a set of constraints to be considered.
+   */
   public @NotNull AccessCheck applyConstraints(
-    @NotNull Collection<Constraint> constraints,
-    @NotNull Map<String, Property> input
+    @NotNull Collection<Constraint> constraints
   ) {
-    this.constraints = constraints;
-    this.input = input;
+    this.constraintChecks.addAll(constraints
+      .stream()
+      .map(c -> c.createCheck())
+      .toList());
+
     return this;
   }
 
+  /**
+   * @return input required to evaluate constraints.
+   */
+  public @NotNull Collection<Property> input() {
+    return this.constraintChecks.stream()
+      .flatMap(c -> c.input().stream())
+      .toList();
+  }
+
   public Result execute() {
+    if (this.executed) {
+      throw new IllegalStateException("The check was executed already");
+    }
+
+    this.executed = true;
+
     //
     // Evaluate ACL and constraints of the policy hierarchy.
     //

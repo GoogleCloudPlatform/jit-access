@@ -40,9 +40,7 @@ public class Catalog {
         // the current subject would or wouldn't meet.
         //
         var access = group.createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
-          .applyConstraints(
-            group.constraints(JitGroupPolicy.LifecycleAction.JOIN),
-            Map.of())
+          .applyConstraints(group.constraints(JitGroupPolicy.LifecycleAction.JOIN))
           .execute();
 
         if (access.isSubjectInAcl()) {

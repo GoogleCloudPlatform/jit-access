@@ -20,11 +20,6 @@ public interface Constraint {
   @NotNull String displayName();
 
   /**
-   * @return input properties required to perform a check.
-   */
-  @NotNull Collection<Property> expectedInput();
-
-  /**
    * @return a check object that can be used to evaluate
    * the constraint.
    */
@@ -34,6 +29,16 @@ public interface Constraint {
    * Represents the evaluation of a constraint.
    */
   interface Check {
+    /**
+     * @return constrait that's being checked.
+     */
+    @NotNull Constraint constraint();
+
+    /**
+     * @return input properties required to perform a check.
+     */
+    @NotNull Collection<Property> input();
+
     /**
      * Add additional input that might be needed to
      * perform the check.
