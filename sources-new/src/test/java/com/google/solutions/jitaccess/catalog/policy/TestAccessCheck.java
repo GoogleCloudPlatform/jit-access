@@ -228,7 +228,8 @@ public class TestAccessCheck {
     "group.system == 'system-1'",
     "group.name == 'group-1'",
     "input.testInt == 42",
-    "input.testString == 'sample'"
+    "input.testString == 'sample'",
+    "input.testBoolean"
   })
   public void constraints_whenConstraintSatisfied(String expression) {
     var constraint = new CelConstraint(
@@ -236,7 +237,8 @@ public class TestAccessCheck {
       "",
       List.of(
         new CelConstraint.Variable("testInt", "", int.class),
-        new CelConstraint.Variable("testString", "", String.class)),
+        new CelConstraint.Variable("testString", "", String.class),
+        new CelConstraint.Variable("testBoolean", "", boolean.class)),
       expression);
 
     var policy = Mockito.mock(Policy.class);
@@ -251,6 +253,7 @@ public class TestAccessCheck {
     check.applyConstraints(List.of(constraint));
     check.input().get(0).set("42");
     check.input().get(1).set("sample");
+    check.input().get(2).set("True");
 
     var result = check.execute();
 
