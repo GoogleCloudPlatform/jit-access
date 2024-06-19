@@ -39,7 +39,7 @@ public record JitGroupPolicy( // TODO: Drop suffix
   @NotNull String name,
   @NotNull String description,
   @NotNull AccessControlList acl,
-  @NotNull Map<LifecycleAction, Collection<Constraint>> constraints
+  @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
 ) implements Policy {
   /**
    * Maximum length for names, in characters.
@@ -79,31 +79,26 @@ public record JitGroupPolicy( // TODO: Drop suffix
       requiredRights);
   }
 
-  public Collection<Constraint> constraints(LifecycleAction action) { // TODO: test
-    var constraints = this.constraints.get(action);
-    return constraints != null
-      ? constraints
-      : List.of();
-  }
-
   @Override
   public String toString() {
     return this.name;
   }
 
   @Override
-  public Optional<Policy> parent() {
+  public @NotNull Optional<Policy> parent() {
     return Optional.of(this.system);
   }
 
   @Override
-  public Optional<AccessControlList> accessControlList() {
+  public @NotNull Optional<AccessControlList> accessControlList() {
     return Optional.of(this.acl);
   }
 
-  public enum LifecycleAction {
-    JOIN,
-    APPROVE,
-    RECERTIFY
+  @Override
+  public @NotNull Collection<Constraint> constraints(ConstraintClass c) { // TODO: test
+    var constraints = this.constraints.get(c);
+    return constraints != null
+      ? constraints
+      : List.of();
   }
 }

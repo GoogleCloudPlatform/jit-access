@@ -119,12 +119,13 @@ public class AccessCheck {
    * Add a set of constraints to be considered.
    */
   public @NotNull AccessCheck applyConstraints(
-    @NotNull Collection<Constraint> constraints
+    @NotNull Policy.ConstraintClass constraintClass
   ) {
-    this.constraintChecks.addAll(constraints
-      .stream()
-      .map(c -> c.createCheck())
-      .toList());
+    this.constraintChecks.addAll(
+      this.policy.constraints(constraintClass)
+        .stream()
+        .map(c -> c.createCheck())
+        .toList());
 
     return this;
   }

@@ -24,9 +24,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Policy for a system.
@@ -93,5 +91,10 @@ public record SystemPolicy(
   @Override
   public Optional<AccessControlList> accessControlList() {
     return Optional.empty();
+  }
+
+  @Override
+  public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
+    return List.of();
   }
 }

@@ -1,17 +1,13 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.catalog.auth.Subject;
-import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
-import com.google.solutions.jitaccess.catalog.policy.CatalogPolicy;
-import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
-import com.google.solutions.jitaccess.catalog.policy.PolicyRight;
+import com.google.solutions.jitaccess.catalog.policy.*;
 import jakarta.enterprise.context.Dependent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedList;
-import java.util.Map;
 
 @Dependent
 public class Catalog {
@@ -40,7 +36,7 @@ public class Catalog {
         // the current subject would or wouldn't meet.
         //
         var access = group.createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
-          .applyConstraints(group.constraints(JitGroupPolicy.LifecycleAction.JOIN))
+          .applyConstraints(Policy.ConstraintClass.JOIN)
           .execute();
 
         if (access.isSubjectInAcl()) {

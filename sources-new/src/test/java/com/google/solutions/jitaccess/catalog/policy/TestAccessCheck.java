@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class TestAccessCheck {
@@ -244,13 +245,15 @@ public class TestAccessCheck {
     var policy = Mockito.mock(Policy.class);
     when(policy.parent()).thenReturn(Optional.empty());
     when(policy.accessControlList()).thenReturn(Optional.empty());
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(constraint));
 
     var check = new AccessCheck(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint));
+    check.applyConstraints(Policy.ConstraintClass.JOIN);
     check.input().get(0).set("42");
     check.input().get(1).set("sample");
     check.input().get(2).set("True");
@@ -273,13 +276,15 @@ public class TestAccessCheck {
     var policy = Mockito.mock(Policy.class);
     when(policy.parent()).thenReturn(Optional.empty());
     when(policy.accessControlList()).thenReturn(Optional.empty());
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(constraint));
 
     var check = new AccessCheck(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint));
+    check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());
@@ -298,13 +303,15 @@ public class TestAccessCheck {
     var policy = Mockito.mock(Policy.class);
     when(policy.parent()).thenReturn(Optional.empty());
     when(policy.accessControlList()).thenReturn(Optional.empty());
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(constraint));
 
     var check = new AccessCheck(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-    check.applyConstraints(List.of(constraint));
+    check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());
@@ -324,6 +331,8 @@ public class TestAccessCheck {
     var policy = Mockito.mock(Policy.class);
     when(policy.parent()).thenReturn(Optional.empty());
     when(policy.accessControlList()).thenReturn(Optional.empty());
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(constraint));
 
     var check = new AccessCheck(
       policy,
@@ -331,7 +340,7 @@ public class TestAccessCheck {
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
 
-    check.applyConstraints(List.of(constraint));
+    check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());
