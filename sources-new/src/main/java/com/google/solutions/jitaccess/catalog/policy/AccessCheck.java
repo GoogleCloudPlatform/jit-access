@@ -81,7 +81,7 @@ public class AccessCheck {
       else {
         resultAccumulator.unsatisfiedConstraints.add(check.constraint());
       }
-    } catch (ConstraintException e) {
+    } catch (Exception e) {
       resultAccumulator.unsatisfiedConstraints.add(check.constraint());
       resultAccumulator.failedConstraints.put(check.constraint(), e);
     }

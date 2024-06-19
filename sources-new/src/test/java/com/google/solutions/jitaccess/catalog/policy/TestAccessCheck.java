@@ -318,7 +318,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      List.of(),
+      List.of(new CelConstraint.Variable("test", "", String.class)),
       "true");
 
     var policy = Mockito.mock(Policy.class);
@@ -330,5 +330,13 @@ public class TestAccessCheck {
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
+
+    check.applyConstraints(List.of(constraint));
+    var result = check.execute();
+
+    assertTrue(result.satisfiedConstraints().isEmpty());
+    assertEquals(1, result.unsatisfiedConstraints().size());
+    assertEquals(1, result.failedConstraints().size());
+    assertNotNull(result.failedConstraints().get(constraint));
   }
 }
