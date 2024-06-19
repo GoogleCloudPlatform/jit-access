@@ -59,14 +59,14 @@ public class AccessCheck {
     @NotNull Constraint c,
     @NotNull Result resultAccumulator
   ) {
-    if (!c.expectedInput().keySet().stream().allMatch(k -> this.input.containsKey(k))) {
-      resultAccumulator.unsatisfiedConstraints.add(c);
-      resultAccumulator.failedConstraints.put(
-        c,
-        new IllegalArgumentException("One or more required input properties are missing"));
-
-      return;
-    }
+//    if (!c.expectedInput().stream().allMatch(k -> this.input.containsKey(k))) {
+//      resultAccumulator.unsatisfiedConstraints.add(c);
+//      resultAccumulator.failedConstraints.put(
+//        c,
+//        new IllegalArgumentException("One or more required input properties are missing"));
+//
+//      return;
+//    }
 
     var check = c.createCheck();
 

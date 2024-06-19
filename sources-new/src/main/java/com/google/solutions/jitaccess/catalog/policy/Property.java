@@ -2,6 +2,16 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 public interface Property {
   /**
+   * @return display name of the property.
+   */
+  String displayName();
+
+  /**
+   * @return name of the property.
+   */
+  String name();
+
+  /**
    * Type of the property.
    */
   Class<?> type();

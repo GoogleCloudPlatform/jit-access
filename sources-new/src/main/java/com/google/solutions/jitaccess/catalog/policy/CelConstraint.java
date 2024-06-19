@@ -33,6 +33,7 @@ import dev.cel.runtime.CelRuntime;
 import dev.cel.runtime.CelRuntimeFactory;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,17 +49,17 @@ public class CelConstraint implements Constraint {
 
   private final @NotNull String name;
   private final @NotNull String displayName;
-  private final @NotNull Map<String, Property> requiredInput;
+  private final @NotNull Collection<Property> requiredInput;
   private final @NotNull String expression;
 
   public CelConstraint(
     @NotNull String name,
     @NotNull String displayName,
-    @NotNull Map<String, Property> requiredInput,
+    @NotNull Collection<Property> requiredInput,
     @NotNull String expression
   ) {
     Preconditions.checkArgument(
-      requiredInput.values().stream().allMatch(p -> p.type().isPrimitive()),
+      requiredInput.stream().allMatch(p -> p.type().isPrimitive()),
       "Input properties must be of a primitive type");
 
     this.name = name;
@@ -86,20 +87,20 @@ public class CelConstraint implements Constraint {
   }
 
   @Override
-  public @NotNull Map<String, Property> expectedInput() {
+  public @NotNull Collection<Property> expectedInput() {
     return this.requiredInput;
   }
 
   @Override
-  public ConstraintCheck createCheck() {
+  public Constraint.Check createCheck() {
     return new Check();
   }
 
-  private class Check implements ConstraintCheck {
+  private class Check implements Constraint.Check {
     private final @NotNull Map<String, GenericJson> variables = new HashMap<>();
 
     @Override
-    public Context addContext(@NotNull String name) {
+    public Constraint.Context addContext(@NotNull String name) {
       var json = new GenericJson();
       this.variables.put(name, json);
       return new Context() {

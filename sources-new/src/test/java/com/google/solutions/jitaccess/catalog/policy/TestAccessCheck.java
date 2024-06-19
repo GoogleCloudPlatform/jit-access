@@ -223,7 +223,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      Map.of(),
+      List.of(),
       "true");
 
     var policy = Mockito.mock(Policy.class);
@@ -248,7 +248,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      Map.of(),
+      List.of(),
       "false");
 
     var policy = Mockito.mock(Policy.class);
@@ -273,7 +273,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      Map.of(),
+      List.of(),
       "syntax error(");
 
     var policy = Mockito.mock(Policy.class);
@@ -299,7 +299,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      Map.of(),
+      List.of(),
       "true");
 
     var policy = Mockito.mock(Policy.class);
@@ -311,6 +311,5 @@ public class TestAccessCheck {
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
-
   }
 }

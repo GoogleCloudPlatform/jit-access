@@ -23,6 +23,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ public class TestCelConstraint {
 
   @Test
   public void toStringReturnsName() {
-    var constraint = new CelConstraint("name", "display name", Map.of(), "?");
+    var constraint = new CelConstraint("name", "display name", List.of(), "?");
     assertEquals("name [?]", constraint.toString());
   }
 
@@ -47,7 +48,7 @@ public class TestCelConstraint {
     var constraint = new CelConstraint(
       "name",
       "display name",
-      Map.of(),
+      List.of(),
       "my.name == 'missing quote");
 
     assertThrows(
@@ -60,7 +61,7 @@ public class TestCelConstraint {
     var constraint = new CelConstraint(
       "name",
       "display name",
-      Map.of(),
+      List.of(),
       "my.name == 'test'");
 
     var positive = constraint.createCheck();
@@ -77,7 +78,7 @@ public class TestCelConstraint {
     var constraint = new CelConstraint(
       "name",
       "display name",
-      Map.of(),
+      List.of(),
       "my.name.extract('t{x}t') == 'es'");
 
     var positive = constraint.createCheck();
