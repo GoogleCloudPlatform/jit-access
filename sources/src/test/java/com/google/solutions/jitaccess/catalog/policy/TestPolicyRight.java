@@ -29,33 +29,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestPolicyRight {
+  @Test
+  public void view() {
+    assertTrue((PolicyRight.JOIN.toMask() & PolicyRight.VIEW.toMask()) != 0);
+  }
+
   //---------------------------------------------------------------------------
   // parse.
   //---------------------------------------------------------------------------
 
   @Test
-  public void parseJoin() {
+  public void parse_join() {
     assertEquals(
       EnumSet.of(PolicyRight.JOIN),
       PolicyRight.parse("Join  "));
   }
 
   @Test
-  public void parseApproveSelf() {
+  public void parse_approveSelf() {
     assertEquals(
       EnumSet.of(PolicyRight.APPROVE_SELF),
       PolicyRight.parse(" approve_self  "));
   }
 
   @Test
-  public void parseApproveOthers() {
+  public void parse_approveOthers() {
     assertEquals(
       EnumSet.of(PolicyRight.APPROVE_OTHERS),
       PolicyRight.parse("APPROVE_OTHERS"));
   }
 
   @Test
-  public void parseList() {
+  public void parse_list() {
     assertEquals(
       EnumSet.of(PolicyRight.JOIN, PolicyRight.APPROVE_SELF),
       PolicyRight.parse("Join,approve_self,,  "));
@@ -66,7 +71,7 @@ public class TestPolicyRight {
   //---------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsCanonicalFormat() {
+  public void toString_returnsCanonicalFormat() {
     assertEquals("JOIN", PolicyRight.JOIN.toString());
     assertEquals(
       "[JOIN, APPROVE_OTHERS, APPROVE_SELF]",

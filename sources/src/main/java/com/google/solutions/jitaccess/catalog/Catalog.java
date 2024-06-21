@@ -12,23 +12,20 @@ public class Catalog {//TODO: test
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
 
-  private Optional<EnvironmentPolicy> lookupEnvironmentWithoutAclCheck(@NotNull String name) {
-    var env = this.environments.get(name);
-    return env != null ? Optional.of(env) : Optional.empty();
-  }
-
-  private @NotNull Optional<JitGroupPolicy> lookupGroupWithoutAclCheck(@NotNull JitGroupId groupId) {
-    return this.lookupEnvironmentWithoutAclCheck(groupId.environment())
-      .flatMap(env -> env.system(groupId.system()))
-      .flatMap(sys -> sys.group(groupId.name()));
-  }
-
   public Catalog(
     @NotNull Subject subject,
     @NotNull Map<String, EnvironmentPolicy> environments
   ) {
     this.subject = subject;
     this.environments = environments;
+  }
+
+  public Optional<EnvironmentPolicy> environment(@NotNull String name) {
+    //
+    // NB. No access check required.
+    //
+    var env = this.environments.get(name);
+    return env != null ? Optional.of(env) : Optional.empty();
   }
 
   /**
@@ -50,7 +47,10 @@ public class Catalog {//TODO: test
   public @NotNull JitGroup group(
     @NotNull JitGroupId groupId
   ) throws AccessDeniedException {
-    var group = lookupGroupWithoutAclCheck(groupId);
+    var group = this.environment(groupId.environment())
+      .flatMap(env -> env.system(groupId.system()))
+      .flatMap(sys -> sys.group(groupId.name()));
+
     if (!group.isPresent() || !group.get()
       .createAccessCheck(this.subject, EnumSet.of(PolicyRight.VIEW))
       .execute()
@@ -75,7 +75,7 @@ public class Catalog {//TODO: test
   public @NotNull Collection<JitGroup> groups(
     @NotNull String environmentName
   ) {
-    var environment = this.lookupEnvironmentWithoutAclCheck(environmentName)
+    var environment = this.environment(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
@@ -98,51 +98,7 @@ public class Catalog {//TODO: test
     return groups;
   }
 
-  /**
-   * Group that a user could join.
-   */
-  public static class JitGroup {
-    private final @NotNull Subject subject;
-    private final @NotNull JitGroupPolicy group;
-
-    private JitGroup(@NotNull Subject subject, @NotNull JitGroupPolicy group) {
-      this.subject = subject;
-      this.group = group;
-    }
-
-    /**
-     * @return group details.
-     */
-    public @NotNull JitGroupPolicy group() {
-      return this.group;
-    }
-
-    /**
-     * @return details about possibly unmet constraints.
-     */
-    public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {
-      //
-      // Analyze if the current subject can join this group, and what
-      // constraints might be unsatisfied.
-      //
-      var result = group
-        .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
-        .applyConstraints(Policy.ConstraintClass.JOIN)
-        .execute();
-
-      if (!result.isSubjectInAcl()) {
-        //
-        // Subject not in ACL, so we can't disclose any details.
-        //
-        return Optional.empty();
-      }
-      else {
-        return Optional.of(result);
-      }
-    }
-  }
-
-//
+  //
 //  @NotNull JoinOperation join(@NotNull JitGroupId groupId) {
 //    var group = getGroupWithoutAclCheck(groupId);
 //    group

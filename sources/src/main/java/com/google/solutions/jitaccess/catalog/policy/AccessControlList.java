@@ -46,7 +46,7 @@ public record AccessControlList(
    */
   private static boolean isAllowed(
     @NotNull Iterable<PrincipalId> principals,
-    Iterable<Entry> accessEntries,
+    @NotNull Iterable<Entry> accessEntries,
     int requiredAccessRights
   ) {
     Preconditions.checkArgument(requiredAccessRights != 0, "requiredAccessMask");

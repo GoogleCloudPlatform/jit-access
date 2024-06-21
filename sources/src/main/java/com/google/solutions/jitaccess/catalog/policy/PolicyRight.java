@@ -55,7 +55,7 @@ public enum PolicyRight {
   /**
    * @return bit field representation.
    */
-  int toMask() {
+  public int toMask() {
     return this.value;
   }
 

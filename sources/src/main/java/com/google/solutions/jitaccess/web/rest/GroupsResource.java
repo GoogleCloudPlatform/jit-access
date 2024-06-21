@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.Catalog;
+import com.google.solutions.jitaccess.catalog.JitGroup;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
@@ -66,10 +67,11 @@ public class GroupsResource {//TODO: test
     @NotNull String id,
     @NotNull String name,
     @NotNull String description,
+    @NotNull SystemInfo system,
     @Nullable JoinAccessInfo access
 
   ) {
-    static GroupInfo fromJitGroup(@NotNull Catalog.JitGroup g) {
+    static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinAccessInfo = g.analyzeJoinAccess()
         .map(a -> new JoinAccessInfo(a.isMembershipActive(),
           a.satisfiedConstraints().stream()
@@ -84,9 +86,17 @@ public class GroupsResource {//TODO: test
         g.group().id().toString(),
         g.group().name(),
         g.group().description(),
+        new SystemInfo(
+          g.group().system().name(),
+          g.group().system().description()),
         joinAccessInfo);
     }
   }
+
+  public record SystemInfo(
+    @NotNull String id,
+    @NotNull String name
+  ) {}
 
   public record JoinAccessInfo(
     @NotNull boolean membershipActive,
