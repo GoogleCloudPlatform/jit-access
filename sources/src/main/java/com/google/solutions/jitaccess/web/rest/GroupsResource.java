@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.Catalog;
-import com.google.solutions.jitaccess.catalog.auth.GroupId;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
@@ -37,7 +36,7 @@ public class GroupsResource {//TODO: test
       .parse(unparsedGroupId)
       .orElseThrow(() -> new IllegalArgumentException("The ID is invalid"));
 
-    return GroupInfo.fromJoinableGroup(this.catalog.joinableGroup(groupId));
+    return GroupInfo.fromJitGroup(this.catalog.group(groupId));
   }
 
   @GET
@@ -50,9 +49,9 @@ public class GroupsResource {//TODO: test
       !Strings.isNullOrEmpty(environment),
       "Environment must be specified");
 
-    var groups = this.catalog.joinableGroups(environment)
+    var groups = this.catalog.groups(environment)
       .stream()
-      .map(GroupInfo::fromJoinableGroup)
+      .map(GroupInfo::fromJitGroup)
       .collect(Collectors.toList());
 
     return new GroupsInfo(groups);
@@ -67,26 +66,33 @@ public class GroupsResource {//TODO: test
     @NotNull String id,
     @NotNull String name,
     @NotNull String description,
-    @NotNull boolean membershipActive,
-    @NotNull List<ConstraintInfo> satisfiedConstraints,
-    @NotNull List<ConstraintInfo> unsatisfiedConstraints
+    @Nullable JoinAccessInfo access
+
   ) {
-    static GroupInfo fromJoinableGroup(@NotNull Catalog.JoinableGroup g) {
-      var analysis = g.accessAnalysis();
+    static GroupInfo fromJitGroup(@NotNull Catalog.JitGroup g) {
+      var joinAccessInfo = g.analyzeJoinAccess()
+        .map(a -> new JoinAccessInfo(a.isMembershipActive(),
+          a.satisfiedConstraints().stream()
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .toList(),
+          a.unsatisfiedConstraints().stream()
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .toList()))
+        .orElse(null);
+
       return new GroupInfo(
         g.group().id().toString(),
         g.group().name(),
         g.group().description(),
-        analysis.isMembershipActive(),
-        analysis.satisfiedConstraints().stream()
-          .map(c -> new ConstraintInfo(c.name(), c.displayName()))
-          .toList(),
-        analysis.unsatisfiedConstraints().stream()
-          .map(c -> new ConstraintInfo(c.name(), c.displayName()))
-          .toList());
+        joinAccessInfo);
     }
-
   }
+
+  public record JoinAccessInfo(
+    @NotNull boolean membershipActive,
+    @NotNull List<ConstraintInfo> satisfiedConstraints,
+    @NotNull List<ConstraintInfo> unsatisfiedConstraints
+  ) {}
 
   public record ConstraintInfo(
     @NotNull String name,

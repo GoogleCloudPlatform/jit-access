@@ -28,19 +28,23 @@ import java.util.EnumSet;
 
 public enum PolicyRight {
   /**
+   * View a group. This right is included in all other rights.
+   */
+  VIEW(1),
+  /**
    * Join a group.
    */
-  JOIN(1),
+  JOIN(VIEW.value + 2),
 
   /**
    * Approve someone's request to join a group.
    */
-  APPROVE_OTHERS(2),
+  APPROVE_OTHERS(VIEW.value + 4),
 
   /**
    * Self-approve.
    */
-  APPROVE_SELF(4);
+  APPROVE_SELF(VIEW.value + 8);
 
   private int value;
 

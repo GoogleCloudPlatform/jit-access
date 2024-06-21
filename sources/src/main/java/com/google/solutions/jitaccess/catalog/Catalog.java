@@ -42,17 +42,17 @@ public class Catalog {//TODO: test
   }
 
   /**
-   * Get details for a group that the current subject could join.
+   * Get details for a JIT group.
    *
    * @return group details
    * @throws is group not found or access denied
    */
-  public @NotNull JoinableGroup joinableGroup(
+  public @NotNull JitGroup group(
     @NotNull JitGroupId groupId
   ) throws AccessDeniedException {
     var group = lookupGroupWithoutAclCheck(groupId);
     if (!group.isPresent() || !group.get()
-      .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+      .createAccessCheck(this.subject, EnumSet.of(PolicyRight.VIEW))
       .execute()
       .isSubjectInAcl()) {
       throw new AccessDeniedException(
@@ -60,35 +60,37 @@ public class Catalog {//TODO: test
     }
 
     //
-    // User in ACL, so we're ok to return this group. The
-    // user might not satisfy all constraints though, which is ok.
+    // User is allowed to view the group, so we're ok to return
+    // the details.
     //
-    return new JoinableGroup(this.subject, group.get());
+    // The user may our may not be allowed to join the group.
+    //
+    return new JitGroup(this.subject, group.get());
   }
 
   /**
-   * List groups that the current subject could join. Other groups
+   * List JIT groups that the current subject can view. Non-JIT groups
    * are filtered out.
    */
-  public @NotNull Collection<JoinableGroup> joinableGroups(
+  public @NotNull Collection<JitGroup> groups(
     @NotNull String environmentName
   ) {
     var environment = this.lookupEnvironmentWithoutAclCheck(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
-    var groups = new LinkedList<JoinableGroup>();
+    var groups = new LinkedList<JitGroup>();
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
         if (group
-          .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+          .createAccessCheck(this.subject, EnumSet.of(PolicyRight.VIEW))
           .execute()
           .isSubjectInAcl()) {
           //
           // User in ACL, so we're ok to return this group. The
           // user might not satisfy all constraints though, which is ok.
           //
-          groups.add(new JoinableGroup(this.subject, group));
+          groups.add(new JitGroup(this.subject, group));
         }
       }
     }
@@ -99,11 +101,11 @@ public class Catalog {//TODO: test
   /**
    * Group that a user could join.
    */
-  public static class JoinableGroup {
+  public static class JitGroup {
     private final @NotNull Subject subject;
     private final @NotNull JitGroupPolicy group;
 
-    private JoinableGroup(@NotNull Subject subject, @NotNull JitGroupPolicy group) {
+    private JitGroup(@NotNull Subject subject, @NotNull JitGroupPolicy group) {
       this.subject = subject;
       this.group = group;
     }
@@ -118,14 +120,25 @@ public class Catalog {//TODO: test
     /**
      * @return details about possibly unmet constraints.
      */
-    public @NotNull AccessCheck.Result accessAnalysis() {
+    public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {
       //
-      // Perform full access check, incl. constraints.
+      // Analyze if the current subject can join this group, and what
+      // constraints might be unsatisfied.
       //
-      return group
+      var result = group
         .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
         .applyConstraints(Policy.ConstraintClass.JOIN)
         .execute();
+
+      if (!result.isSubjectInAcl()) {
+        //
+        // Subject not in ACL, so we can't disclose any details.
+        //
+        return Optional.empty();
+      }
+      else {
+        return Optional.of(result);
+      }
     }
   }
 
