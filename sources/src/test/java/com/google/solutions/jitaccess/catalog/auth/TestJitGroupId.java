@@ -23,6 +23,8 @@ package com.google.solutions.jitaccess.catalog.auth;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,10 +34,26 @@ public class TestJitGroupId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsPolicyAndName() {
+  public void toString_returnsPolicyAndName() {
     Assertions.assertEquals(
-      "env-system-name",
+      "env.system.name",
       new JitGroupId("env", "system", "name").toString());
+  }
+
+  // -------------------------------------------------------------------------
+  // Parse.
+  // -------------------------------------------------------------------------
+
+  @ParameterizedTest
+  @ValueSource(strings = {"", ".", "..", "a. .c", ".b.", "a.b." ,".b.c"})
+  public void parse_whenNullOrEmpty_returnsEmpty(String s) {
+    assertFalse(JitGroupId.parse(s).isPresent());
+  }
+
+  @Test
+  public void parse_toString() {
+    var g = new JitGroupId("env", "system", "name");
+    assertEquals(g, JitGroupId.parse(g.toString()).get());
   }
 
   // -------------------------------------------------------------------------
@@ -121,7 +139,7 @@ public class TestJitGroupId {
   @Test
   public void value() {
     assertEquals(
-      "env-system-name",
+      "env.system.name",
       new JitGroupId("env", "system", "name").value());
   }
 }

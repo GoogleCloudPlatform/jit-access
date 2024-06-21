@@ -46,7 +46,7 @@ public class TestHealthResource {
   @Test
   public void checkLivenessReturns200() throws Exception {
     var response = new RestDispatcher<>(new HealthResource(), SAMPLE_USER)
-      .get("/health/alive", HealthResource.ResponseEntity.class);
+      .get("/health/alive", HealthResource.HealthInfo.class);
 
     assertEquals(200, response.getStatus());
     assertTrue(response.getBody().healthy());
@@ -71,7 +71,7 @@ public class TestHealthResource {
       () -> List.of(new DiagnosticsResult("Sample-1")));
 
     var response = new RestDispatcher<>(resource, SAMPLE_USER)
-      .get("/health/ready", HealthResource.ResponseEntity.class);
+      .get("/health/ready", HealthResource.HealthInfo.class);
 
     assertEquals(200, response.getStatus());
     assertTrue(response.getBody().healthy());
@@ -95,7 +95,7 @@ public class TestHealthResource {
         new DiagnosticsResult("Sample-2", false, "error")));
 
     var response = new RestDispatcher<>(resource, SAMPLE_USER)
-      .get("/health/ready", HealthResource.ResponseEntity.class);
+      .get("/health/ready", HealthResource.HealthInfo.class);
 
     assertEquals(503, response.getStatus());
     assertFalse(response.getBody().healthy());

@@ -22,10 +22,12 @@
 package com.google.solutions.jitaccess.catalog.auth;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * Identifier of a JIT group.
@@ -132,9 +134,32 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   @Override
   public @NotNull String value() {
     return String.format(
-      "%s-%s-%s",
+      "%s.%s.%s",
       this.environment,
       this.system,
       this.name);
+  }
+
+  // -------------------------------------------------------------------------
+  // Parse.
+  // -------------------------------------------------------------------------
+
+  /**
+   * Parse a string into a JIT Group Id.
+   */
+  public static Optional<JitGroupId> parse(@Nullable String s) {
+    if (Strings.isNullOrEmpty(s) || s.isBlank()) {
+      return Optional.empty();
+    }
+
+    var parts = s.split("\\.");
+    if (parts.length != 3 ||
+      parts[0].isBlank() ||
+      parts[1].isBlank() ||
+      parts[2].isBlank()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(new JitGroupId(parts[0], parts[1], parts[2]));
   }
 }

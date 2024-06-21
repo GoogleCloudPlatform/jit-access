@@ -21,7 +21,6 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
-import com.google.solutions.jitaccess.catalog.auth.PrincipalId;
 import com.google.solutions.jitaccess.web.RequestContext;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import com.google.solutions.jitaccess.web.RuntimeEnvironment;
@@ -57,12 +56,12 @@ public class DiagnosticsResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("whoami")
-  public @NotNull DiagnosticsResource.Response whoami() {
+  public @NotNull DiagnosticsResource.SubjectInfo whoami() {
     if (!this.runtimeEnvironment.isDebugModeEnabled()) {
       throw new ForbiddenException();
     }
 
-    return new Response(
+    return new SubjectInfo(
       requestContext.user().email,
       requestContext.subject().principals()
         .stream()
@@ -70,7 +69,7 @@ public class DiagnosticsResource {
         .collect(Collectors.toList()));
   }
 
-  public record Response(
+  public record SubjectInfo(
     @NotNull String email,
     @NotNull List<PrincipalInfo> principals
   ) {}

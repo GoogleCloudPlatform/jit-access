@@ -1,42 +1,45 @@
 package com.google.solutions.jitaccess.web.rest;
 
+import com.google.solutions.jitaccess.catalog.Catalog;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-/**
- * REST API controller for catalog.
- */
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Dependent
 @Path("/catalog")
 @RequireIapPrincipal
-public class CatalogResource {
+public class CatalogResource {//TODO: test
   @Inject
-  ListGroups listGroups;
-
-  @Inject
-  ListEnvironments listEnvironments;
+  Catalog catalog;
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments")
-  public @NotNull ListEnvironments.Response listEnvironments() {
-    return this.listEnvironments.execute();
+  public @NotNull CatalogResource.EnvironmentsInfo listEnvironments() {
+    var environments = this.catalog.environments()
+      .stream()
+      .map(env -> new EnvironmentInfo(env.name(), env.description()))
+      .collect(Collectors.toList());
+
+    return new EnvironmentsInfo(environments);
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("environments/{environment}/groups")
-  public @NotNull ListGroups.Response listGroups(
-    @PathParam("environment") @Nullable String environment
+
+  public record EnvironmentsInfo(
+    @NotNull List<EnvironmentInfo> environments
   ) {
-    return this.listGroups.execute(environment);
   }
+
+  public record EnvironmentInfo(
+    @NotNull String name,
+    @NotNull String description
+  ) {}
 }

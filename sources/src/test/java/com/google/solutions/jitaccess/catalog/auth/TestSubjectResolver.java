@@ -146,9 +146,9 @@ public class TestSubjectResolver {
     when(groupsClient.listMembershipsByUser(eq(SAMPLE_USER)))
       .thenReturn(List.of(
         new MembershipRelation()
-          .setGroup(SAMPLE_GROUP.email),
+          .setGroupKey(new EntityKey().setId(SAMPLE_GROUP.email)),
         new MembershipRelation()
-          .setGroup(mapping.groupFromJitGroup(SAMPLE_JITGROUP).email)
+          .setGroupKey(new EntityKey().setId(mapping.groupFromJitGroup(SAMPLE_JITGROUP).email))
           .setMembership("m1")));
     when(groupsClient.getMembership(eq(new CloudIdentityGroupsClient.MembershipId("m1"))))
       .thenReturn(new Membership()

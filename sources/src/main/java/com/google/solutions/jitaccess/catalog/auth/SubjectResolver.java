@@ -180,7 +180,7 @@ public class SubjectResolver {
     //
     assert allMemberships
       .stream()
-      .filter(m -> this.groupMapping.isJitGroup(new GroupId(m.getGroup())))
+      .filter(m -> this.groupMapping.isJitGroup(new GroupId(m.getGroupKey().getId())))
       .filter(m -> m.getRoles() != null)
       .flatMap(m -> m.getRoles().stream())
       .allMatch(r -> r.getExpiryDetail() == null);
