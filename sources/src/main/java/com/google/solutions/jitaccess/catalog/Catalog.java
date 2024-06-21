@@ -1,5 +1,6 @@
 package com.google.solutions.jitaccess.catalog;
 
+import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.*;
@@ -11,17 +12,15 @@ public class Catalog {//TODO: test
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
 
-  private Optional<EnvironmentPolicy> environment(@NotNull String name) {
+  private Optional<EnvironmentPolicy> lookupEnvironmentWithoutAclCheck(@NotNull String name) {
     var env = this.environments.get(name);
     return env != null ? Optional.of(env) : Optional.empty();
   }
 
-  private @NotNull JitGroupPolicy lookupGroupWithouAclCheck(@NotNull JitGroupId groupId) {
-    return this.environment(groupId.environment())
+  private @NotNull Optional<JitGroupPolicy> lookupGroupWithoutAclCheck(@NotNull JitGroupId groupId) {
+    return this.lookupEnvironmentWithoutAclCheck(groupId.environment())
       .flatMap(env -> env.system(groupId.system()))
-      .flatMap(sys -> sys.group(groupId.name()))
-      .orElseThrow(() -> new IllegalArgumentException(
-        String.format("The group '%s' does not exist", groupId)));
+      .flatMap(sys -> sys.group(groupId.name()));
   }
 
   public Catalog(
@@ -37,19 +36,44 @@ public class Catalog {//TODO: test
    */
   public @NotNull Collection<EnvironmentPolicy> environments() {
     //
-    // NB. No access check requires.
+    // NB. No access check required.
     //
     return this.environments.values();
   }
 
   /**
-   * @return groups in the environment that the subject might be
-   * allowed to join
+   * Get details for a group that the current subject could join.
+   *
+   * @return group details
+   * @throws is group not found or access denied
+   */
+  public @NotNull JoinableGroup joinableGroup(
+    @NotNull JitGroupId groupId
+  ) throws AccessDeniedException {
+    var group = lookupGroupWithoutAclCheck(groupId);
+    if (!group.isPresent() || !group.get()
+      .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+      .execute()
+      .isSubjectInAcl()) {
+      throw new AccessDeniedException(
+        String.format("The group '%s' does not exist or access is denied", groupId));
+    }
+
+    //
+    // User in ACL, so we're ok to return this group. The
+    // user might not satisfy all constraints though, which is ok.
+    //
+    return new JoinableGroup(this.subject, group.get());
+  }
+
+  /**
+   * List groups that the current subject could join. Other groups
+   * are filtered out.
    */
   public @NotNull Collection<JoinableGroup> joinableGroups(
     @NotNull String environmentName
   ) {
-    var environment = this.environment(environmentName)
+    var environment = this.lookupEnvironmentWithoutAclCheck(environmentName)
       .orElseThrow(() -> new IllegalArgumentException(
         String.format("The environment '%s' does not exist", environmentName)));
 
@@ -64,23 +88,7 @@ public class Catalog {//TODO: test
           // User in ACL, so we're ok to return this group. The
           // user might not satisfy all constraints though, which is ok.
           //
-          groups.add(new JoinableGroup() {
-            @Override
-            public @NotNull JitGroupPolicy group() {
-              return group;
-            }
-
-            @Override
-            public @NotNull AccessCheck.Result accessAnalysis() {
-              //
-              // Perform full access check, incl. constraints.
-              //
-              return group
-                .createAccessCheck(Catalog.this.subject, EnumSet.of(PolicyRight.JOIN))
-                .applyConstraints(Policy.ConstraintClass.JOIN)
-                .execute();
-            }
-          });
+          groups.add(new JoinableGroup(this.subject, group));
         }
       }
     }
@@ -91,16 +99,34 @@ public class Catalog {//TODO: test
   /**
    * Group that a user could join.
    */
-  public interface JoinableGroup {
+  public static class JoinableGroup {
+    private final @NotNull Subject subject;
+    private final @NotNull JitGroupPolicy group;
+
+    private JoinableGroup(@NotNull Subject subject, @NotNull JitGroupPolicy group) {
+      this.subject = subject;
+      this.group = group;
+    }
+
     /**
      * @return group details.
      */
-    @NotNull JitGroupPolicy group();
+    public @NotNull JitGroupPolicy group() {
+      return this.group;
+    }
 
     /**
      * @return details about possibly unmet constraints.
      */
-    @NotNull AccessCheck.Result accessAnalysis();
+    public @NotNull AccessCheck.Result accessAnalysis() {
+      //
+      // Perform full access check, incl. constraints.
+      //
+      return group
+        .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+        .applyConstraints(Policy.ConstraintClass.JOIN)
+        .execute();
+    }
   }
 
 //
