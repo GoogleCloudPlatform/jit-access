@@ -31,6 +31,7 @@ public class ListGroups {//TODO: test
           g.group().id().toString(),
           g.group().name(),
           g.group().description(),
+          analysis.isMembershipActive(),
           analysis.satisfiedConstraints().stream()
             .map(c -> new ConstraintInfo(c.name(), c.displayName()))
             .toList(),
@@ -52,7 +53,7 @@ public class ListGroups {//TODO: test
     @NotNull String id,
     @NotNull String name,
     @NotNull String description,
-
+    @NotNull boolean membershipActive,
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints
   ) {}

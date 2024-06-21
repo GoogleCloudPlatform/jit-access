@@ -73,7 +73,7 @@ public class Catalog {//TODO: test
             @Override
             public @NotNull AccessCheck.Result accessAnalysis() {
               //
-              // Check constraints.
+              // Perform full access check, incl. constraints.
               //
               return group
                 .createAccessCheck(Catalog.this.subject, EnumSet.of(PolicyRight.JOIN))
