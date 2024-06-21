@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import com.google.common.base.Enums;
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
@@ -87,15 +88,21 @@ public class AccessCheck {
     }
   }
 
-  private void evaluateAclAndConstraints(
+  private static void evaluateAcl(
     @NotNull Policy policy,
+    @NotNull Subject subject,
+    @NotNull EnumSet<PolicyRight> requiredRights,
     @NotNull Result resultAccumulator
   ) {
     //
     // Evaluate the environment policy first.
     //
     if (policy.parent().isPresent()) {
-      evaluateAclAndConstraints(policy.parent().get(), resultAccumulator);
+      evaluateAcl(
+        policy.parent().get(),
+        subject,
+        requiredRights,
+        resultAccumulator);
     }
 
     //
@@ -107,8 +114,15 @@ public class AccessCheck {
     {
       resultAccumulator.isSubjectInAcl &= policy.accessControlList()
         .get()
-        .isAllowed(this.subject, PolicyRight.toMask(this.requiredRights));
+        .isAllowed(subject, PolicyRight.toMask(requiredRights));
     }
+  }
+
+  private void evaluateAclAndConstraints(
+    @NotNull Policy policy,
+    @NotNull Result resultAccumulator
+  ) {
+    evaluateAcl(policy, this.subject, this.requiredRights, resultAccumulator);
 
     for (var constraintCheck : this.constraintChecks) {
       evaluateConstraintCheck(constraintCheck, resultAccumulator);
