@@ -42,6 +42,13 @@ class RuntimeConfiguration {
   final @NotNull Setting<String> customerId;
 
   /**
+   * Domain to use for JIT groups. This can be the primary
+   * or a secondary domain of the account idnetified
+   * by @see customerId.
+   */
+  final @NotNull Setting<String> groupsDomain;
+
+  /**
    * Topic (within the resource hierarchy) that binding information will
    * publish to.
    */
@@ -134,7 +141,10 @@ class RuntimeConfiguration {
     this.readSetting = readSetting;
 
     this.customerId = new StringSetting(
-     "RESOURCE_CUSTOMER_ID",
+      "RESOURCE_CUSTOMER_ID",
+       null);
+    this.groupsDomain = new StringSetting(
+      "RESOURCE_DOMAIN",
       null);
 
     //

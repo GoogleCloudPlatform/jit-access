@@ -33,6 +33,7 @@ import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.solutions.jitaccess.ApplicationVersion;
 import com.google.solutions.jitaccess.catalog.Catalog;
+import com.google.solutions.jitaccess.catalog.auth.GroupMapping;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
@@ -317,7 +318,7 @@ public class RuntimeEnvironment {
   }
 
   @Produces
-  public  @NotNull Catalog produceCatalog(@NotNull Subject subject) {
+  public @NotNull Catalog produceCatalog(@NotNull Subject subject) {
     // TODO: load YAML
     var environment = new EnvironmentPolicy("test", "Test policy");
     var system = new SystemPolicy(environment, "test-system", "Test policy");
@@ -332,5 +333,11 @@ public class RuntimeEnvironment {
     return new Catalog(
       subject,
       Map.of(environment.name(), environment));
+  }
+
+  @Produces
+  @Singleton
+  public @NotNull GroupMapping produceGroupMapping() {
+    return new GroupMapping(this.configuration.groupsDomain.getValue());
   }
 }

@@ -157,17 +157,18 @@ public class SubjectResolver {
     //
     var otherGroupPrincipals = allMemberships
       .stream()
-      .filter(m -> !this.groupMapping.isJitGroup(new GroupId(m.getGroup())))
-      .map(m -> new Principal(new GroupId(m.getGroup())))
+      .filter(m -> !this.groupMapping.isJitGroup(new GroupId(m.getGroupKey().getId())))
+      .map(m -> new Principal(new GroupId(m.getGroupKey().getId())))
       .collect(Collectors.toSet());
 
     var jitGroupMemberships = allMemberships
       .stream()
-      .filter(m -> this.groupMapping.isJitGroup(new GroupId(m.getGroup())))
+      .filter(m -> this.groupMapping.isJitGroup(new GroupId(m.getGroupKey().getId())))
       .map(m -> new CloudIdentityGroupsClient.MembershipId(m.getMembership()))
       .toList();
 
     assert otherGroupPrincipals.size() + jitGroupMemberships.size() == allMemberships.size();
+    assert otherGroupPrincipals.stream().allMatch(g -> g.id().value().contains("@"));
 
     //
     // For JIT groups, we need to know the expiry. The API doesn't
