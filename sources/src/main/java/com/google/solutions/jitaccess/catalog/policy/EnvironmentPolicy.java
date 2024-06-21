@@ -32,7 +32,7 @@ import java.util.*;
 public record EnvironmentPolicy(
   @NotNull String name,
   @NotNull String description,
-  @NotNull SortedSet<SystemPolicy> systems
+  @NotNull List<SystemPolicy> systems
 ) implements Policy {
   /**
    * Maximum length for names, in characters.
@@ -56,7 +56,7 @@ public record EnvironmentPolicy(
     @NotNull String name,
     @NotNull String description
   ) {
-    this(name, description, new TreeSet<>());
+    this(name, description, new LinkedList<>());
   }
 
   public Optional<SystemPolicy> system(@NotNull String name) {

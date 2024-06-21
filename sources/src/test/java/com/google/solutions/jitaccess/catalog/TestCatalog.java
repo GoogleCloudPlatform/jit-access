@@ -20,7 +20,7 @@
 //
 
 package com.google.solutions.jitaccess.catalog;
-import com.google.api.services.secretmanager.v1.model.Secret;
+
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Principal;

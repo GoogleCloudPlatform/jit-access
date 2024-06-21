@@ -42,7 +42,7 @@ public record SystemPolicy(
   @NotNull EnvironmentPolicy environment,
   @NotNull String name,
   @NotNull String description,
-  @NotNull SortedSet<JitGroupPolicy> groups
+  @NotNull List<JitGroupPolicy> groups
   ) implements Policy, Comparable<SystemPolicy> {
 
   /**
@@ -70,7 +70,7 @@ public record SystemPolicy(
     @NotNull String name,
     @NotNull String description
   ) {
-    this(parent, name, description, new TreeSet<>());
+    this(parent, name, description, new LinkedList<>());
   }
 
   public Optional<JitGroupPolicy> group(@NotNull String name) {
