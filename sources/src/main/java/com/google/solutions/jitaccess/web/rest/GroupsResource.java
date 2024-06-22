@@ -75,10 +75,10 @@ public class GroupsResource {//TODO: test
       var joinAccessInfo = g.analyzeJoinAccess()
         .map(a -> new JoinAccessInfo(a.isMembershipActive(),
           a.satisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .map(c -> new ConstraintInfo(c.name(), c.description()))
             .toList(),
           a.unsatisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+            .map(c -> new ConstraintInfo(c.name(), c.description()))
             .toList()))
         .orElse(null);
 
@@ -106,6 +106,6 @@ public class GroupsResource {//TODO: test
 
   public record ConstraintInfo(
     @NotNull String name,
-    @NotNull String displayName
+    @NotNull String description
   ) {}
 }

@@ -32,6 +32,7 @@ import dev.cel.runtime.CelEvaluationException;
 import dev.cel.runtime.CelRuntime;
 import dev.cel.runtime.CelRuntimeFactory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public class CelConstraint implements Constraint {
     return this.name;
   }
   @Override
-  public @NotNull String displayName() {
+  public @NotNull String description() {
     return this.displayName;
   }
 
@@ -127,7 +128,7 @@ public class CelConstraint implements Constraint {
     @Override
     public boolean execute() throws ConstraintException {
       for (var input : this.input) {
-        if (input.value() == null) {
+        if (input.get() == null) {
           throw new IllegalArgumentException(
             String.format("Input missing for '%s'", input.displayName()));
         }
@@ -199,7 +200,7 @@ public class CelConstraint implements Constraint {
         }
 
         @Override
-        public void set(String s) {
+        public void set(@Nullable String s) {
           if (this.type() == int.class) {
             json.set(name, Integer.parseInt(s));
           }
@@ -212,8 +213,9 @@ public class CelConstraint implements Constraint {
         }
 
         @Override
-        public Object value() {
-          return json.get(name);
+        public @Nullable String get() {
+          var value = json.get(name);
+          return value == null ? null : value.toString();
         }
       };
     }

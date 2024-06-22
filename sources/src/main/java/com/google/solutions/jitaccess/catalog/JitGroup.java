@@ -68,7 +68,8 @@ public class JitGroup {
       // Subject not in ACL, so we can't disclose any details.
       //
       return Optional.empty();
-    } else {
+    }
+    else {
       return Optional.of(result);
     }
   }

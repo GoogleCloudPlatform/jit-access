@@ -59,6 +59,8 @@ public record JitGroupPolicy(
       "JIT group names must only contain letters, numbers, and hyphens");
 
     system.groups().add(this);
+
+    //TODO: Verify constraint names are unique
   }
 
   public JitGroupId id() {

@@ -23,7 +23,6 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -38,7 +37,7 @@ public interface Constraint {
   /**
    * @return display name.
    */
-  @NotNull String displayName();
+  @NotNull String description();
 
   /**
    * @return a check object that can be used to evaluate
