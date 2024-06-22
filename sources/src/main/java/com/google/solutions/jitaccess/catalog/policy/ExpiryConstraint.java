@@ -50,6 +50,10 @@ public class ExpiryConstraint implements Constraint {
     this.maxDuration = maxDuration;
   }
 
+  public ExpiryConstraint(@NotNull Duration duration) {
+    this(duration, duration);
+  }
+
   public Duration minDuration() {
     return minDuration;
   }
@@ -117,7 +121,7 @@ public class ExpiryConstraint implements Constraint {
             }
 
             @Override
-            public String displayName() {
+            public String description() {
               return "Expiry";
             }
 

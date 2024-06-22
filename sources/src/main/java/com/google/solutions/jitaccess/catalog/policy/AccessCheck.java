@@ -209,6 +209,13 @@ public class AccessCheck {
     }
 
     /**
+     * Input used to perform check.
+     */
+    public @NotNull List<Property> input() {
+      return AccessCheck.this.input();
+    }
+
+    /**
      * @return failed constraints and the exception they encountered.
      *
      * Failed constraints are always unsatisfied too.

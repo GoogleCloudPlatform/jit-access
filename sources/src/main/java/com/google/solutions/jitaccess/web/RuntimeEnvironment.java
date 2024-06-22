@@ -320,15 +320,24 @@ public class RuntimeEnvironment {
     // TODO: load YAML
     var environment = new EnvironmentPolicy("test", "Test policy");
     var system = new SystemPolicy(environment, "test-system", "Test policy");
-    var group = new JitGroupPolicy(
+    new JitGroupPolicy(
       system,
       "test-group",
-      "Test group",
+      "Test group with custom expiry",
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
       Map.of(
         Policy.ConstraintClass.JOIN,
         List.of(new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
+    new JitGroupPolicy(
+      system,
+      "test-group-fixed",
+      "Test group with fixed expiry",
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
+      Map.of(
+        Policy.ConstraintClass.JOIN,
+        List.of(new ExpiryConstraint(Duration.ofDays(1).plusMinutes(1)))));
 
     return new Catalog(
       subject,

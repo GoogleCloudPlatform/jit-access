@@ -60,6 +60,7 @@ public record JitGroupPolicy(
 
     system.groups().add(this);
 
+    //TODO: Verify name is unique
     //TODO: Verify constraint names are unique
   }
 

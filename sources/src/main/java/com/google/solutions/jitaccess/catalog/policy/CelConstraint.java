@@ -130,7 +130,7 @@ public class CelConstraint implements Constraint {
       for (var input : this.input) {
         if (input.get() == null) {
           throw new IllegalArgumentException(
-            String.format("Input missing for '%s'", input.displayName()));
+            String.format("Input missing for '%s'", input.description()));
         }
       }
 
@@ -185,7 +185,7 @@ public class CelConstraint implements Constraint {
     private Property bind(@NotNull GenericJson json) {
       return new Property() {
         @Override
-        public String displayName() {
+        public String description() {
           return displayName;
         }
 

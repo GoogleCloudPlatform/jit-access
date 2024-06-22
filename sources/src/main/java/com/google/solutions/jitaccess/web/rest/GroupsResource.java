@@ -79,6 +79,13 @@ public class GroupsResource {//TODO: test
             .toList(),
           a.unsatisfiedConstraints().stream()
             .map(c -> new ConstraintInfo(c.name(), c.description()))
+            .toList(),
+          a.input().stream()
+            .map(i -> new InputInfo(
+              i.name(),
+              i.description(),
+              i.type().getSimpleName(),
+              i.get()))
             .toList()))
         .orElse(null);
 
@@ -101,11 +108,21 @@ public class GroupsResource {//TODO: test
   public record JoinAccessInfo(
     @NotNull boolean membershipActive,
     @NotNull List<ConstraintInfo> satisfiedConstraints,
-    @NotNull List<ConstraintInfo> unsatisfiedConstraints
+    @NotNull List<ConstraintInfo> unsatisfiedConstraints,
+    @NotNull List<InputInfo> input
   ) {}
 
   public record ConstraintInfo(
     @NotNull String name,
     @NotNull String description
+  ) {}
+
+  public record InputInfo(
+    @NotNull String name,
+    @NotNull String description,
+    @NotNull String type,
+    @NotNull String value
+
+    //TODO: min, max
   ) {}
 }

@@ -25,9 +25,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Property {
   /**
-   * @return display name of the property.
+   * @return description of the property.
    */
-  String displayName();
+  String description();
 
   /**
    * @return name of the property.
