@@ -76,6 +76,40 @@ mdc.dataTable.MDCDataTable.prototype.addRow = function(id, columns, showCheckbox
     this.layout();
 };
 
+mdc.list.MDCList.prototype.clearRows = function () {
+    this.root.innerHTML = '';
+
+    //
+    // Update internal bindings.
+    //
+    this.layout();
+};
+
+
+mdc.list.MDCList.prototype.addRow = function (primary, secondary) {
+    const li = $(`<li class="mdc-list-item">
+        <span class="mdc-list-item__ripple"></span>
+      </li>`);
+
+    const textSpan = $(`<span class="mdc-list-item__text">`);
+    li.append(textSpan);
+
+    const primarySpan = $(`<span class="mdc-list-item__primary-text"></span>`);
+    primarySpan.text(primary)
+    textSpan.append(primarySpan);
+
+    const secondarySpan = $(`<span class="mdc-list-item__secondary-text"></span>`);
+    secondarySpan.text(secondary);
+    textSpan.append(secondarySpan);
+
+    $(this.root).append(li);
+
+    //
+    // Update internal bindings.
+    //
+    this.layout();
+}
+
 //-----------------------------------------------------------------------------
 // Base classes.
 //-----------------------------------------------------------------------------
@@ -145,44 +179,36 @@ class DefaultView extends ViewBase {
 class SelectScopeDialog extends DialogBase {
     constructor() {
         super('#jit-scopedialog');
-        
-        const textField = new mdc.textField.MDCTextField(document.querySelector('#jit-scopedialog-project'));
 
-        $('#jit-scopedialog-project-input').on('change', e => {
-            $('#jit-scopedialog-ok').prop('disabled', $('#jit-scopedialog-project-input').val() == '');
+        this._list = new mdc.list.MDCList(document.querySelector('#jit-scopedialog-list'));
+    }
+
+
+    async showAsync() {
+        this._list.clearRows();
+
+        const environments = await document.model.listEnvironments();
+        environments.environments.forEach(item => {
+            this._list.addRow(item.name, item.description);
         });
 
-        //
-        // Configure autocompleter.
-        //
-        $("#jit-scopedialog-project-input").autocomplete({
-            source: async (request, response) => {
-                try {
-                    const projects = await document.model.searchProjects(request.term);
-                    response($.map(projects, (item) => {
-                        return {
-                            label: item,
-                            value: item
-                        };
-                    }));
-                }
-                catch (e) {
-                    this.cancelDialog(`Loading projects failed: ${e}`);
-                }
-            },
-            minLength: 2,
-            position: { of: $("#jit-scopedialog-project-input") },
-            open: function() {
-                $("ul.ui-menu").width($(this).innerWidth());
-            },
-            select: (e, ui) => {
-                $('#jit-scopedialog-ok').prop('disabled', ui.item.value == '');
-            }
-        });
+
+        const dialog = this.element;
+        let onSelect = (e) => {
+            this._list.unlisten('MDCList:action', onSelect);
+
+            this._result = environments.environments[e.detail.index].name;
+
+            dialog.close("accept");
+        }
+
+        this._list.listen('MDCList:action', onSelect);        
+
+        return super.showAsync();
     }
 
     get result() {
-        return $('#jit-scopedialog-project-input').val();
+        return this._result;
     }
 }
 
@@ -192,9 +218,9 @@ class AppBar {
         this._banner = new mdc.banner.MDCBanner(document.querySelector('.mdc-banner'));
         
         const localSettings = new LocalSettings();
-        this.scope = new URLSearchParams(location.search).get("projectId") ?? localSettings.lastProjectId;
+        this.scope = new URLSearchParams(location.search).get("environment") ?? localSettings.environment;
         
-        $('#jit-projectselector').on('click', () => {
+        $('#jit-environmentselector').on('click', () => {
             this.selectScopeAsync().catch(e => {
                 if (e) {
                     this.showError(e, true);
@@ -217,8 +243,8 @@ class AppBar {
     async selectScopeAsync() {
         var dialog = new SelectScopeDialog();
 
-        const newScope = await dialog.showAsync();
-        new LocalSettings().lastProjectId = newScope;
+        const newEnvironment = await dialog.showAsync();
+        new LocalSettings().environment = newEnvironment;
         
         this._reloadPage();
     }
@@ -234,10 +260,10 @@ class AppBar {
             // Download policy to check if the communication with the model
             // works properly. 
             //
-            await document.model.fetchPolicy();
+            await document.model.initialize();
 
-            $("#signed-in-user").text(document.model.policy.signedInUser.email);
-            $("#application-version").text(document.model.policy.applicationVersion);
+            $("#signed-in-user").text(document.model.context.subject.email);
+            $("#application-version").text(document.model.context.application.version);
 
         }
         catch (error) {
@@ -285,12 +311,12 @@ $(document).ready(async () => {
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                 <span class="mdc-top-app-bar__title jit-title">
                     <img src='logo.png' alt='JIT Access'/>
-                    <a href="/">Just-in-Time Access</a>
+                    <a href="/">JIT Access</a>
                 </span>
-                <button class="mdc-button mdc-button--outlined" id="jit-projectselector">
+                <button class="mdc-button mdc-button--outlined" id="jit-environmentselector">
                     <span class="mdc-button__ripple"></span>
                     <span class="mdc-button__label">
-                        <span id="jit-scope">No project selected</span>
+                        <span id="jit-scope">No environment selected</span>
                         <i class="material-icons mdc-button__icon" aria-hidden="true">expand_more</i>
                     </span>
                 </button>
@@ -327,27 +353,15 @@ $(document).ready(async () => {
                 aria-labelledby="scopedialog-title"
                 aria-describedby="scopedialog-content">
                   
-                <h2 class="mdc-dialog__title" id="scopedialog-title">Select project</h2>
+                <h2 class="mdc-dialog__title" id="scopedialog-title">Environment</h2>
                 <div class="mdc-dialog__content" id="scopedialog-content">
-                    <label class="mdc-text-field mdc-text-field--outlined" id="jit-scopedialog-project">
-                        <span class="mdc-notched-outline">
-                            <span class="mdc-notched-outline__leading"></span>
-                            <span class="mdc-notched-outline__notch">
-                                <span class="mdc-floating-label">Project ID</span>
-                            </span>
-                            <span class="mdc-notched-outline__trailing"></span>
-                        </span>
-                        <input type="text" class="mdc-text-field__input" id="jit-scopedialog-project-input" autofocus>
-                    </label>
+                    <ul class="mdc-list mdc-list--two-line" id="jit-scopedialog-list">
+                    </ul>
                 </div>
                 <div class="mdc-dialog__actions">
                     <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
                         <div class="mdc-button__ripple"></div>
                         <span class="mdc-button__label">Cancel</span>
-                    </button>
-                    <button type="button" class="mdc-button mdc-dialog__button  mdc-button--raised" data-mdc-dialog-action="accept" id="jit-scopedialog-ok" disabled>
-                        <div class="mdc-button__ripple"></div>
-                        <span class="mdc-button__label">OK</span>
                     </button>
                 </div>
             </div>
