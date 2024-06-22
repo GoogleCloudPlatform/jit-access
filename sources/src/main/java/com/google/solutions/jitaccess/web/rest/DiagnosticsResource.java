@@ -50,12 +50,12 @@ public class DiagnosticsResource {
   RequestContext requestContext;
 
   /**
-   * Check if the application is ready to receive requests.
+   * Return information about the current subject.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("whoami")
-  public @NotNull DiagnosticsResource.SubjectInfo whoami() {
+  @Path("me")
+  public @NotNull DiagnosticsResource.SubjectInfo me() {
     return new SubjectInfo(
       requestContext.user().email,
       requestContext.subject().principals()
