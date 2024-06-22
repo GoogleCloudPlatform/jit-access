@@ -21,43 +21,31 @@
 
 package com.google.solutions.jitaccess.web;
 
-import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Require requests to have a special header to prevent against
- * unauthorized cross-site requests (XSRF).
+ * Require application to run in debug mode.
  */
 @Dependent
 @Provider
-@Priority(Priorities.AUTHENTICATION - 200)
-@RequireXsrfHeader
-public class XsrfRequestFilter implements ContainerRequestFilter {
-
-  public static final String XSRF_HEADER_NAME = "X-JITACCESS";
-  public static final String XSRF_HEADER_VALUE = "1";
+@Priority(Priorities.AUTHENTICATION - 300)
+@RequireDebugMode
+public class RequireDebugModeFilter implements ContainerRequestFilter {
+  @Inject
+  RuntimeEnvironment runtimeEnvironment;
 
   @Override
   public void filter(@NotNull ContainerRequestContext containerRequestContext) {
-    //
-    // Verify that the request contains a special header. Trying to inject
-    // that header from a different site would trigger a CORS check, which
-    // we'd deny.
-    //
-    if (!XSRF_HEADER_VALUE.equals(containerRequestContext.getHeaderString(XSRF_HEADER_NAME))) {
-      containerRequestContext.abortWith(
-        Response
-          .status(400, "Invalid request")
-          .entity(new ExceptionMappers.ErrorEntity(
-            new AccessDeniedException("Missing header: " + XSRF_HEADER_NAME)))
-          .build());
+    if (this.runtimeEnvironment.isDebugModeEnabled()) {
+      throw new ForbiddenException();
     }
   }
 }

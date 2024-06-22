@@ -43,7 +43,7 @@ public record SystemPolicy(
   @NotNull String name,
   @NotNull String description,
   @NotNull List<JitGroupPolicy> groups
-  ) implements Policy, Comparable<SystemPolicy> {
+  ) implements Policy {
 
   /**
    * Maximum length for names, in characters.
@@ -98,14 +98,5 @@ public record SystemPolicy(
   @Override
   public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
     return List.of();
-  }
-
-  @Override
-  public int compareTo(@NotNull SystemPolicy o) {
-    if (o.name == null) {
-      return -1;
-    }
-
-    return this.name.compareTo(o.name);
   }
 }

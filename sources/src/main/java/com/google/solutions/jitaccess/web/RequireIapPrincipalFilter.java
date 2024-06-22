@@ -43,7 +43,7 @@ import org.jetbrains.annotations.NotNull;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 @RequireIapPrincipal
-public class IapRequestFilter implements ContainerRequestFilter {
+public class RequireIapPrincipalFilter implements ContainerRequestFilter {
   private static final String EVENT_AUTHENTICATE = "iap.authenticate";
 
   private static final String IAP_ISSUER_URL = "https://cloud.google.com/iap";

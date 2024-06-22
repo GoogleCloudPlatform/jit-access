@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-public class TestIapRequestFilter {
+public class TestRequireIapPrincipalFilter {
   @Test()
   public void whenHeaderMissing_ThenFilterThrowsForbiddenException() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
@@ -42,7 +42,7 @@ public class TestIapRequestFilter {
     when(environment.isRunningOnAppEngine()).thenReturn(true);
     when(environment.isDebugModeEnabled()).thenReturn(false);
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     filter.logger = Mockito.mock(Logger.class);
@@ -61,7 +61,7 @@ public class TestIapRequestFilter {
     when(environment.isRunningOnAppEngine()).thenReturn(true);
     when(environment.isDebugModeEnabled()).thenReturn(false);
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     filter.logger = Mockito.mock(Logger.class);
@@ -80,7 +80,7 @@ public class TestIapRequestFilter {
     when(environment.isRunningOnAppEngine()).thenReturn(true);
     when(environment.isDebugModeEnabled()).thenReturn(false);
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     filter.logger = Mockito.mock(Logger.class);
@@ -106,7 +106,7 @@ public class TestIapRequestFilter {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.isDebugModeEnabled()).thenReturn(true);
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     filter.logger = Mockito.mock(Logger.class);
@@ -120,7 +120,7 @@ public class TestIapRequestFilter {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.isDebugModeEnabled()).thenReturn(true);
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
     filter.requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     filter.logger = Mockito.mock(Logger.class);
@@ -142,7 +142,7 @@ public class TestIapRequestFilter {
     when(environment.isRunningOnCloudRun()).thenReturn(true);
     when(environment.getBackendServiceId()).thenReturn("12345");
 
-    IapRequestFilter filter = new IapRequestFilter();
+    RequireIapPrincipalFilter filter = new RequireIapPrincipalFilter();
     filter.runtimeEnvironment = environment;
 
     assertEquals(filter.getExpectedAudience(), "/projects/123/global/backendServices/12345");

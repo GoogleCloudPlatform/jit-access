@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class Catalog {//TODO: test
+public class Catalog {
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
 

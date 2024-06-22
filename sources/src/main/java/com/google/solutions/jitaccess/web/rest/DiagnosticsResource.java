@@ -22,6 +22,7 @@
 package com.google.solutions.jitaccess.web.rest;
 
 import com.google.solutions.jitaccess.web.RequestContext;
+import com.google.solutions.jitaccess.web.RequireDebugMode;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import com.google.solutions.jitaccess.web.RuntimeEnvironment;
 import jakarta.enterprise.context.Dependent;
@@ -42,10 +43,8 @@ import java.util.stream.Collectors;
 @Dependent
 @Path("/diagnostics")
 @RequireIapPrincipal
+@RequireDebugMode
 public class DiagnosticsResource {
-
-  @Inject
-  RuntimeEnvironment runtimeEnvironment;
 
   @Inject
   RequestContext requestContext;
@@ -57,10 +56,6 @@ public class DiagnosticsResource {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("whoami")
   public @NotNull DiagnosticsResource.SubjectInfo whoami() {
-    if (!this.runtimeEnvironment.isDebugModeEnabled()) {
-      throw new ForbiddenException();
-    }
-
     return new SubjectInfo(
       requestContext.user().email,
       requestContext.subject().principals()
