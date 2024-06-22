@@ -1,5 +1,5 @@
 //
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.web;
 
+import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -28,6 +29,7 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,8 +46,13 @@ public class RequireDebugModeFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(@NotNull ContainerRequestContext containerRequestContext) {
-    if (this.runtimeEnvironment.isDebugModeEnabled()) {
-      throw new ForbiddenException();
+    if (!this.runtimeEnvironment.isDebugModeEnabled()) {
+      containerRequestContext.abortWith(
+        Response
+          .status(403, "Access is denied")
+          .entity(new ExceptionMappers.ErrorEntity(
+            new AccessDeniedException("Access is denied")))
+          .build());
     }
   }
 }
