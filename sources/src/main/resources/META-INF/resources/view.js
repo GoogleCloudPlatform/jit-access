@@ -188,10 +188,15 @@ class SelectScopeDialog extends DialogBase {
         this._list.clearRows();
 
         const environments = await document.model.listEnvironments();
-        environments.environments.forEach(item => {
-            this._list.addRow(item.name, item.description);
-        });
 
+        if (environments.environments.length > 0) {
+            environments.environments.forEach(item => {
+                this._list.addRow(item.name, item.description);
+            });
+        }
+        else {
+            throw "There are currently no environments available"
+        }
 
         const dialog = this.element;
         let onSelect = (e) => {
