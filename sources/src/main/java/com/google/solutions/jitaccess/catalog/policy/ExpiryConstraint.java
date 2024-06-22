@@ -136,6 +136,8 @@ public class ExpiryConstraint implements Constraint {
               // NB. We use minutes instead of ISO-8601 durations
               // for easier client-side handling and parsing.
               //
+              //TODO: Use ISO format? https://stackoverflow.com/questions/57737451/convert-seconds-to-iso-8601-duration-with-javascript
+
               userProvidedDuration = Duration.ofMinutes(Integer.parseInt(s));
             }
 

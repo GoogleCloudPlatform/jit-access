@@ -107,6 +107,7 @@ public class GroupsResource {//TODO: test
 
   public record JoinAccessInfo(
     @NotNull boolean membershipActive,
+    //TODO: requiresApproval
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints,
     @NotNull List<InputInfo> input

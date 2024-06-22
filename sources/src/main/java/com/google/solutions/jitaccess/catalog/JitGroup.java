@@ -53,7 +53,7 @@ public class JitGroup {
   /**
    * @return details about possibly unmet constraints.
    */
-  public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {
+  public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {//TODO: replace with join request
     //
     // Analyze if the current subject can join this group, and what
     // constraints might be unsatisfied.
@@ -72,5 +72,35 @@ public class JitGroup {
     else {
       return Optional.of(result);
     }
+  }
+
+  //TODO: members()
+
+
+  public @NotNull Optional<JoinOperationBuilder> join() {
+    // check ACL w/o constraints
+    // if ok, return request
+    throw new RuntimeException("NIY");
+  }
+
+  class JoinOperationBuilder {
+    // input
+    // analyze (w/ constraints + approval constraints if applicable)
+    // build -> request
+
+    // build -> JoinOperation
+  }
+
+  class DelegatedJoinOperationBuilder {
+    // input
+    // analyze (w/ constraints)
+    // build -> JoinOperation
+
+    // from token (-> approver constraints!)
+  }
+
+  class JoinOperation {
+    // execute (w/ constraints)
+    // delegate -> token
   }
 }
