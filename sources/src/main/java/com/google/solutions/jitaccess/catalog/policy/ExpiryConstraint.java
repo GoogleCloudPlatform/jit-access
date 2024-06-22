@@ -73,10 +73,17 @@ public class ExpiryConstraint implements Constraint {
 
   @Override
   public @NotNull String description() {
-    return String.format(
-      "Membership expires after %s%s",
-      isFixedDuration() ? "" : "at most ",
-      DurationFormatter.format(this.maxDuration));
+    if (isFixedDuration()) {
+      return String.format(
+        "Membership expires after %s",
+        DurationFormatter.format(this.maxDuration));
+    }
+    else {
+      return String.format(
+        "You must choose an expiry between %s and %s",
+        DurationFormatter.format(this.minDuration),
+        DurationFormatter.format(this.maxDuration));
+    }
   }
 
   @Override

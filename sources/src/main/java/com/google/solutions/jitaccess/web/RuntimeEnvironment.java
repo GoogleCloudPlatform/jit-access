@@ -40,10 +40,7 @@ import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
 import com.google.solutions.jitaccess.apis.clients.Diagnosable;
 import com.google.solutions.jitaccess.apis.clients.DiagnosticsResult;
 import com.google.solutions.jitaccess.apis.clients.HttpTransport;
-import com.google.solutions.jitaccess.catalog.policy.AccessControlList;
-import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
-import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
-import com.google.solutions.jitaccess.catalog.policy.SystemPolicy;
+import com.google.solutions.jitaccess.catalog.policy.*;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.core.UriBuilder;
@@ -52,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -328,7 +326,9 @@ public class RuntimeEnvironment {
       "Test group",
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
-      Map.of());
+      Map.of(
+        Policy.ConstraintClass.JOIN,
+        List.of(new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
 
     return new Catalog(
       subject,

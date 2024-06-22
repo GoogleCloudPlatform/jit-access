@@ -55,7 +55,7 @@ public class TestExpiryConstraint {
 
   @Test
   public void description_whenUserDefinedDuration() {
-    assertEquals("Membership expires after at most 3 days", USER_DEFINED.description());
+    assertEquals("You must choose an expiry between 1 minute and 3 days", USER_DEFINED.description());
   }
 
   //---------------------------------------------------------------------------
