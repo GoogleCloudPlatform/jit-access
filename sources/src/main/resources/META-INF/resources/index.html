@@ -30,21 +30,9 @@
                     <table class="mdc-data-table__table">
                         <thead>
                             <tr class="mdc-data-table__header-row">
-                                <th class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox" role="columnheader" scope="col">
-                                    <div class="mdc-checkbox mdc-data-table__header-row-checkbox mdc-checkbox--selected">
-                                        <input type="checkbox" class="mdc-checkbox__native-control" aria-label="Toggle all rows" />
-                                        <div class="mdc-checkbox__background">
-                                            <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                                <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
-                                            </svg>
-                                            <div class="mdc-checkbox__mixedmark"></div>
-                                        </div>
-                                        <div class="mdc-checkbox__ripple"></div>
-                                    </div>
-                                </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Role</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Resource condition</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Requirements</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Group</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">System</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Description</th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Status</th>
                             </tr>
                         </thead>
@@ -105,11 +93,25 @@
                 console.assert(document.appbar.scope);
                 super.showAsync();
 
-                let selectedGroups = []
 
                 try {
                     this._table.showProgress();
                     this._table.clearRows();
+
+                    let response = await this.model.listGroups(document.appbar.scope);
+                    if (response.groups && response.groups.length > 0) {
+                        response.groups.forEach(item => {
+                            this._table.addRow(
+                                item.id,
+                                [
+                                    { text: item.name, icon: 'group' },
+                                    { text: item.system.name },
+                                    { text: item.description, maxLength: 30 },
+                                    { text: item.access.membershipActive ? "Active" : "" }
+                                ],
+                                false);
+                        });
+                    }
                 }
                 finally {
                     this._table.hideProgress();
@@ -156,6 +158,9 @@
 
                 document.appbar.showError(e ?? "No environment selected", true);
             }
+
+            // TODO: window.addEventListener("hashchange", locationHandler);
+            // https://dev.to/thedevdrawer/single-page-application-routing-using-hash-or-url-9jh
         });
     </script>
   </body>
