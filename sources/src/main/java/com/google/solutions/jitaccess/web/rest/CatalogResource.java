@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Dependent
-@Path("/catalog")
+@Path("/api/catalog")
 @RequireIapPrincipal
 public class CatalogResource {//TODO: test
   @Inject

@@ -187,7 +187,7 @@ class SelectScopeDialog extends DialogBase {
     async showAsync() {
         this._list.clearRows();
 
-        const environments = await document.model.listEnvironments();
+        const environments = await document.appbar.model.listEnvironments();
 
         if (environments.environments.length > 0) {
             environments.environments.forEach(item => {
