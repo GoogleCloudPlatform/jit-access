@@ -24,6 +24,7 @@
     <main class="mdc-top-app-bar--fixed-adjust">
         <!-- ListGroupsView -->
         <div class='jit-view' id='jit-listgroups-view'>
+            <h1>Groups</h1>
             <div class="mdc-data-table" id="jit-groups-table">
                 <div class="mdc-data-table__table-container">
                     <table class="mdc-data-table__table">
@@ -69,6 +70,13 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- GetGroupView -->
+        <div class='jit-view' id='jit-getgroup-view'>
+            <h1>Group</h1>
+            
+        </div>
     </main>
 
     <!-- script -->
@@ -97,16 +105,13 @@
                 console.assert(document.appbar.scope);
                 super.showAsync();
 
-
                 let selectedGroups = []
 
                 try {
                     this._table.showProgress();
                     this._table.clearRows();
 
-                }
-                catch (error) {
-                    this.cancelView(error);
+                    throw "test";
                 }
                 finally {
                     this._table.hideProgress();
@@ -114,20 +119,44 @@
             }
         }
 
+        class GetGroupView extends GroupsViewBase {
+            constructor(model, groupId) {
+                super('#jit-getgroup-view');
+
+                console.assert(model);
+
+                this.model = model;
+                this.groupId = groupId;
+            }
+
+            async showAsync() {
+                super.showAsync();
+            }
+        }
+
         $(document).ready(async () => {
+            let view;
             try {
-                const queryParameters = new URLSearchParams(location.search);
-
-                let view = new ListGroupsView(document.model);
-
                 await document.appbar.initialize();
 
-                document.appbar.showError("Bang", true);
-
-                await view.showAsync();
+                if (window.location.hash == "#!/groups") {
+                    view = new ListGroupsView(document.model);
+                    await view.showAsync();
+                }
+                else if (window.location.hash.startsWith("#!/group/")) {
+                    view = new GetGroupView(document.model, window.location.hash.substring(9));
+                    await view.showAsync();
+                }
+                else {
+                    window.location.hash = "#!/groups";
+                }
             }
             catch (e) {
-                document.appbar.showError(e ?? "Select an environment", true);
+                if (view) {
+                    view.cancelView(e);
+                }
+
+                document.appbar.showError(e ?? "No environment selected", true);
             }
         });
     </script>

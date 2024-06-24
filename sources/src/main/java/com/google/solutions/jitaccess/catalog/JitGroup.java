@@ -97,6 +97,7 @@ public class JitGroup {
     // build -> JoinOperation
 
     // from token (-> approver constraints!)
+    //   verify different users
   }
 
   class JoinOperation {
