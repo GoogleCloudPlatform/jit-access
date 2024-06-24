@@ -110,8 +110,6 @@
                 try {
                     this._table.showProgress();
                     this._table.clearRows();
-
-                    throw "test";
                 }
                 finally {
                     this._table.hideProgress();
@@ -140,11 +138,11 @@
                 await document.appbar.initialize();
 
                 if (window.location.hash == "#!/groups") {
-                    view = new ListGroupsView(document.model);
+                    view = new ListGroupsView(document.appbar.model);
                     await view.showAsync();
                 }
                 else if (window.location.hash.startsWith("#!/group/")) {
-                    view = new GetGroupView(document.model, window.location.hash.substring(9));
+                    view = new GetGroupView(document.appbar.model, window.location.hash.substring(9));
                     await view.showAsync();
                 }
                 else {

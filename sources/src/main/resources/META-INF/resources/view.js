@@ -260,21 +260,18 @@ class AppBar {
         //
         new DefaultView().showAsync();
 
-        try {
-            //
-            // Download policy to check if the communication with the model
-            // works properly. 
-            //
-            await document.model.initialize();
+        //
+        // Initialize model. This implicitly verifies that the
+        // API communication works.
+        //
+        this.model = window.location.host.startsWith("localhost:")
+            ? new DebugModel()
+            : new Model();
+        await this.model.initialize();
 
-            $("#signed-in-user").text(document.model.context.subject.email);
-            $("#application-version").text(document.model.context.application.version);
+        $("#signed-in-user").text(this.model.context.subject.email);
+        $("#application-version").text(this.model.context.application.version);
 
-        }
-        catch (error) {
-            this.showError(error, true);
-            return;
-        }
 
         if (!this.scope) {
             await this.selectScopeAsync();
@@ -382,8 +379,5 @@ $(document).ready(async () => {
         
     mdc.autoInit();
     
-    document.model = new URLSearchParams(location.search).get("debug") 
-        ? new DebugModel() 
-        : new Model();
     document.appbar = new AppBar();
 });

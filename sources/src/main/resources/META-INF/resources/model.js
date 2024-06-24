@@ -39,7 +39,7 @@ class Model {
         try {
             await new Promise(r => setTimeout(r, 200));
             this._context = await $.ajax({
-                url: "/catalog/context",
+                url: "/api/user/context",
                 dataType: "json",
                 headers: this._getHeaders()
             });
@@ -52,7 +52,7 @@ class Model {
     async listEnvironments() {
         try {
             return await $.ajax({
-                url: "/catalog/environments",
+                url: "/api/catalog/environments",
                 dataType: "json",
                 headers: this._getHeaders()
             });

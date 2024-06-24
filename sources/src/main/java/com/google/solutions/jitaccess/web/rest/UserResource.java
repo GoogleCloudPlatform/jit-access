@@ -21,13 +21,12 @@
 
 package com.google.solutions.jitaccess.web.rest;
 
+import com.google.solutions.jitaccess.ApplicationVersion;
 import com.google.solutions.jitaccess.web.RequestContext;
-import com.google.solutions.jitaccess.web.RequireDebugMode;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import com.google.solutions.jitaccess.web.RuntimeEnvironment;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -38,31 +37,48 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * REST API controller for diagnostics.
  */
 @Dependent
-@Path("/diagnostics")
+@Path("/api/user")
 @RequireIapPrincipal
-@RequireDebugMode
-public class DiagnosticsResource {
+public class UserResource { // TODO: test
 
   @Inject
   RequestContext requestContext;
 
+  @Inject
+  RuntimeEnvironment runtimeEnvironment;
+
   /**
-   * Return information about the current subject.
+   * Return information about the current subject and application.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("me")
-  public @NotNull DiagnosticsResource.SubjectInfo me() {
-    return new SubjectInfo(
-      requestContext.user().email,
-      requestContext.subject().principals()
+  @Path("context")
+  public @NotNull ContextInfo get() {
+    //
+    // Return principal details in debug mode only.
+    //
+    var principals = this.runtimeEnvironment.isDebugModeEnabled()
+      ? requestContext.subject().principals()
         .stream()
         .map(p -> new PrincipalInfo(p.id().type(), p.id().value()))
-        .collect(Collectors.toList()));
+        .collect(Collectors.toList())
+      : List.<PrincipalInfo>of();
+
+    return new ContextInfo(
+      new SubjectInfo(
+        requestContext.user().email,
+        principals),
+      new ApplicationInfo(
+        ApplicationVersion.VERSION_STRING,
+        this.runtimeEnvironment.isDebugModeEnabled()));
   }
+
+  public record ContextInfo(
+    @NotNull SubjectInfo subject,
+    @NotNull ApplicationInfo application
+  ) {}
 
   public record SubjectInfo(
     @NotNull String email,
@@ -72,5 +88,10 @@ public class DiagnosticsResource {
   public record PrincipalInfo(
     @NotNull String type,
     @NotNull String email
+  ) {}
+
+  public record ApplicationInfo(
+    @NotNull String version,
+    @NotNull boolean debugMode
   ) {}
 }
