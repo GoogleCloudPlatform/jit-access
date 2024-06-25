@@ -11,6 +11,10 @@ h1, h2 {
     font-size: 20px;
 }
 
+a {
+    color: #3367d6;
+}
+
 .activated {
     background-color: #188038;
     color: #fff;

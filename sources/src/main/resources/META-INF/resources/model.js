@@ -74,6 +74,19 @@ class Model {
             throw this._formatError(error);
         }
     }
+
+    async getGroup(environment, groupId) {
+        try {
+            return await $.ajax({
+                url: `/api/catalog/environments/${environment}/groups/${groupId}`,
+                dataType: "json",
+                headers: this._getHeaders()
+            });
+        }
+        catch (error) {
+            throw this._formatError(error);
+        }
+    }
 }
 
 class DebugModel extends Model {

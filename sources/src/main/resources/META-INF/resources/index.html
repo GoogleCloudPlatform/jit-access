@@ -31,9 +31,9 @@
                         <thead>
                             <tr class="mdc-data-table__header-row">
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Group</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">System</th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Description</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Status</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">System</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Membership</th>
                             </tr>
                         </thead>
                         <tbody class="mdc-data-table__content">
@@ -62,7 +62,7 @@
 
         <!-- GetGroupView -->
         <div class='jit-view' id='jit-getgroup-view'>
-            <h1>Group</h1>
+            <h1></h1>
             
         </div>
     </main>
@@ -98,16 +98,18 @@
                     this._table.showProgress();
                     this._table.clearRows();
 
-                    let response = await this.model.listGroups(document.appbar.scope);
+                    const response = await this.model.listGroups(document.appbar.scope);
                     if (response.groups && response.groups.length > 0) {
                         response.groups.forEach(item => {
                             this._table.addRow(
                                 item.id,
                                 [
-                                    { text: item.name, icon: 'group' },
-                                    { text: item.system.name },
+                                    { text: item.name, icon: 'group', href: `#!/group/${item.id}` },
                                     { text: item.description, maxLength: 30 },
-                                    { text: item.access.membershipActive ? "Active" : "" }
+                                    { text: item.system.name },
+                                    { text: item.access.membershipActive ? "Active" : "",
+                                      icon: item.access.membershipActive ? "check" : null
+                                    }
                                 ],
                                 false);
                         });
@@ -131,14 +133,16 @@
 
             async showAsync() {
                 super.showAsync();
+
+                const response = await this.model.getGroup(document.appbar.scope, this.groupId);
+
+                $('h1').text(response.name)
             }
         }
 
-        $(document).ready(async () => {
+        async function routeToView() {
             let view;
             try {
-                await document.appbar.initialize();
-
                 if (window.location.hash == "#!/groups") {
                     view = new ListGroupsView(document.appbar.model);
                     await view.showAsync();
@@ -156,6 +160,17 @@
                     view.cancelView(e);
                 }
 
+                document.appbar.showError(e ?? "No environment selected", true);
+            }
+        }
+
+        $(document).ready(async () => {
+            try {
+                await document.appbar.initialize();
+                window.addEventListener("hashchange", routeToView);
+                routeToView();
+            }
+            catch (e) {
                 document.appbar.showError(e ?? "No environment selected", true);
             }
 

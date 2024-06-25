@@ -47,6 +47,7 @@ mdc.dataTable.MDCDataTable.prototype.addRow = function(id, columns, showCheckbox
         else {
             div.text(value.text);
         }
+
         if (value.class) {
             div.attr("class", value.class);
         }
@@ -65,8 +66,17 @@ mdc.dataTable.MDCDataTable.prototype.addRow = function(id, columns, showCheckbox
             icon.text(value.icon);
             div.prepend(icon);
         }
+
+        if (value.href) {
+            const a = $("<a></a>");
+            a.prop('href', value.href);
+            a.append(div);
+            td.append(a);
+        }
+        else {
+            td.append(div);
+        }
         
-        td.append(div);
         tr.append(td);
     });
 
