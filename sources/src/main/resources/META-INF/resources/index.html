@@ -62,8 +62,22 @@
 
         <!-- GetGroupView -->
         <div class='jit-view' id='jit-getgroup-view'>
-            <h1></h1>
-            
+            <h1>
+                <button class="mdc-icon-button material-icons" onclick="window.location.href='#!/groups'">
+                    <div class="mdc-icon-button__ripple"></div>
+                    arrow_back
+                </button>
+                <span id="jit-getgroup-name"></span>
+            </h1>
+
+            <h2>About this group</h2>
+            <div class="jit-card-subsection">
+                <span id="jit-getgroup-description"></span>
+            </div>
+
+            <h2>Membership</h2>
+
+
         </div>
     </main>
 
@@ -90,7 +104,7 @@
             }
 
             async showAsync() {
-                console.assert(document.appbar.scope);
+                console.assert(document.appbar.environment);
                 super.showAsync();
 
 
@@ -98,7 +112,7 @@
                     this._table.showProgress();
                     this._table.clearRows();
 
-                    const response = await this.model.listGroups(document.appbar.scope);
+                    const response = await this.model.listGroups(document.appbar.environment);
                     if (response.groups && response.groups.length > 0) {
                         response.groups.forEach(item => {
                             this._table.addRow(
@@ -134,9 +148,10 @@
             async showAsync() {
                 super.showAsync();
 
-                const response = await this.model.getGroup(document.appbar.scope, this.groupId);
+                const response = await this.model.getGroup(document.appbar.environment, this.groupId);
 
-                $('h1').text(response.name)
+                $('#jit-getgroup-name').text(response.name)
+                $('#jit-getgroup-description').text(response.description)
             }
         }
 

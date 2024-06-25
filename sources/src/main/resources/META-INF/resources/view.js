@@ -233,7 +233,7 @@ class AppBar {
         this._banner = new mdc.banner.MDCBanner(document.querySelector('.mdc-banner'));
         
         const localSettings = new LocalSettings();
-        this.scope = new URLSearchParams(location.search).get("environment") ?? localSettings.environment;
+        this.environment = new URLSearchParams(location.search).get("environment") ?? localSettings.environment;
         
         $('#jit-environmentselector').on('click', () => {
             this.selectScopeAsync().catch(e => {
@@ -247,10 +247,6 @@ class AppBar {
     /** Reload page, stripping previous parameters */
     _reloadPage() {
         let url = window.location.pathname;
-        if (new URLSearchParams(location.search).get("debug")) {
-            url += '?debug=1';
-        }
-
         window.location.href = url;
     }
     
@@ -282,13 +278,12 @@ class AppBar {
         $("#signed-in-user").text(this.model.context.subject.email);
         $("#application-version").text(this.model.context.application.version);
 
-
-        if (!this.scope) {
+        if (!this.environment) {
             await this.selectScopeAsync();
         }
         else {
-            $('#jit-scope').text(this.scope);
-            $('title').html(`JIT Access: ${this.scope}`);
+            $('#jit-scope').text(this.environment);
+            $('title').html(`JIT Access: ${this.environment}`);
         }
     }
 

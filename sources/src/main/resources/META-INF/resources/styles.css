@@ -6,9 +6,14 @@ body {
     --mdc-text-button-label-text-size: 14px;
 }
 
-h1, h2 {
+h1 {
     font-weight: normal;
     font-size: 20px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 16px;
 }
 
 a {
@@ -80,6 +85,7 @@ a {
     line-height: 22px;
     padding-top: 10px;
     padding-bottom: 10px;
+    font-size: 13px;
 }
 
 .jit-card-divider {
@@ -198,6 +204,11 @@ ul.ui-menu  {
 main .mdc-button {
     margin-top: 8px;
     margin-right: 0;
+}
+
+.mdc-icon-button {
+    vertical-align: middle;
+    color: #3367d6;
 }
 
 .mdc-card {
