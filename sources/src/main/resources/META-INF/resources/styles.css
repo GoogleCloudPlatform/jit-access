@@ -89,6 +89,7 @@ a {
     margin-right: 15px;
     margin-bottom: 30px;
     font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+    width: 600px;
 }
 
 .jit-card-subsection .mdc-list-item__primary-text  {
@@ -134,47 +135,7 @@ a {
     width: 130px;
 }
 
-/* ==== jQuery UI === */
-
-.ui-autocomplete-loading {
-    background: url(/spinner.gif) no-repeat right center
-}
-
-.ui-autocomplete {
-    z-index: 100 !important;
-}
-
-.ui-widget {
-    font-family: "Roboto",sans-serif;
-}
-
-.ui-menu {
-    background-color: white;
-    font-size: 14px;
-    //box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-}
-
-ul.ui-menu  {
-    list-style: none;
-    margin: 0 0 0 -0.8125em;
-    padding-left: 0;
-}
-
-.ui-menu-item  {
-    border: 0px;
-}
-
-.ui-menu-item-wrapper {
-    padding: 10px;
-}
-
-.ui-menu-item .ui-menu-item-wrapper.ui-state-active {
-    background: #f0f0f0 !important;
-}
-
-.ui-helper-hidden-accessible{
-    display:none;
-}
+/* ==== MDC Overrides === */
 
 .material-symbols-outlined {
     vertical-align: middle;
@@ -182,7 +143,6 @@ ul.ui-menu  {
     font-size: revert;
 }
 
-/* ==== MDC Overrides === */
 .mdc-data-table {
     width: 100%;
 }
@@ -205,7 +165,6 @@ ul.ui-menu  {
     background-color: #FFFDE7;
 }
 
-            
 .mdc-top-app-bar--fixed-adjust {
     padding-top: 48px;
 }
@@ -233,6 +192,10 @@ main .mdc-button {
 .mdc-dialog .mdc-dialog__content{
     font-size: var(--mdc-typography-body2-font-size, 0.875rem);
     color: rgba(0,0,0,.8);
+}
+
+.mdc-text-field__input::-webkit-calendar-picker-indicator {
+    display: block !important;
 }
 
 /* ==== Debug === */

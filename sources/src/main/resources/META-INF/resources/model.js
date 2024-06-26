@@ -108,6 +108,14 @@ class DebugModel extends Model {
                         <option value="100">Simulate 100 results</option>
                     </select>
                 </div>
+                <div>
+                    getGroup:
+                    <select id="debug-getGroup">
+                        <option value="">(default)</option>
+                        <option value="error">Simulate error</option>
+                        <option value="success">Success</option>
+                    </select>
+                </div>
             </div>
         `);
 
@@ -116,7 +124,8 @@ class DebugModel extends Model {
         //
         [
             "debug-user",
-            "debug-listEnvironments"
+            "debug-listEnvironments",
+            "debug-getGroup"
         ].forEach(setting => {
             $("#" + setting).val(localStorage.getItem(setting))
             $("#" + setting).change(() => {
@@ -173,4 +182,56 @@ class DebugModel extends Model {
             });
         }
     }
+
+    async getGroup(environment, groupId) {
+        var setting = $("#debug-getGroup").val();
+        if (!setting) {
+            return super.getGroup(environment, groupId);
+        }
+        else if (setting === "error") {
+            await this._simulateError();
+        }
+        else {
+            return Promise.resolve({
+                "id": `${environment}.test-system.${groupId}`,
+                "name": `Name of ${groupId}`,
+                "description": `Description for ${groupId}`,
+                "system": {
+                    "id": "test-system",
+                    "name": "Test policy"
+                },
+                "access": {
+                    "membershipActive": false,
+                    "satisfiedConstraints": [],
+                    "unsatisfiedConstraints": [
+                        {
+                            "name": "__expiry",
+                            "description": "You must choose an expiry between 1 minute and 1 day"
+                        },
+                        {
+                            "name": "test",
+                            "description": "Another unsatisfied constraint"
+                        }
+                    ],
+                    "input": [
+                        {
+                            "name": "__expiry",
+                            "description": "Expiry",
+                            "type": "Duration",
+                            "value": null,
+                            "minInclusive": "60",
+                            "maxInclusive": "86400"
+                        },
+                        {
+                            "name": "justification",
+                            "description": "Justification",
+                            "type": "String",
+                            "value": null
+                        }
+                    ]
+                }
+            });
+        }
+    }
+
 }

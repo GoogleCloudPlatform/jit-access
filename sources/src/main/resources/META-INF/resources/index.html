@@ -11,7 +11,6 @@
 
     <!-- All external resources are hosted by Google -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0" />
@@ -83,7 +82,10 @@
                 Membership of this group is subject to the following constraints:
                 <ul class="mdc-list" id="jit-getgroup-constraints"></ul>
 
-                <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-requestbutton" disabled="">
+                To join the group, provide the following information:
+                <div id="jit-getgroup-request-form" style="margin: 20px"></div>
+
+                <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-requestbutton" type="submit">
                     <div class="mdc-button__ripple"></div>
                     <span class="mdc-button__label">Request access</span>
                 </button>
@@ -156,7 +158,69 @@
                 this.groupId = groupId;
                 this.constraints = new mdc.list.MDCList(document.querySelector('#jit-getgroup-constraints'));
                 this.constraints.clearRows();
+
+                this.form = $('#jit-getgroup-request-form');
+                this.form.empty();
+
+                this.formFields = []
             }
+
+            dateFromDuration(durationInSeconds) {
+                // Cut seconds to ensure compatibility with datetime-local fields.
+                return new Date(new Date().getTime() + durationInSeconds * 1000).toISOString().substring(0, 16);
+            }
+
+            addInput(input) {
+                switch (input.type) {
+                    case "String": {
+                        const element = $(`
+                            <label class="mdc-text-field mdc-text-field--outlined" id="jit-getgroup-request-form-${input.name}">
+                                <span class="mdc-notched-outline">
+                                    <span class="mdc-notched-outline__leading"></span>
+                                    <span class="mdc-notched-outline__notch">
+                                        <span class="mdc-floating-label">${input.description}</span>
+                                    </span>
+                                    <span class="mdc-notched-outline__trailing"></span>
+                                </span>
+                                <input type="text" class="mdc-text-field__input" id="jit-getgroup-request-input-${input.name}" required maxlength="100" autocomplete="off">
+                            </label>`);
+                        this.form.append(element);
+
+                        const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-getgroup-request-form-${input.name}`));
+                        this.formFields.push(textField);
+                        break;
+                    }
+                    case "Duration": {
+                        const element = $(`
+                             <label class="mdc-text-field mdc-text-field--outlined" id="jit-getgroup-request-form-${input.name}">
+                                 <span class="mdc-notched-outline">
+                                     <span class="mdc-notched-outline__leading"></span>
+                                     <span class="mdc-notched-outline__notch">
+                                        <span class="mdc-floating-label">${input.description}</span>
+                                     </span>
+                                     <span class="mdc-notched-outline__trailing"></span>
+                                 </span>
+                                 <input type="datetime-local" class="mdc-text-field__input" id="jit-getgroup-request-input-${input.name}" required>
+                             </label>`);
+                        this.form.append(element);
+
+                        if (input.minInclusive) {
+                            $(`#jit-getgroup-request-input-${input.name}`).prop('min', this.dateFromDuration(input.minInclusive));
+                        }
+
+                        if (input.maxInclusive) {
+                            $(`#jit-getgroup-request-input-${input.name}`).prop('max', this.dateFromDuration(input.maxInclusive));
+                        }
+
+                        const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-getgroup-request-form-${input.name}`));
+                        this.formFields.push(textField);
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
+            } 
 
             async showAsync() {
                 super.showAsync();
@@ -184,6 +248,10 @@
                         });
                     });
                 }
+
+                response.access.input.forEach(item => {
+                    this.addInput(item);
+                });
             }
         }
 

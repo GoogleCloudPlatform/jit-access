@@ -133,30 +133,29 @@ public class ExpiryConstraint implements Constraint {
 
             @Override
             public Optional<String> minInclusive() {
-              return Optional.of(String.valueOf(minDuration.toMinutes()));
+              return Optional.of(String.valueOf(minDuration.toSeconds()));
             }
 
             @Override
             public Optional<String> maxInclusive() {
-              return Optional.of(String.valueOf(maxDuration.toMinutes()));
+              return Optional.of(String.valueOf(maxDuration.toSeconds()));
             }
 
             @Override
             public void set(@Nullable String s) {
               //
-              // NB. We use minutes instead of ISO-8601 durations
+              // NB. We use seconds instead of ISO-8601 durations
               // for easier client-side handling and parsing.
               //
-              //TODO: Use ISO format? https://stackoverflow.com/questions/57737451/convert-seconds-to-iso-8601-duration-with-javascript
 
-              userProvidedDuration = Duration.ofMinutes(Integer.parseInt(s));
+              userProvidedDuration = Duration.ofSeconds(Integer.parseInt(s));
             }
 
             @Override
             public @Nullable String get() {
               return userProvidedDuration == null
                 ? null
-                : String.valueOf(userProvidedDuration.toMinutes());
+                : String.valueOf(userProvidedDuration.toSeconds());
             }
           });
         }
