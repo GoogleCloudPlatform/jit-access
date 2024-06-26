@@ -70,7 +70,6 @@ public class GroupsResource {//TODO: test
     @NotNull String description,
     @NotNull SystemInfo system,
     @Nullable JoinAccessInfo access
-
   ) {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinAccessInfo = g.analyzeJoinAccess()

@@ -55,11 +55,11 @@ public class ExpiryConstraint implements Constraint {
     this(duration, duration);
   }
 
-  public Duration minDuration() {
+  public @NotNull Duration minDuration() {
     return minDuration;
   }
 
-  public Duration maxDuration() {
+  public @NotNull Duration maxDuration() {
     return maxDuration;
   }
 
@@ -115,47 +115,15 @@ public class ExpiryConstraint implements Constraint {
           return List.of();
         }
         else {
-          return List.of(new Property() {
+          return List.of(new AbstractDurationProperty(NAME, "Expiry", minDuration, maxDuration) {
             @Override
-            public String name() {
-              return NAME;
+            protected void setCore(@Nullable Duration value) {
+              userProvidedDuration = value;
             }
 
             @Override
-            public String description() {
-              return "Expiry";
-            }
-
-            @Override
-            public Class<?> type() {
-              return Duration.class;
-            }
-
-            @Override
-            public Optional<String> minInclusive() {
-              return Optional.of(String.valueOf(minDuration.toSeconds()));
-            }
-
-            @Override
-            public Optional<String> maxInclusive() {
-              return Optional.of(String.valueOf(maxDuration.toSeconds()));
-            }
-
-            @Override
-            public void set(@Nullable String s) {
-              //
-              // NB. We use seconds instead of ISO-8601 durations
-              // for easier client-side handling and parsing.
-              //
-
-              userProvidedDuration = Duration.ofSeconds(Integer.parseInt(s));
-            }
-
-            @Override
-            public @Nullable String get() {
-              return userProvidedDuration == null
-                ? null
-                : String.valueOf(userProvidedDuration.toSeconds());
+            protected @Nullable Duration getCore() {
+              return userProvidedDuration;
             }
           });
         }
