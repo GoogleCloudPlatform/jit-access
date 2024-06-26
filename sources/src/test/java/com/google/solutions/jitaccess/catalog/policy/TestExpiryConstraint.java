@@ -94,7 +94,7 @@ public class TestExpiryConstraint {
   }
 
   @Test
-  public void createCheck_whenUserDefinedDurationAndInputOutOfRange_thenCheckSucceeds() throws Exception {
+  public void createCheck_whenUserDefinedDurationAndInputOutOfRange_thenSetFails() throws Exception {
     var check = USER_DEFINED.createCheck();
 
     assertSame(USER_DEFINED, check.constraint());
@@ -105,9 +105,9 @@ public class TestExpiryConstraint {
     assertEquals(Duration.class, expiry.type());
     assertNull(expiry.get());
 
-    expiry.set(String.valueOf(USER_DEFINED.maxDuration().toMinutes() + 1));
-
-    assertFalse(check.execute());
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> expiry.set(String.valueOf(USER_DEFINED.maxDuration().toSeconds() + 1)));
   }
 
   @Test
@@ -122,8 +122,8 @@ public class TestExpiryConstraint {
     assertEquals(Duration.class, expiry.type());
     assertNull(expiry.get());
 
-    expiry.set("0");
-    expiry.set(String.valueOf(USER_DEFINED.minDuration().toMinutes()));
+    expiry.set("60");
+    expiry.set(String.valueOf(USER_DEFINED.minDuration().toSeconds()));
 
     assertTrue(check.execute());
   }

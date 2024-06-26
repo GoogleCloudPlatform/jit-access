@@ -95,7 +95,7 @@ public class TestCelConstraint {
     var constraint = new CelConstraint(
       "name",
       "display name",
-      List.of(new CelConstraint.Variable("test", "Test variable", String.class)),
+      List.of(new CelConstraint.StringVariable("test", "Test variable", 1, 10)),
       "has(input.test)");
 
     assertThrows(
@@ -108,7 +108,7 @@ public class TestCelConstraint {
     var constraint = new CelConstraint(
       "name",
       "display name",
-      List.of(new CelConstraint.Variable("test", "Test variable", String.class)),
+      List.of(new CelConstraint.StringVariable("test", "Test variable", 1, 10)),
       "has(input.test) && input.test == 'some value'");
 
     var check = constraint.createCheck();

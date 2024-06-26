@@ -222,7 +222,7 @@
                         }
 
                         if (input.maxInclusive) {
-                            $(`#jit-getgroup-request-input-${input.name}`).prop('maxlength', input.minInclusive);
+                            $(`#jit-getgroup-request-input-${input.name}`).prop('maxlength', input.maxInclusive);
                         }
 
                         const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-getgroup-request-form-${input.name}`));

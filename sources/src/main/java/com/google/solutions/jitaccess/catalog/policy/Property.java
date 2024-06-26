@@ -33,9 +33,9 @@ import java.util.Optional;
  */
 public interface Property {
   /**
-   * @return description of the property.
+   * @return display name of the property.
    */
-  String description();
+  String displayName();
 
   /**
    * @return name of the property.
@@ -74,7 +74,7 @@ public interface Property {
 abstract class AbstractProperty<T> implements Property { // TODO: test
   private final  @NotNull Class<T> type;
   private final @NotNull String name;
-  private final @NotNull String description;
+  private final @NotNull String displayName;
 
   protected final @Nullable T minInclusive;
   protected final @Nullable T maxInclusive;
@@ -82,19 +82,19 @@ abstract class AbstractProperty<T> implements Property { // TODO: test
   protected AbstractProperty(
     @NotNull Class<T> type,
     @NotNull String name,
-    @NotNull String description,
+    @NotNull String displayName,
     @Nullable T minInclusive,
     @Nullable T maxInclusive
   ) {
     this.type = type;
     this.name = name;
-    this.description = description;
+    this.displayName = displayName;
     this.minInclusive = minInclusive;
     this.maxInclusive = maxInclusive;
   }
 
-  protected AbstractProperty(@NotNull Class<T> type, @NotNull String name, @NotNull String description) {
-    this(type, name, description, null, null);
+  protected AbstractProperty(@NotNull Class<T> type, @NotNull String name, @NotNull String displayName) {
+    this(type, name, displayName, null, null);
   }
 
   /**
@@ -109,8 +109,8 @@ abstract class AbstractProperty<T> implements Property { // TODO: test
    * @return description of the property.
    */
   @Override
-  public String description() {
-    return description;
+  public String displayName() {
+    return displayName;
   }
 
   /**
@@ -150,7 +150,7 @@ abstract class AbstractProperty<T> implements Property { // TODO: test
 
   @Override
   public Class<?> type() {
-    return Duration.class;
+    return this.type;
   }
 
   @Override
@@ -191,11 +191,11 @@ abstract class AbstractProperty<T> implements Property { // TODO: test
 abstract class AbstractDurationProperty extends AbstractProperty<Duration> { // TODO: test
   protected AbstractDurationProperty(
     @NotNull String name,
-    @NotNull String description,
+    @NotNull String displayName,
     @Nullable Duration minInclusive,
     @Nullable Duration maxInclusive)
   {
-    super(Duration.class, name, description, minInclusive, maxInclusive);
+    super(Duration.class, name, displayName, minInclusive, maxInclusive);
   }
 
   @Override
@@ -230,21 +230,23 @@ abstract class AbstractDurationProperty extends AbstractProperty<Duration> { // 
 abstract class AbstractIntProperty extends AbstractProperty<Integer> { // TODO: test
   protected AbstractIntProperty(
     @NotNull String name,
-    @NotNull String description,
+    @NotNull String displayName,
     @Nullable Integer minInclusive,
     @Nullable Integer maxInclusive)
   {
-    super(int.class, name, description, minInclusive, maxInclusive);
+    super(int.class, name, displayName, minInclusive, maxInclusive);
   }
 
   @Override
   protected void validateRange(@Nullable Integer value) {
     if (this.minInclusive != null && value < this.minInclusive) {
-      throw new IllegalArgumentException("The provided value is too small");
+      throw new IllegalArgumentException(
+        String.format("The value for %s is too small", this.name()));
     }
 
     if (this.maxInclusive != null && value > this.maxInclusive) {
-      throw new IllegalArgumentException("The provided value is too large");
+      throw new IllegalArgumentException(
+        String.format("The value for %s is too large", this.name()));
     }
   }
 
@@ -267,9 +269,9 @@ abstract class AbstractIntProperty extends AbstractProperty<Integer> { // TODO: 
 abstract class AbstractBooleanProperty extends AbstractProperty<Boolean> { // TODO: test
   protected AbstractBooleanProperty(
     @NotNull String name,
-    @NotNull String description)
+    @NotNull String displayName)
   {
-    super(Boolean.class, name, description);
+    super(Boolean.class, name, displayName);
   }
 
   @Override
@@ -293,23 +295,32 @@ abstract class AbstractStringProperty extends AbstractProperty<String> { // TODO
   private final int maxLength;
   protected AbstractStringProperty(
     @NotNull String name,
-    @NotNull String description,
-    @Nullable int minLength,
-    @Nullable int maxLength)
+    @NotNull String displayName,
+    @NotNull int minLength,
+    @NotNull int maxLength)
   {
-    super(String.class, name, description);
+    super(
+      String.class,
+      name,
+      displayName,
+      String.valueOf(minLength),
+      String.valueOf(maxLength));
+
     this.minLength = minLength;
     this.maxLength = maxLength;
   }
 
   @Override
-  public Optional<String> minInclusive() {
-    return Optional.of(String.valueOf(this.minLength));
-  }
+  protected void validateRange(@Nullable String value) {
+    if (value.length() < this.minLength) {
+      throw new IllegalArgumentException(
+        String.format("The value for %s is too short", this.name()));
+    }
 
-  @Override
-  public Optional<String> maxInclusive() {
-    return Optional.of(String.valueOf(this.maxLength));
+    if (value.length() > this.maxLength) {
+      throw new IllegalArgumentException(
+        String.format("The value for %s is too long", this.name()));
+    }
   }
 
   @Override

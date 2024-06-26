@@ -127,7 +127,7 @@ public class CelConstraint implements Constraint {
       for (var input : this.input) {
         if (input.get() == null) {
           throw new IllegalArgumentException(
-            String.format("Input missing for '%s'", input.description()));
+            String.format("Input missing for '%s'", input.displayName()));
         }
       }
 
@@ -160,69 +160,116 @@ public class CelConstraint implements Constraint {
     }
   }
 
-  public record Variable(
-    @NotNull String name,
-    @NotNull String displayName,
-    @NotNull Class<?> type
-  ) {
+  public static abstract class Variable {
     /**
      * Pattern for variable names in CEL.
      */
     private static final String NAME_PATTERN = "[A-Za-z\\_]+";
 
-    public Variable {
+    private final String name;
+    private final String displayName;
+
+    protected Variable(String name, String displayName) {
       Preconditions.checkArgument(
         name.matches(NAME_PATTERN),
         "Variable names must be alphanumeric");
-      Preconditions.checkArgument(
-        type == String.class || type == int.class || type == boolean.class,
-        "Variable must be of type String, int, or boolean");
+
+      this.name = name;
+      this.displayName = displayName;
     }
 
-    private Property bind(@NotNull GenericJson json) {
-      return new Property() {
+    public String name() {
+      return name;
+    }
+
+    public String displayName() {
+      return displayName;
+    }
+
+    protected abstract Property bind(@NotNull GenericJson json);
+  }
+
+  public static class StringVariable extends Variable {// TODO: test
+    private final int minLength;
+    private final int maxLength;
+
+    public StringVariable(
+      @NotNull String name,
+      @NotNull String displayName,
+      int minLength,
+      int maxLength
+    ) {
+      super(name, displayName);
+      this.minLength = minLength;
+      this.maxLength = maxLength;
+    }
+
+    @Override
+    public Property bind(@NotNull GenericJson json) {
+      return new AbstractStringProperty(this.name(), this.displayName(), this.minLength, this.maxLength) {
         @Override
-        public String description() {
-          return displayName;
+        protected void setCore(@Nullable String value) {
+          json.set(this.name(), value);
         }
 
         @Override
-        public String name() {
-          return name;
+        protected @Nullable String getCore() {
+          return (String)json.get(this.name());
+        }
+      };
+    }
+  }
+
+  public static class IntegerVariable extends Variable {// TODO: test
+    private final Integer minInclusive;
+    private final Integer maxInclusive;
+
+    public IntegerVariable(
+      @NotNull String name,
+      @NotNull String displayName,
+      @Nullable Integer minInclusive,
+      @Nullable Integer maxInclusive
+    ) {
+      super(name, displayName);
+      this.minInclusive = minInclusive;
+      this.maxInclusive = maxInclusive;
+    }
+
+    @Override
+    public Property bind(@NotNull GenericJson json) {
+      return new AbstractIntProperty(this.name(), this.displayName(), this.minInclusive, this.maxInclusive) {
+        @Override
+        protected void setCore(@Nullable Integer value) {
+          json.set(this.name(), value);
         }
 
         @Override
-        public Class<?> type() {
-          return type;
+        protected @Nullable Integer getCore() {
+          return (Integer)json.get(this.name());
+        }
+      };
+    }
+  }
+
+  public static class BooleanVariable extends Variable {// TODO: test
+    public BooleanVariable(
+      @NotNull String name,
+      @NotNull String displayName
+    ) {
+      super(name, displayName);
+    }
+
+    @Override
+    public Property bind(@NotNull GenericJson json) {
+      return new AbstractBooleanProperty(this.name(), this.displayName()) {
+        @Override
+        protected void setCore(@Nullable Boolean value) {
+          json.set(this.name(), value);
         }
 
         @Override
-        public Optional<String> minInclusive() { //TODO: make configurable
-          return Optional.empty();
-        }
-
-        @Override
-        public Optional<String> maxInclusive() { //TODO: make configurable
-          return Optional.empty();
-        }
-
-        @Override
-        public void set(@Nullable String s) {
-          if (this.type() == int.class) {
-            json.set(name, Integer.parseInt(s));
-          }
-          else if (this.type() == boolean.class) {
-            json.set(name, Boolean.parseBoolean(s));
-          }
-          else if (this.type() == String.class) {
-            json.set(name, s);
-          }
-        }
-
-        @Override
-        public @Nullable String get() {
-          var value = json.get(name);
-          return value == null ? null : value.toString();
+        protected @Nullable Boolean getCore() {
+          return (Boolean)json.get(this.name());
         }
       };
     }

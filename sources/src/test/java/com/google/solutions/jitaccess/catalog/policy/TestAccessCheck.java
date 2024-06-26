@@ -237,9 +237,9 @@ public class TestAccessCheck {
       "cel",
       "",
       List.of(
-        new CelConstraint.Variable("testInt", "", int.class),
-        new CelConstraint.Variable("testString", "", String.class),
-        new CelConstraint.Variable("testBoolean", "", boolean.class)),
+        new CelConstraint.IntegerVariable("testInt", "", 41, 42),
+        new CelConstraint.StringVariable("testString", "", 0 ,10),
+        new CelConstraint.BooleanVariable("testBoolean", "")),
       expression);
 
     var policy = Mockito.mock(Policy.class);
@@ -325,7 +325,7 @@ public class TestAccessCheck {
     var constraint = new CelConstraint(
       "cel",
       "",
-      List.of(new CelConstraint.Variable("test", "", String.class)),
+      List.of(new CelConstraint.StringVariable("test", "", 0, 10)),
       "true");
 
     var policy = Mockito.mock(Policy.class);

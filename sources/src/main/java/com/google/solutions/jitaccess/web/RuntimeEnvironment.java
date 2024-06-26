@@ -328,7 +328,13 @@ public class RuntimeEnvironment {
         new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
       Map.of(
         Policy.ConstraintClass.JOIN,
-        List.of(new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
+        List.of(
+          new CelConstraint(
+            "justification",
+            "You must provide a justification",
+            List.of(new CelConstraint.StringVariable("justification", "Justification", 1, 100)),
+            "true"),
+          new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
     new JitGroupPolicy(
       system,
       "test-group-fixed",
