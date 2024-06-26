@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Requires group memberships to have an expiry.
@@ -128,6 +129,16 @@ public class ExpiryConstraint implements Constraint {
             @Override
             public Class<?> type() {
               return Duration.class;
+            }
+
+            @Override
+            public Optional<String> minInclusive() {
+              return Optional.of(String.valueOf(minDuration.toMinutes()));
+            }
+
+            @Override
+            public Optional<String> maxInclusive() {
+              return Optional.of(String.valueOf(maxDuration.toMinutes()));
             }
 
             @Override

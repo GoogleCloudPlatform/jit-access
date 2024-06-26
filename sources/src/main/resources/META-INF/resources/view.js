@@ -61,8 +61,8 @@ mdc.dataTable.MDCDataTable.prototype.addRow = function(id, columns, showCheckbox
             td = $(`<td class="mdc-data-table__cell"></td>`);
         }
 
-        const icon = $("<span class='material-symbols-outlined'></span>");
         if (value.icon) {
+            const icon = $("<span class='material-symbols-outlined'></span>");
             icon.text(value.icon);
             div.prepend(icon);
         }
@@ -96,21 +96,30 @@ mdc.list.MDCList.prototype.clearRows = function () {
 };
 
 
-mdc.list.MDCList.prototype.addRow = function (primary, secondary) {
+mdc.list.MDCList.prototype.addRow = function (column) {
     const li = $(`<li class="mdc-list-item">
         <span class="mdc-list-item__ripple"></span>
       </li>`);
 
     const textSpan = $(`<span class="mdc-list-item__text">`);
+
+    if (column.icon) {
+        const icon = $("<span class='material-symbols-outlined'></span>");
+        icon.text(column.icon);
+        textSpan.prepend(icon);
+    }
+
     li.append(textSpan);
 
     const primarySpan = $(`<span class="mdc-list-item__primary-text"></span>`);
-    primarySpan.text(primary)
+    primarySpan.text(column.primary)
     textSpan.append(primarySpan);
 
-    const secondarySpan = $(`<span class="mdc-list-item__secondary-text"></span>`);
-    secondarySpan.text(secondary);
-    textSpan.append(secondarySpan);
+    if (column.secondary) {
+        const secondarySpan = $(`<span class="mdc-list-item__secondary-text"></span>`);
+        secondarySpan.text(column.secondary);
+        textSpan.append(secondarySpan);
+    }
 
     $(this.root).append(li);
 
@@ -201,7 +210,10 @@ class SelectScopeDialog extends DialogBase {
 
         if (environments.environments.length > 0) {
             environments.environments.forEach(item => {
-                this._list.addRow(item.name, item.description);
+                this._list.addRow({
+                    primary: item.name,
+                    secondary: item.description
+                });
             });
         }
         else {

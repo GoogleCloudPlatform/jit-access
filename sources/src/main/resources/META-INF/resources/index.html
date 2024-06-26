@@ -25,7 +25,7 @@
         <!-- ListGroupsView -->
         <div class='jit-view' id='jit-listgroups-view'>
             <h1>Groups</h1>
-            <div class="mdc-data-table" id="jit-groups-table">
+            <div class="mdc-data-table" id="jit-listgroups-table">
                 <div class="mdc-data-table__table-container">
                     <table class="mdc-data-table__table">
                         <thead>
@@ -67,16 +67,27 @@
                     <div class="mdc-icon-button__ripple"></div>
                     arrow_back
                 </button>
-                <span id="jit-getgroup-name"></span>
+                <span>
+                    <span id="jit-getgroup-system-name"></span>
+                    <span class="jit-material-icons">chevron_right</span>
+                    <span id="jit-getgroup-group-name"></span>
+                </span>
             </h1>
 
-            <h2>About this group</h2>
             <div class="jit-card-subsection">
-                <span id="jit-getgroup-description"></span>
+                <span id="jit-getgroup-group-description"></span>
             </div>
 
-            <h2>Membership</h2>
+            <div class="jit-card-subsection">
+                <h2>Join group</h2>
+                Membership of this group is subject to the following constraints:
+                <ul class="mdc-list" id="jit-getgroup-constraints"></ul>
 
+                <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-requestbutton" disabled="">
+                    <div class="mdc-button__ripple"></div>
+                    <span class="mdc-button__label">Request access</span>
+                </button>
+            </div>
 
         </div>
     </main>
@@ -99,8 +110,9 @@
 
                 console.assert(model);
 
-                this._table = new mdc.dataTable.MDCDataTable(document.querySelector('#jit-groups-table'));
                 this.model = model;
+                this.table = new mdc.dataTable.MDCDataTable(document.querySelector('#jit-listgroups-table'));
+                this.table.clearRows();
             }
 
             async showAsync() {
@@ -109,13 +121,12 @@
 
 
                 try {
-                    this._table.showProgress();
-                    this._table.clearRows();
+                    this.table.showProgress();
 
                     const response = await this.model.listGroups(document.appbar.environment);
                     if (response.groups && response.groups.length > 0) {
                         response.groups.forEach(item => {
-                            this._table.addRow(
+                            this.table.addRow(
                                 item.id,
                                 [
                                     { text: item.name, icon: 'group', href: `#!/group/${item.id}` },
@@ -130,7 +141,7 @@
                     }
                 }
                 finally {
-                    this._table.hideProgress();
+                    this.table.hideProgress();
                 }
             }
         }
@@ -143,6 +154,8 @@
 
                 this.model = model;
                 this.groupId = groupId;
+                this.constraints = new mdc.list.MDCList(document.querySelector('#jit-getgroup-constraints'));
+                this.constraints.clearRows();
             }
 
             async showAsync() {
@@ -150,8 +163,27 @@
 
                 const response = await this.model.getGroup(document.appbar.environment, this.groupId);
 
-                $('#jit-getgroup-name').text(response.name)
-                $('#jit-getgroup-description').text(response.description)
+                $('#jit-getgroup-system-name').text(response.system.name);
+                $('#jit-getgroup-group-name').text(response.name);
+                $('#jit-getgroup-group-description').text(response.description);
+
+                if (response.access.satisfiedConstraints) {
+                    response.access.satisfiedConstraints.forEach(item => {
+                        this.constraints.addRow({
+                            primary: item.description,
+                            icon: 'check'
+                        });
+                    });
+                }
+
+                if (response.access.unsatisfiedConstraints) {
+                    response.access.unsatisfiedConstraints.forEach(item => {
+                        this.constraints.addRow({
+                            primary: item.description,
+                            icon: 'exclamation'
+                        });
+                    });
+                }
             }
         }
 

@@ -23,6 +23,8 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public interface Property {
   /**
    * @return description of the property.
@@ -38,6 +40,16 @@ public interface Property {
    * Type of the property.
    */
   Class<?> type();
+
+  /**
+   * Minimum allowed value, if constrained.
+   */
+  Optional<String> minInclusive();
+
+  /**
+   * Maximum allowed value, if constrained.
+   */
+  Optional<String> maxInclusive();
 
   /**
    * Parse string value and assign to property.

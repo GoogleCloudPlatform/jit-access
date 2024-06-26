@@ -9,6 +9,7 @@ import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
+import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -85,7 +86,9 @@ public class GroupsResource {//TODO: test
               i.name(),
               i.description(),
               i.type().getSimpleName(),
-              i.get()))
+              i.get(),
+              i.minInclusive().orElse(null),
+              i.maxInclusive().orElse(null)))
             .toList()))
         .orElse(null);
 
@@ -122,8 +125,8 @@ public class GroupsResource {//TODO: test
     @NotNull String name,
     @NotNull String description,
     @NotNull String type,
-    @NotNull String value
-
-    //TODO: min, max
+    @NotNull String value,
+    @Nullable String minInclusive,
+    @Nullable String maxInclusive
   ) {}
 }

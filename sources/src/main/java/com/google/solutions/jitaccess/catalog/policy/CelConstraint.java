@@ -34,10 +34,7 @@ import dev.cel.runtime.CelRuntimeFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Constraint that executes a CEL expression.
@@ -197,6 +194,16 @@ public class CelConstraint implements Constraint {
         @Override
         public Class<?> type() {
           return type;
+        }
+
+        @Override
+        public Optional<String> minInclusive() {
+          return Optional.empty();
+        }
+
+        @Override
+        public Optional<String> maxInclusive() {
+          return Optional.empty();
         }
 
         @Override

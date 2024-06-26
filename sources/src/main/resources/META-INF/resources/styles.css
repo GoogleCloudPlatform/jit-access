@@ -7,11 +7,13 @@ body {
 }
 
 h1 {
+    color: #000000a8;
     font-weight: normal;
     font-size: 20px;
 }
 
 h2 {
+    color: #000000a8;
     font-weight: bold;
     font-size: 16px;
 }
@@ -83,9 +85,14 @@ a {
 
 .jit-card-subsection {
     line-height: 22px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    font-size: 13px;
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 30px;
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+}
+
+.jit-card-subsection .mdc-list-item__primary-text  {
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
 }
 
 .jit-card-divider {
@@ -99,6 +106,11 @@ a {
     font-weight: normal;
     letter-spacing: normal;
     color: #006CBE;
+}
+
+.jit-material-icons {
+    font-family: 'Material Icons';
+    vertical-align: text-bottom;
 }
 
 .mdc-text-field {
@@ -167,6 +179,7 @@ ul.ui-menu  {
 .material-symbols-outlined {
     vertical-align: middle;
     padding-right: 10px;
+    font-size: revert;
 }
 
 /* ==== MDC Overrides === */
