@@ -53,7 +53,7 @@ public class JitGroup {
   /**
    * @return details about possibly unmet constraints.
    */
-  public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {//TODO: replace with join request
+  public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
     //
     // Analyze if the current subject can join this group, and what
     // constraints might be unsatisfied.

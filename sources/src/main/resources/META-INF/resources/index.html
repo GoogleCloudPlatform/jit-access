@@ -85,12 +85,35 @@
                 To join the group, provide the following information:
                 <div id="jit-getgroup-request-form" style="margin: 20px"></div>
 
-                <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-requestbutton" type="submit">
+                <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-request-button" type="submit">
                     <div class="mdc-button__ripple"></div>
                     <span class="mdc-button__label">Request access</span>
                 </button>
             </div>
 
+        </div>
+
+        <!-- WaitDialog -->
+        <div class="mdc-dialog" id="jit-wait-dialog">
+            <div class="mdc-dialog__container">
+                <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true">
+                    <h2 class="mdc-dialog__title">Please wait...</h2>
+                    <div class="mdc-dialog__content">
+                        <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate" aria-label="Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" id="jit-wait-dialog-progress-bar">
+                            <div class="mdc-linear-progress__buffer">
+                                <div class="mdc-linear-progress__buffer-bar"></div>
+                                <div class="mdc-linear-progress__buffer-dots"></div>
+                            </div>
+                            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                                <span class="mdc-linear-progress__bar-inner"></span>
+                            </div>
+                            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                                <span class="mdc-linear-progress__bar-inner"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -99,6 +122,14 @@
     <script src="view.js"></script>
     <script>
         "use strict"
+
+        class WaitDialog extends DialogBase {
+            constructor() {
+                super('#jit-wait-dialog');
+
+                const progressBar = new mdc.linearProgress.MDCLinearProgress(document.querySelector('#jit-wait-dialog-progress-bar'));
+            }
+        }
 
         class GroupsViewBase extends ViewBase {
             constructor(selector) {
@@ -182,9 +213,17 @@
                                     </span>
                                     <span class="mdc-notched-outline__trailing"></span>
                                 </span>
-                                <input type="text" class="mdc-text-field__input" id="jit-getgroup-request-input-${input.name}" required maxlength="100" autocomplete="off">
+                                <input type="text" class="mdc-text-field__input" id="jit-getgroup-request-input-${input.name}" required autocomplete="off">
                             </label>`);
                         this.form.append(element);
+
+                        if (input.minInclusive) {
+                            $(`#jit-getgroup-request-input-${input.name}`).prop('minlength', input.minInclusive);
+                        }
+
+                        if (input.maxInclusive) {
+                            $(`#jit-getgroup-request-input-${input.name}`).prop('maxlength', input.minInclusive);
+                        }
 
                         const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-getgroup-request-form-${input.name}`));
                         this.formFields.push(textField);
@@ -251,6 +290,21 @@
 
                 response.access.input.forEach(item => {
                     this.addInput(item);
+                });
+
+                $('#jit-getgroup-request-button').click(async () => {
+                    try {
+                        var dialog = new WaitDialog();
+                        dialog.showAsync();
+                        await new Promise(r => setTimeout(r, 2000));
+                        dialog.close();
+                        throw "NIY";
+                    }
+                    catch (e) {
+                        if (e) {
+                            document.appbar.showError(e, false);
+                        }
+                    }
                 });
             }
         }

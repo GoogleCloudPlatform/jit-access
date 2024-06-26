@@ -165,6 +165,10 @@ class DialogBase {
             this.element.open();
         });
     }
+
+    close() {
+        this.element.close();
+    }
 }
 
 /** Base class for views */

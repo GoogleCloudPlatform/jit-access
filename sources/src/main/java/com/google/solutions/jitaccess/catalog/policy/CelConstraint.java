@@ -197,12 +197,12 @@ public class CelConstraint implements Constraint {
         }
 
         @Override
-        public Optional<String> minInclusive() {
+        public Optional<String> minInclusive() { //TODO: make configurable
           return Optional.empty();
         }
 
         @Override
-        public Optional<String> maxInclusive() {
+        public Optional<String> maxInclusive() { //TODO: make configurable
           return Optional.empty();
         }
 
