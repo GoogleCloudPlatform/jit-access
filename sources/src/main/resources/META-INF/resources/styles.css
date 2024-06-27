@@ -87,6 +87,7 @@ a {
     line-height: 22px;
     margin-left: 15px;
     margin-right: 15px;
+    margin-top: 30px;
     margin-bottom: 30px;
     font-size: var(--mdc-typography-body2-font-size, 0.875rem);
     width: 600px;

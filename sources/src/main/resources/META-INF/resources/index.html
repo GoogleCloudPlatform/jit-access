@@ -74,16 +74,32 @@
             </h1>
 
             <div class="jit-card-subsection">
-                <span id="jit-getgroup-group-description"></span>
+                <h2>Details</h2>
+                <div class="mdc-data-table" id="jit-getgroups-details">
+                    <div class="mdc-data-table__table-container">
+                        <table class="mdc-data-table__table">
+                            <thead style="display: none">
+                                <tr class="mdc-data-table__header-row">
+                                    <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Name</th>
+                                    <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody class="mdc-data-table__content">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="jit-card-subsection">
+                Membership of this group is subject to the following constraints:
+                <ul class="mdc-list" id="jit-getgroup-constraints"></ul>
             </div>
 
             <div class="jit-card-subsection">
                 <h2>Join group</h2>
-                Membership of this group is subject to the following constraints:
-                <ul class="mdc-list" id="jit-getgroup-constraints"></ul>
 
                 To join the group, provide the following information:
-                <div id="jit-getgroup-request-form" style="margin: 20px"></div>
+                <div id="jit-getgroup-request-form"></div>
 
                 <button class="mdc-button foo-button mdc-button--raised" id="jit-getgroup-request-button" type="submit">
                     <div class="mdc-button__ripple"></div>
@@ -187,8 +203,12 @@
 
                 this.model = model;
                 this.groupId = groupId;
+
                 this.constraints = new mdc.list.MDCList(document.querySelector('#jit-getgroup-constraints'));
                 this.constraints.clearRows();
+
+                this.details = new mdc.dataTable.MDCDataTable(document.querySelector('#jit-getgroups-details'));
+                this.details.clearRows();
 
                 this.form = $('#jit-getgroup-request-form');
                 this.form.empty();
@@ -268,7 +288,23 @@
 
                 $('#jit-getgroup-system-name').text(response.system.name);
                 $('#jit-getgroup-group-name').text(response.name);
-                $('#jit-getgroup-group-description').text(response.description);
+
+                this.details.addRow(
+                    null,
+                    [
+                        { text: 'Description' },
+                        { text: response.description }
+                    ],
+                    false);
+                this.details.addRow(
+                    null,
+                    [
+                        { text: 'Email' },
+                        { text: response.cloudIdentityGroup,
+                          href: `https://groups.google.com/search?q=${response.cloudIdentityGroup}&inOrg=true`
+                        }
+                    ],
+                    false);
 
                 if (response.access.satisfiedConstraints) {
                     response.access.satisfiedConstraints.forEach(item => {
