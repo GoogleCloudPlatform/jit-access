@@ -64,6 +64,10 @@ public class TestJitGroup {
     when(subject.principals())
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
 
+    var catalog = Mockito.mock(Catalog.class);
+    when(catalog.subject())
+      .thenReturn(subject);
+
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
     var system = new SystemPolicy(environment, "system-1", "System 1");
     var deniedGroup = new JitGroupPolicy(
@@ -76,9 +80,7 @@ public class TestJitGroup {
           PolicyRight.VIEW.toMask()))), // missing JOIN
       Map.of());
 
-    var group = new JitGroup(
-      subject,
-      deniedGroup);
+    var group = new JitGroup(catalog, deniedGroup);
 
     assertFalse(group.analyzeJoinAccess().isPresent());
   }
@@ -90,6 +92,10 @@ public class TestJitGroup {
       .thenReturn(SAMPLE_USER);
     when(subject.principals())
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
+
+    var catalog = Mockito.mock(Catalog.class);
+    when(catalog.subject())
+      .thenReturn(subject);
 
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
     var system = new SystemPolicy(environment, "system-1", "System 1");
@@ -103,9 +109,7 @@ public class TestJitGroup {
           PolicyRight.JOIN.toMask()))),
       Map.of(Policy.ConstraintClass.JOIN, List.of(createFailingConstraint())));
 
-    var access = new JitGroup(
-      subject,
-      deniedGroup).analyzeJoinAccess();
+    var access = new JitGroup(catalog, deniedGroup).analyzeJoinAccess();
 
     assertTrue(access.isPresent());
     assertTrue(access.get().isSubjectInAcl());

@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.Catalog;
 import com.google.solutions.jitaccess.catalog.JitGroup;
+import com.google.solutions.jitaccess.catalog.auth.GroupId;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
@@ -67,6 +68,7 @@ public class GroupsResource {//TODO: test
     @NotNull String id,
     @NotNull String name,
     @NotNull String description,
+    @NotNull String cloudIdentityGroup,
     @NotNull SystemInfo system,
     @Nullable JoinAccessInfo access
   ) {
@@ -90,10 +92,13 @@ public class GroupsResource {//TODO: test
             .toList()))
         .orElse(null);
 
+      //TODO: group email
+
       return new GroupInfo(
         g.group().id().toString(),
         g.group().name(),
         g.group().description(),
+        g.cloudIdentityGroupId().email,
         new SystemInfo(
           g.group().system().name(),
           g.group().system().description()),
@@ -108,6 +113,8 @@ public class GroupsResource {//TODO: test
 
   public record JoinAccessInfo(
     @NotNull boolean membershipActive,
+
+    //TODO: expiry date
     //TODO: requiresApproval
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints,

@@ -72,7 +72,7 @@ public class GroupMapping {
   /**
    * Determine group email corresponding to a JIT Group.
    */
-  GroupId groupFromJitGroup(JitGroupId group) {
+  public GroupId groupFromJitGroup(JitGroupId group) {
     var handle = String.join(".", new String[] {
       PREFIX,
       group.environment(),

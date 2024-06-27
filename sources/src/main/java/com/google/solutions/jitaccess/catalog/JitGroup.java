@@ -21,6 +21,8 @@
 
 package com.google.solutions.jitaccess.catalog;
 
+import com.google.solutions.jitaccess.catalog.auth.GroupId;
+import com.google.solutions.jitaccess.catalog.auth.GroupMapping;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
@@ -35,11 +37,14 @@ import java.util.Optional;
  * JIT Group in the context of a specific subject.
  */
 public class JitGroup {
-  private final @NotNull Subject subject;
   private final @NotNull JitGroupPolicy group;
+  private final @NotNull Catalog catalog;
 
-  JitGroup(@NotNull Subject subject, @NotNull JitGroupPolicy group) {
-    this.subject = subject;
+  JitGroup(
+    @NotNull Catalog catalog,
+    @NotNull JitGroupPolicy group
+  ) {
+    this.catalog = catalog;
     this.group = group;
   }
 
@@ -51,6 +56,13 @@ public class JitGroup {
   }
 
   /**
+   * @return Cloud Identity group that backs this JIT group.
+   */
+  public @NotNull GroupId cloudIdentityGroupId() {
+    return this.catalog.groupMapping().groupFromJitGroup(this.group().id());
+  }
+
+  /**
    * @return details about possibly unmet constraints.
    */
   public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
@@ -59,7 +71,7 @@ public class JitGroup {
     // constraints might be unsatisfied.
     //
     var result = group
-      .createAccessCheck(this.subject, EnumSet.of(PolicyRight.JOIN))
+      .createAccessCheck(this.catalog.subject(), EnumSet.of(PolicyRight.JOIN))
       .applyConstraints(Policy.ConstraintClass.JOIN)
       .execute();
 

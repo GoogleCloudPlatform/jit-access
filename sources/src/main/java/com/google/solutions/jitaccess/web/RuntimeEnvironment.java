@@ -316,7 +316,10 @@ public class RuntimeEnvironment {
   }
 
   @Produces
-  public @NotNull Catalog produceCatalog(@NotNull Subject subject) {
+  public @NotNull Catalog produceCatalog(
+    @NotNull Subject subject,
+    @NotNull GroupMapping groupMapping
+  ) {
     // TODO: load YAML
     var environment = new EnvironmentPolicy("test", "Test policy");
     var system = new SystemPolicy(environment, "test-system", "Test policy");
@@ -347,7 +350,8 @@ public class RuntimeEnvironment {
 
     return new Catalog(
       subject,
-      Map.of(environment.name(), environment));
+      Map.of(environment.name(), environment),
+      groupMapping);
   }
 
   @Produces

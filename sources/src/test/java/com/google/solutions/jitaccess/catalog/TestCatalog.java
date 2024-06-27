@@ -22,10 +22,7 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
-import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
-import com.google.solutions.jitaccess.catalog.auth.Principal;
-import com.google.solutions.jitaccess.catalog.auth.Subject;
-import com.google.solutions.jitaccess.catalog.auth.UserId;
+import com.google.solutions.jitaccess.catalog.auth.*;
 import com.google.solutions.jitaccess.catalog.policy.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,7 +45,8 @@ public class TestCatalog {
   public void environment() {
     var catalog = new Catalog(
       Mockito.mock(Subject.class),
-      Map.of("env-1", new EnvironmentPolicy("env-1", "Environment 1")));
+      Map.of("env-1", new EnvironmentPolicy("env-1", "Environment 1")),
+      Mockito.mock(GroupMapping.class));
 
     assertFalse(catalog.environment("").isPresent());
     assertFalse(catalog.environment("ENV-1").isPresent());
@@ -66,7 +64,8 @@ public class TestCatalog {
       Mockito.mock(Subject.class),
       Map.of(
         "env-1", new EnvironmentPolicy("env-1", "Environment 1"),
-        "env-2", new EnvironmentPolicy("env-2", "Environment 2")));
+        "env-2", new EnvironmentPolicy("env-2", "Environment 2")),
+      Mockito.mock(GroupMapping.class));
 
     assertEquals(2, catalog.environments().size());
   }
@@ -82,7 +81,8 @@ public class TestCatalog {
 
     var catalog = new Catalog(
       Mockito.mock(Subject.class),
-      Map.of(environment.name(), environment));
+      Map.of(environment.name(), environment),
+      Mockito.mock(GroupMapping.class));
 
     assertThrows(
       AccessDeniedException.class,
@@ -102,7 +102,8 @@ public class TestCatalog {
 
     var catalog = new Catalog(
       Mockito.mock(Subject.class),
-      Map.of(environment.name(), environment));
+      Map.of(environment.name(), environment),
+      Mockito.mock(GroupMapping.class));
 
     assertThrows(
       AccessDeniedException.class,
@@ -129,7 +130,8 @@ public class TestCatalog {
 
     var catalog = new Catalog(
       subject,
-      Map.of(environment.name(), environment));
+      Map.of(environment.name(), environment),
+      Mockito.mock(GroupMapping.class));
 
     var details = catalog.group(group.id());
     assertNotNull(details);
@@ -166,7 +168,8 @@ public class TestCatalog {
 
     var catalog = new Catalog(
       subject,
-      Map.of(environment.name(), environment));
+      Map.of(environment.name(), environment),
+      Mockito.mock(GroupMapping.class));
 
     var groups = catalog.groups(environment.name());
     assertEquals(1, groups.size());

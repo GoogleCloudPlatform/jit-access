@@ -22,6 +22,7 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
+import com.google.solutions.jitaccess.catalog.auth.GroupMapping;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
@@ -33,13 +34,24 @@ import java.util.*;
 public class Catalog {
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
+  private final @NotNull GroupMapping groupMapping;
+
+  Subject subject() {
+    return subject;
+  }
+
+  GroupMapping groupMapping() {
+    return groupMapping;
+  }
 
   public Catalog(
     @NotNull Subject subject,
-    @NotNull Map<String, EnvironmentPolicy> environments
+    @NotNull Map<String, EnvironmentPolicy> environments,
+    @NotNull GroupMapping groupMapping
   ) {
     this.subject = subject;
     this.environments = environments;
+    this.groupMapping = groupMapping;
   }
 
   public Optional<EnvironmentPolicy> environment(@NotNull String name) {
@@ -87,7 +99,7 @@ public class Catalog {
     //
     // The user may our may not be allowed to join the group.
     //
-    return new JitGroup(this.subject, group.get());
+    return new JitGroup(this, group.get());
   }
 
   /**
@@ -112,7 +124,7 @@ public class Catalog {
           // User in ACL, so we're ok to return this group. The
           // user might not satisfy all constraints though, which is ok.
           //
-          groups.add(new JitGroup(this.subject, group));
+          groups.add(new JitGroup(this, group));
         }
       }
     }
