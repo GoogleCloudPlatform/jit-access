@@ -5,7 +5,6 @@ import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.Catalog;
 import com.google.solutions.jitaccess.catalog.JitGroup;
-import com.google.solutions.jitaccess.catalog.auth.GroupId;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
@@ -74,7 +73,10 @@ public class GroupsResource {//TODO: test
   ) {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinAccessInfo = g.analyzeJoinAccess()
-        .map(a -> new JoinAccessInfo(a.isMembershipActive(),
+        .map(a -> new JoinAccessInfo(
+          new MembershipInfo(
+            a.activeMembership().isPresent(),
+            a.activeMembership().map(p -> p.expiry().getEpochSecond()).orElse(null)),
           a.satisfiedConstraints().stream()
             .map(c -> new ConstraintInfo(c.name(), c.description()))
             .toList(),
@@ -103,21 +105,25 @@ public class GroupsResource {//TODO: test
         joinAccessInfo);
     }
   }
-
   public record SystemInfo(
     @NotNull String id,
     @NotNull String name
   ) {}
 
   public record JoinAccessInfo(
-    @NotNull boolean membershipActive,
+    @NotNull MembershipInfo membership,
 
-    //TODO: expiry date
     //TODO: requiresApproval
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints,
     @NotNull List<InputInfo> input
   ) {}
+
+  public record MembershipInfo(
+    @NotNull boolean active,
+    @Nullable Long expiry
+  ) {}
+
 
   public record ConstraintInfo(
     @NotNull String name,

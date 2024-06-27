@@ -23,6 +23,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
+import com.google.solutions.jitaccess.catalog.auth.Principal;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -170,11 +171,11 @@ public class AccessCheck {
     // has joined this group before. We only need to do this
     // once as it doesn't depend on the policy.
     //
-    result.isMembershipActive = this.subject
+    result.activeMembership = this.subject
       .principals()
       .stream()
-      .filter(p -> p.isValid())
-      .anyMatch(p -> p.id().equals(this.groupId));
+      .filter(p -> p.isValid() && p.id().equals(this.groupId))
+      .findFirst();
 
     assert result.failedConstraints
       .keySet()
@@ -186,14 +187,14 @@ public class AccessCheck {
 
   public class Result {
     private boolean isSubjectInAcl;
-    private boolean isMembershipActive;
+    private Optional<Principal> activeMembership;
     private @NotNull LinkedList<Constraint> satisfiedConstraints;
     private @NotNull LinkedList<Constraint> unsatisfiedConstraints;
     private @NotNull Map<Constraint, Exception> failedConstraints;
 
     private Result(boolean isSubjectInAcl) {
       this.isSubjectInAcl = isSubjectInAcl;
-      this.isMembershipActive = false;
+      this.activeMembership = Optional.empty();
       this.satisfiedConstraints = new LinkedList<>();
       this.unsatisfiedConstraints = new LinkedList<>();
       this.failedConstraints = new HashMap<>();
@@ -223,11 +224,8 @@ public class AccessCheck {
       return failedConstraints;
     }
 
-    /**
-     * Check if the subject has an active membership.
-     */
-    public boolean isMembershipActive() {
-      return isMembershipActive;
+    public Optional<Principal> activeMembership() {
+      return activeMembership;
     }
 
     /**
@@ -242,7 +240,7 @@ public class AccessCheck {
      * and active memberships.
      */
     public boolean isAllowed() {
-      return this.isMembershipActive ||
+      return this.activeMembership.isPresent() ||
         (this.isSubjectInAcl && this.unsatisfiedConstraints.isEmpty());
     }
   }

@@ -196,12 +196,16 @@ class DebugModel extends Model {
                 "id": `${environment}.test-system.${groupId}`,
                 "name": `Name of ${groupId}`,
                 "description": `Description for ${groupId}`,
+                "cloudIdentityGroup": `jit.${groupId}@example.com`,
                 "system": {
                     "id": "test-system",
                     "name": "Test policy"
                 },
                 "access": {
-                    "membershipActive": false,
+                    "membership": {
+                        active: true,
+                        expiry: new Date(new Date().getTime() + 30*60*1000).getTime()/1000
+                    },
                     "satisfiedConstraints": [],
                     "unsatisfiedConstraints": [
                         {

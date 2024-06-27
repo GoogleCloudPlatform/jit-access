@@ -179,7 +179,8 @@ public class TestAccessCheck {
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
 
-    assertFalse(check.execute().isMembershipActive());
+    var result = check.execute();
+    assertFalse(result.activeMembership().isPresent());
   }
 
   @Test
@@ -196,7 +197,9 @@ public class TestAccessCheck {
       SAMPLE_GROUPID,
       EnumSet.of(PolicyRight.JOIN));
 
-    assertTrue(check.execute().isMembershipActive());
+    var result = check.execute();
+    assertTrue(result.activeMembership().isPresent());
+    assertSame(SAMPLE_GROUPID, result.activeMembership().get().id());
   }
 
   //---------------------------------------------------------------------------

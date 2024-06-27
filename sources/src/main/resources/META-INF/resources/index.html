@@ -75,6 +75,7 @@
 
             <div class="jit-card-subsection">
                 <h2>Details</h2>
+                <span id="jit-getgroup-group-description"></span>
                 <ul class="mdc-list" id="jit-getgroups-details"></ul>
             </div>
             <div class="jit-card-subsection">
@@ -275,11 +276,24 @@
 
                 $('#jit-getgroup-system-name').text(response.system.name);
                 $('#jit-getgroup-group-name').text(response.name);
+                $('#jit-getgroup-group-description').text(response.description);
 
-                this.details.addRow({
-                    icon: 'description',
-                    primary: response.description
-                });
+                if (response.access.membership.active) {
+                    this.details.addRow({
+                        icon: 'check',
+                        primary: 'You currently a member of this group'
+                    });
+                    this.details.addRow({
+                        icon: 'schedule',
+                        primary: `Your membership expires on ${new Date(response.access.membership.expiry*1000).toLocaleString() }`
+                    });
+                }
+                else {
+                    this.details.addRow({
+                        icon: 'close',
+                        primary: "You're not a member of this group"
+                    });
+                }
                 this.details.addRow({
                     icon: 'alternate_email',
                     primary: response.cloudIdentityGroup
