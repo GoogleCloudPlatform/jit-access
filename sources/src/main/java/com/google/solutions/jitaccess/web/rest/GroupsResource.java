@@ -92,8 +92,6 @@ public class GroupsResource {//TODO: test
             .toList()))
         .orElse(null);
 
-      //TODO: group email
-
       return new GroupInfo(
         g.group().id().toString(),
         g.group().name(),

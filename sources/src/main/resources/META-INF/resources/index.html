@@ -277,12 +277,12 @@
                 $('#jit-getgroup-group-name').text(response.name);
 
                 this.details.addRow({
-                    key: 'Description',
-                    value: response.description
+                    icon: 'description',
+                    primary: response.description
                 });
                 this.details.addRow({
-                    key: 'Email',
-                    value: response.cloudIdentityGroup
+                    icon: 'alternate_email',
+                    primary: response.cloudIdentityGroup
                 });
 
                 if (response.access.satisfiedConstraints) {
