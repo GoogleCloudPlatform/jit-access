@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Requires group memberships to have an expiry.

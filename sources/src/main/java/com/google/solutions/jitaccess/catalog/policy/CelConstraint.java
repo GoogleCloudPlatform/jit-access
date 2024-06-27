@@ -34,7 +34,10 @@ import dev.cel.runtime.CelRuntimeFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Constraint that executes a CEL expression.
@@ -220,7 +223,7 @@ public class CelConstraint implements Constraint {
     }
   }
 
-  public static class IntegerVariable extends Variable {// TODO: test
+  public static class IntegerVariable extends Variable {
     private final Integer minInclusive;
     private final Integer maxInclusive;
 
@@ -251,7 +254,7 @@ public class CelConstraint implements Constraint {
     }
   }
 
-  public static class BooleanVariable extends Variable {// TODO: test
+  public static class BooleanVariable extends Variable {
     public BooleanVariable(
       @NotNull String name,
       @NotNull String displayName

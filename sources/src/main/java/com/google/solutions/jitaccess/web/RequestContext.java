@@ -77,7 +77,7 @@ public class RequestContext {
     this.authenticationContext.device = device;
   }
 
-  boolean isAuthenticated() { // TODO: test
+  boolean isAuthenticated() {
     return this.authenticationContext.subject != ANONYMOUS_SUBJECT;
   }
 

@@ -24,7 +24,10 @@ package com.google.solutions.jitaccess.catalog.policy;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Policy for an environment such as "prod".

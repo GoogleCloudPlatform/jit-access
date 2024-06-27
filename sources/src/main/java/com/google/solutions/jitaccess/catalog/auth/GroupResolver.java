@@ -22,9 +22,9 @@
 package com.google.solutions.jitaccess.catalog.auth;
 
 import com.google.api.services.cloudidentity.v1.model.Membership;
-import com.google.solutions.jitaccess.catalog.*;
 import com.google.solutions.jitaccess.apis.clients.AccessException;
 import com.google.solutions.jitaccess.apis.clients.CloudIdentityGroupsClient;
+import com.google.solutions.jitaccess.catalog.ThrowingCompletableFuture;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

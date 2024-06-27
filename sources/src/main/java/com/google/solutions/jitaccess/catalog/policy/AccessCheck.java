@@ -21,7 +21,6 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
-import com.google.common.base.Enums;
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;

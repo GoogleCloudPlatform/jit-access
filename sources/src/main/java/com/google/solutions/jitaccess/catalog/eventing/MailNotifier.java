@@ -24,8 +24,8 @@ package com.google.solutions.jitaccess.catalog.eventing;
 import com.google.common.base.Preconditions;
 import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
-import com.google.solutions.jitaccess.catalog.auth.EmailMapping;
 import com.google.solutions.jitaccess.apis.clients.SmtpClient;
+import com.google.solutions.jitaccess.catalog.auth.EmailMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

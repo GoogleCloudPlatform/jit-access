@@ -24,7 +24,8 @@ package com.google.solutions.jitaccess.catalog;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
-import com.google.solutions.jitaccess.catalog.policy.*;
+import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
+import com.google.solutions.jitaccess.catalog.policy.PolicyRight;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

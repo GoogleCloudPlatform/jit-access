@@ -21,11 +21,8 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
-import com.google.common.base.Preconditions;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.Optional;
 
 /**

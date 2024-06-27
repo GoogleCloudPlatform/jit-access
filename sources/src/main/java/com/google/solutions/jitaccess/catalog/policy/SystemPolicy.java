@@ -22,11 +22,12 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
-import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
-import org.antlr.v4.runtime.tree.Tree;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Policy for a system.
