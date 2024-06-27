@@ -189,7 +189,7 @@ public class CelConstraint implements Constraint {
     protected abstract Property bind(@NotNull GenericJson json);
   }
 
-  public static class StringVariable extends Variable {// TODO: test
+  public static class StringVariable extends Variable {
     private final int minLength;
     private final int maxLength;
 
@@ -237,7 +237,7 @@ public class CelConstraint implements Constraint {
 
     @Override
     public Property bind(@NotNull GenericJson json) {
-      return new AbstractIntProperty(this.name(), this.displayName(), this.minInclusive, this.maxInclusive) {
+      return new AbstractIntegerProperty(this.name(), this.displayName(), this.minInclusive, this.maxInclusive) {
         @Override
         protected void setCore(@Nullable Integer value) {
           json.set(this.name(), value);

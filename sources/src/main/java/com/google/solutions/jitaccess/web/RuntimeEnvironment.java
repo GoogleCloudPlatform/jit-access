@@ -333,7 +333,7 @@ public class RuntimeEnvironment {
             "justification",
             "You must provide a justification",
             List.of(new CelConstraint.StringVariable("justification", "Justification", 1, 100)),
-            "true"),
+            "input.justification.matches('^b/[0-9]+$')"),
           new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
     new JitGroupPolicy(
       system,
