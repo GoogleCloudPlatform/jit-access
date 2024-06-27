@@ -111,14 +111,26 @@ mdc.list.MDCList.prototype.addRow = function (column) {
 
     li.append(textSpan);
 
-    const primarySpan = $(`<span class="mdc-list-item__primary-text"></span>`);
-    primarySpan.text(column.primary)
-    textSpan.append(primarySpan);
+    if (column.key) {
+        const span = $(`<span class="mdc-list-item__primary-text" style="display: inline-block; width: 110px"></span>`);
+        span.text(column.key)
+        textSpan.append(span);
+    }
+    if (column.value) {
+        const span = $(`<span class="mdc-list-item__primary-text" style="display: inline-block;"></span>`);
+        span.text(column.value)
+        textSpan.append(span);
+    }
 
+    if (column.primary) {
+        const span = $(`<span class="mdc-list-item__primary-text"></span>`);
+        span.text(column.primary)
+        textSpan.append(span);
+    }
     if (column.secondary) {
-        const secondarySpan = $(`<span class="mdc-list-item__secondary-text"></span>`);
-        secondarySpan.text(column.secondary);
-        textSpan.append(secondarySpan);
+        const span = $(`<span class="mdc-list-item__secondary-text"></span>`);
+        span.text(column.secondary);
+        textSpan.append(span);
     }
 
     $(this.root).append(li);
