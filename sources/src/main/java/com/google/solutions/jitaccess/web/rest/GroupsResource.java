@@ -78,10 +78,10 @@ public class GroupsResource {//TODO: test
             a.activeMembership().isPresent(),
             a.activeMembership().map(p -> p.expiry().getEpochSecond()).orElse(null)),
           a.satisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.description()))
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
             .toList(),
           a.unsatisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.description()))
+            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
             .toList(),
           a.input().stream()
             .map(i -> new InputInfo(

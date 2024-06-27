@@ -80,7 +80,7 @@ public class CelConstraint implements Constraint {
     return this.name;
   }
   @Override
-  public @NotNull String description() {
+  public @NotNull String displayName() {
     return this.displayName;
   }
 

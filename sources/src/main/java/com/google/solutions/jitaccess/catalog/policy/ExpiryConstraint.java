@@ -76,7 +76,7 @@ public class ExpiryConstraint implements Constraint {
   }
 
   @Override
-  public @NotNull String description() {
+  public @NotNull String displayName() {
     if (isFixedDuration()) {
       return String.format(
         "Membership expires after %s",
@@ -92,7 +92,7 @@ public class ExpiryConstraint implements Constraint {
 
   @Override
   public String toString() {
-    return description();
+    return displayName();
   }
 
   @Override

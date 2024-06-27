@@ -75,6 +75,8 @@ public class JitGroup {
       .applyConstraints(Policy.ConstraintClass.JOIN)
       .execute();
 
+    // TODO: Attempt JOIN | APPROVE_SELF first (w/ approval consraints), fall back to JOIN
+
     if (!result.isSubjectInAcl()) {
       //
       // Subject not in ACL, so we can't disclose any details.

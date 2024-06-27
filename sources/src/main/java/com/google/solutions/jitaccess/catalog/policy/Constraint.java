@@ -37,7 +37,7 @@ public interface Constraint {
   /**
    * @return display name.
    */
-  @NotNull String description();
+  @NotNull String displayName();
 
   /**
    * @return a check object that can be used to evaluate
