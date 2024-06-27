@@ -58,12 +58,29 @@ public class TestAccessCheck {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenPolicyHasNoAcl_ThenAccessAllowedByAcl() {
-    var policy = Mockito.mock(Policy.class);
-    when(policy.parent()).thenReturn(Optional.empty());
-    when(policy.accessControlList()).thenReturn(Optional.empty());
+  public void isSubjectInAcl_whenPolicyDeniesAccess() {
 
     var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyRight.JOIN)))
+      .thenReturn(false);
+
+    var check = new AccessCheck(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyRight.JOIN));
+
+    assertFalse(check.execute().isSubjectInAcl());
+  }
+
+  @Test
+  public void isSubjectInAcl_whenPolicyGrantsAccess() {
+
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyRight.JOIN)))
+      .thenReturn(true);
 
     var check = new AccessCheck(
       policy,
@@ -72,93 +89,6 @@ public class TestAccessCheck {
       EnumSet.of(PolicyRight.JOIN));
 
     assertTrue(check.execute().isSubjectInAcl());
-  }
-
-  @Test
-  public void isSubjectInAcl_whenPolicyHasEmptyAcl() {
-    var policy = Mockito.mock(Policy.class);
-    when(policy.parent()).thenReturn(Optional.empty());
-    when(policy.accessControlList())
-      .thenReturn(Optional.of(new AccessControlList(List.of())));
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
-
-    assertFalse(check.execute().isSubjectInAcl());
-  }
-
-  @Test
-  public void isSubjectInAcl_whenPolicyHasNoAclAndEmptyParentAcl() {
-    var parentPolicy = Mockito.mock(Policy.class);
-    when(parentPolicy.parent()).thenReturn(Optional.empty());
-    when(parentPolicy.accessControlList())
-      .thenReturn(Optional.of(new AccessControlList(List.of())));
-
-    var policy = Mockito.mock(Policy.class);
-    when(policy.parent()).thenReturn(Optional.of(parentPolicy));
-    when(policy.accessControlList()).thenReturn(Optional.empty());
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
-
-    assertFalse(check.execute().isSubjectInAcl());
-  }
-
-  @Test
-  public void isSubjectInAcl_whenPolicyAclAllowsAccess() {
-    var acl = new AccessControlList(List.of(
-      new AccessControlList.AllowedEntry(
-        SAMPLE_USER,
-        PolicyRight.JOIN.toMask())));
-
-    var policy = Mockito.mock(Policy.class);
-    when(policy.parent()).thenReturn(Optional.empty());
-    when(policy.accessControlList()).thenReturn(Optional.of(acl));
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
-
-    assertTrue(check.execute().isSubjectInAcl());
-  }
-
-  @Test
-  public void isSubjectInAcl_whenPolicyAclDeniesAccess() {
-    var acl = new AccessControlList(List.of(
-      new AccessControlList.AllowedEntry( // Irrelevant ACE
-        SAMPLE_USER,
-        PolicyRight.APPROVE_SELF.toMask()),
-      new AccessControlList.DeniedEntry(
-        SAMPLE_USER,
-        PolicyRight.JOIN.toMask())));
-
-    var policy = Mockito.mock(Policy.class);
-    when(policy.parent()).thenReturn(Optional.empty());
-    when(policy.accessControlList()).thenReturn(Optional.of(acl));
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
-
-    assertFalse(check.execute().isSubjectInAcl());
   }
 
   //---------------------------------------------------------------------------

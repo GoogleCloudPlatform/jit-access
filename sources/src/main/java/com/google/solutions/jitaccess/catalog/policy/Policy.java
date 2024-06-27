@@ -21,9 +21,11 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 
 public interface Policy {
@@ -46,5 +48,38 @@ public interface Policy {
     JOIN,
     APPROVE,
     RECERTIFY
+  }
+
+  /**
+   * Check access based on this policy's ACL, and it's ancestry's ACLs.
+   */
+  default boolean checkAccess(
+    @NotNull Subject subject,
+    @NotNull EnumSet<PolicyRight> requiredRights
+  ) {
+    //
+    // Evaluate parent policy.
+    //
+    if (this.parent().isPresent() &&
+      !this.parent().get().checkAccess(subject, requiredRights)) {
+
+      //
+      // Parent denies access.
+      //
+      return false;
+    }
+
+    if (this.accessControlList().isPresent() &&
+      !this.accessControlList()
+        .get()
+        .isAllowed(subject, PolicyRight.toMask(requiredRights))) {
+
+      //
+      // This policy's ACL denies access.
+      //
+      return false;
+    }
+
+    return true;
   }
 }

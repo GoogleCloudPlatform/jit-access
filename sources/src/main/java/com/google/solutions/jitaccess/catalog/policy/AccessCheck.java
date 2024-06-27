@@ -36,7 +36,7 @@ public class AccessCheck {
   private final @NotNull Policy policy;
   private final @NotNull EnumSet<PolicyRight> requiredRights;
 
-  private @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
+  private final @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
 
   private boolean executed = false;
 
@@ -88,47 +88,6 @@ public class AccessCheck {
     }
   }
 
-  private static void evaluateAcl(
-    @NotNull Policy policy,
-    @NotNull Subject subject,
-    @NotNull EnumSet<PolicyRight> requiredRights,
-    @NotNull Result resultAccumulator
-  ) {
-    //
-    // Evaluate the environment policy first.
-    //
-    if (policy.parent().isPresent()) {
-      evaluateAcl(
-        policy.parent().get(),
-        subject,
-        requiredRights,
-        resultAccumulator);
-    }
-
-    //
-    // Check ACL. If any ACL in the hierarchy denies access,
-    // we deny overall access. Therefore, we AND-combine
-    // the individual results.
-    //
-    if (policy.accessControlList().isPresent())
-    {
-      resultAccumulator.isSubjectInAcl &= policy.accessControlList()
-        .get()
-        .isAllowed(subject, PolicyRight.toMask(requiredRights));
-    }
-  }
-
-  private void evaluateAclAndConstraints(
-    @NotNull Policy policy,
-    @NotNull Result resultAccumulator
-  ) {
-    evaluateAcl(policy, this.subject, this.requiredRights, resultAccumulator);
-
-    for (var constraintCheck : this.constraintChecks) {
-      evaluateConstraintCheck(constraintCheck, resultAccumulator);
-    }
-  }
-
   /**
    * Add a set of constraints to be considered.
    */
@@ -163,8 +122,13 @@ public class AccessCheck {
     //
     // Evaluate ACL and constraints of the policy hierarchy.
     //
-    var result = new Result(true);
-    evaluateAclAndConstraints(this.policy, result);
+    var result = new Result(policy.checkAccess(
+      this.subject,
+      this.requiredRights));
+
+    for (var constraintCheck : this.constraintChecks) {
+      evaluateConstraintCheck(constraintCheck, result);
+    }
 
     //
     // Check if the current user has the principal, i.e.,
@@ -186,7 +150,7 @@ public class AccessCheck {
   }
 
   public class Result {
-    private boolean isSubjectInAcl;
+    private final boolean isSubjectInAcl;
     private Optional<Principal> activeMembership;
     private @NotNull LinkedList<Constraint> satisfiedConstraints;
     private @NotNull LinkedList<Constraint> unsatisfiedConstraints;
