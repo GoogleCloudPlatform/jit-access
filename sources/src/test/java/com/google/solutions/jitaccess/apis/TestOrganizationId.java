@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestOrganizationId {
 
   @Test
-  public void toStringReturnsId() {
+  public void toString_returnsId() {
     assertEquals("111", new OrganizationId("111").toString());
   }
 
@@ -67,7 +67,7 @@ public class TestOrganizationId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     OrganizationId id1 = new OrganizationId("111");
     OrganizationId id2 = new OrganizationId("111");
 
@@ -76,14 +76,14 @@ public class TestOrganizationId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     OrganizationId id1 = new OrganizationId("111");
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     OrganizationId id1 = new OrganizationId("111");
     OrganizationId id2 = new OrganizationId("222");
 
@@ -92,14 +92,14 @@ public class TestOrganizationId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     OrganizationId id1 = new OrganizationId("111");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     OrganizationId id1 = new OrganizationId("111");
 
     assertFalse(id1.equals(""));
@@ -110,7 +110,7 @@ public class TestOrganizationId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenInTreeSet_ThenReturnsInExpectedOrder() {
+  public void compareTo() {
     var organizations = List.of(
       new OrganizationId("333"),
       new OrganizationId("111"),

@@ -93,7 +93,7 @@ public class ITestSecretManagerClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenAccessSecretThrowsException() {
+  public void accessSecret_whenUnauthenticated_thenThrowsException() {
     var adapter = new SecretManagerClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       HttpTransport.Options.DEFAULT);
@@ -104,7 +104,7 @@ public class ITestSecretManagerClient {
   }
 
   @Test
-  public void whenCallerLacksPermission_ThenAccessSecretThrowsException() {
+  public void accessSecret_whenCallerLacksPermission_thenThrowsException() {
     var adapter = new SecretManagerClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       HttpTransport.Options.DEFAULT);
@@ -115,7 +115,7 @@ public class ITestSecretManagerClient {
   }
 
   @Test
-  public void whenSecretNotFondPermission_ThenAccessSecretThrowsException() {
+  public void accessSecret_whenSecretNotFondPermission_thenThrowsException() {
     var adapter = new SecretManagerClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       HttpTransport.Options.DEFAULT);
@@ -128,7 +128,7 @@ public class ITestSecretManagerClient {
   }
 
   @Test
-  public void whenSecretVersionNotFondPermission_ThenAccessSecretThrowsException() {
+  public void accessSecret_whenSecretVersionNotFondPermission_thenThrowsException() {
     var adapter = new SecretManagerClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       HttpTransport.Options.DEFAULT);

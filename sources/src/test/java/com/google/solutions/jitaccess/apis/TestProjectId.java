@@ -35,7 +35,7 @@ public class TestProjectId {
     "//cloudresourcemanager.googleapis.com/projects/project-1";
 
   @Test
-  public void toStringReturnsId() {
+  public void toString_returnsId() {
     assertEquals("project-1", new ProjectId("project-1").toString());
   }
 
@@ -44,43 +44,18 @@ public class TestProjectId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenProjectIdHasAbsolutePrefix_ThenParseSucceeds() {
-    var s = ProjectId.ABSOLUTE_PREFIX + "project-1";
+  public void parse_whenProjectIdHasRelativePrefix() {
+    var id = ProjectId.parse(ProjectId.RELATIVE_PREFIX + "project-1");
 
-    assertTrue(ProjectId.canParse(s));
-    assertEquals("project-1", ProjectId.parse(s).id());
-  }
-
-  @Test
-  public void whenProjectIdHasRelativePrefix_ThenParseSucceeds() {
-    var s = ProjectId.RELATIVE_PREFIX + "project-1";
-
-    assertTrue(ProjectId.canParse(s));
-    assertEquals("project-1", ProjectId.parse(s).id());
-  }
-
-  @Test
-  public void whenResourceIdHasAbsolutePrefix_ThenParseThrowsException() {
-    var s = ProjectId.ABSOLUTE_PREFIX + "project-1/resources/1";
-
-    assertFalse(ProjectId.canParse(s));
-    assertThrows(IllegalArgumentException.class, () -> ProjectId.parse(s).id());
-  }
-
-  @Test
-  public void whenResourceIdHasRelativePrefix_ThenParseSucceeds() {
-    var s = ProjectId.RELATIVE_PREFIX + "project-1/resources/1";
-
-    assertFalse(ProjectId.canParse(s));
-    assertThrows(IllegalArgumentException.class, () -> ProjectId.parse(s).id());
+    assertTrue(id.isPresent());
+    assertEquals("project-1", id.get().toString());
   }
 
   @ParameterizedTest
   @ValueSource(strings = {" ", "project-1", "foo/bar", "project-1/"})
   public void whenResourceIdInvalid_ThenParseThrowsException(String s) {
-    assertFalse(ProjectId.canParse(null));
-    assertFalse(ProjectId.canParse(s));
-    assertThrows(IllegalArgumentException.class, () -> ProjectId.parse(s).id());
+    assertFalse(ProjectId.parse(null).isPresent());
+    assertFalse(ProjectId.parse(s).isPresent());
   }
 
   // -------------------------------------------------------------------------
@@ -115,7 +90,7 @@ public class TestProjectId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     ProjectId id1 = new ProjectId("project-1");
     ProjectId id2 = new ProjectId("project-1");
 
@@ -124,14 +99,14 @@ public class TestProjectId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     ProjectId id1 = new ProjectId("project-1");
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     ProjectId id1 = new ProjectId("project-1");
     ProjectId id2 = new ProjectId("project-2");
 
@@ -140,14 +115,14 @@ public class TestProjectId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     ProjectId id1 = new ProjectId("project-1");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     ProjectId id1 = new ProjectId("project-1");
 
     assertFalse(id1.equals(""));
@@ -158,7 +133,7 @@ public class TestProjectId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenInTreeSet_ThenReturnsInExpectedOrder() {
+  public void compareTo() {
     var projects = List.of(
       new ProjectId("project-3"),
       new ProjectId("project-1"),

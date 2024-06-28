@@ -26,6 +26,8 @@ import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * ID of a Google Cloud project.
  */
@@ -33,7 +35,6 @@ public record ProjectId(
   @NotNull String id
 ) implements Comparable<ProjectId>, ResourceId {
   static final String RELATIVE_PREFIX = "projects/";
-  static final String ABSOLUTE_PREFIX = "//cloudresourcemanager.googleapis.com/projects/";
 
   public ProjectId {
     Preconditions.checkNotNull(id, "id");
@@ -46,56 +47,17 @@ public record ProjectId(
     return this.id;
   }
 
-  // -------------------------------------------------------------------------
-  // Full resource name conversion.
-  // -------------------------------------------------------------------------
-
   /**
-   * Return a full resource name as used by the Asset API.
+   * Parse a project ID from one of the formats projects/123.
    */
-  public @NotNull String getFullResourceName() {
-    return ABSOLUTE_PREFIX + this.id;
-  }
-
-  /**
-   * Parse a project ID from one of the following formats:
-   *
-   * - projects/123
-   * - //cloudresourcemanager.googleapis.com/projects/123
-   *
-   * The following are not project IDs:
-   *
-   * - projects/123/foo/123
-   * - //cloudresourcemanager.googleapis.com/projects/123/foo/123
-   *
-   */
-  public static @NotNull ProjectId parse(@NotNull String s) {
-    if (s.startsWith(ABSOLUTE_PREFIX) && s.indexOf('/', ABSOLUTE_PREFIX.length()) == -1) {
-      return new ProjectId(s.substring(ABSOLUTE_PREFIX.length()));
-    }
-    else if (s.startsWith(RELATIVE_PREFIX) && s.indexOf('/', RELATIVE_PREFIX.length()) == -1) {
-      return new ProjectId(s.substring(RELATIVE_PREFIX.length()));
+  public static @NotNull Optional<ProjectId> parse(@Nullable String s) {
+    if (s != null &&
+      s.startsWith(RELATIVE_PREFIX) &&
+      s.indexOf('/', RELATIVE_PREFIX.length()) == -1) {
+      return Optional.of(new ProjectId(s.substring(RELATIVE_PREFIX.length())));
     }
     else {
-      throw new IllegalArgumentException("Invalid project ID");
-    }
-  }
-
-  /**
-   * Check if the string is a well-formed project ID and can be parsed.
-   */
-  public static boolean canParse(@Nullable String s) {
-    if (Strings.isNullOrEmpty(s)) {
-      return false;
-    }
-    else if (s.startsWith(ABSOLUTE_PREFIX) && s.indexOf('/', ABSOLUTE_PREFIX.length()) == -1) {
-      return true;
-    }
-    else if (s.startsWith(RELATIVE_PREFIX) && s.indexOf('/', RELATIVE_PREFIX.length()) == -1) {
-      return true;
-    }
-    else {
-      return false;
+      return Optional.empty();
     }
   }
 

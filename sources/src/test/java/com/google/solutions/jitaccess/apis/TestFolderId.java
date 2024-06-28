@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestFolderId {
 
   @Test
-  public void toStringReturnsId() {
+  public void toString_returnsId() {
     Assertions.assertEquals("111", new FolderId("111").toString());
   }
 
@@ -68,7 +68,7 @@ public class TestFolderId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     FolderId id1 = new FolderId("111");
     FolderId id2 = new FolderId("111");
 
@@ -77,14 +77,14 @@ public class TestFolderId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     FolderId id1 = new FolderId("111");
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     FolderId id1 = new FolderId("111");
     FolderId id2 = new FolderId("222");
 
@@ -93,14 +93,14 @@ public class TestFolderId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     FolderId id1 = new FolderId("111");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     FolderId id1 = new FolderId("111");
 
     assertFalse(id1.equals(""));
@@ -111,7 +111,7 @@ public class TestFolderId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenInTreeSet_ThenReturnsInExpectedOrder() {
+  public void compareTo() {
     var folders = List.of(
       new FolderId("333"),
       new FolderId("111"),

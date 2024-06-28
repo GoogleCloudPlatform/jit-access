@@ -61,7 +61,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenGetGroupThrowsException() {
+  public void getGroup_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -73,7 +73,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenCallerLacksPermission_ThenGetGroupThrowsException() {
+  public void getGroup_whenCallerLacksPermission_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -86,7 +86,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenGroupNotFound_ThenGetThrowsException() {
+  public void getGroup_whenGroupNotFound_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -119,7 +119,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenCreateGroupThrowsException() {
+  public void createGroup_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -133,7 +133,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenCustomerIdDoesNotMatchDomain_ThenCreateGroupThrowsException() {
+  public void createGroup_whenCustomerIdDoesNotMatchDomain_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -148,7 +148,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void createGroupIsIdempotent() throws Exception {
+  public void createGroup_createGroupIsIdempotent() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(ITestEnvironment.CLOUD_IDENTITY_ACCOUNT_ID),
@@ -178,7 +178,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenDeleteGroupThrowsException() {
+  public void deleteGroup_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -190,7 +190,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenGroupIdInvalid_ThenDeleteGroupThrowsException() {
+  public void deleteGroup_whenGroupIdInvalid_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -207,7 +207,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenGroupIdInvalid_ThenGetMembershipThrowsException() {
+  public void getMembership_whenGroupIdInvalid_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -222,7 +222,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void getMembershipReturnsExpiryDetails() throws Exception {
+  public void getMembership() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -251,7 +251,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenAddMembershipThrowsException() {
+  public void addMembership_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -266,7 +266,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenGroupIdInvalid_ThenAddMembershipThrowsException() {
+  public void addMembership_whenGroupIdInvalid_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -282,7 +282,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void addMembershipIsIdempotent() throws Exception {
+  public void addMembership_isIdempotent() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(ITestEnvironment.CLOUD_IDENTITY_ACCOUNT_ID),
@@ -301,7 +301,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenExpiryIsInThePast_ThenAddMembershipThrowsException() throws Exception {
+  public void addMembership_whenExpiryIsInThePast_thenThrowsException() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(ITestEnvironment.CLOUD_IDENTITY_ACCOUNT_ID),
@@ -318,7 +318,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenMembershipExists_ThenAddMembershipUpdatesExpiry() throws Exception {
+  public void addMembership_whenMembershipExists_thenUpdatesExpiry() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(ITestEnvironment.CLOUD_IDENTITY_ACCOUNT_ID),
@@ -363,7 +363,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenDeleteMembershipThrowsException() {
+  public void deleteMembership_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -376,7 +376,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void deleteMembershipIsIdempotent() throws Exception {
+  public void deleteMembership_isIdempotent() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -408,7 +408,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenListMembershipsThrowsException() {
+  public void listMemberships_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -420,7 +420,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void listMembershipsReturnsExpiryDetails() throws Exception {
+  public void listMemberships() throws Exception {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -455,7 +455,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenListMembershipsByUserThrowsException() {
+  public void listMembershipsByUser_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -468,7 +468,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenUserNotFound_ThenListMembershipsByUserThrowsException() {
+  public void listMembershipsByUser_whenUserNotFound_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(
@@ -499,7 +499,7 @@ public class ITestCloudIdentityGroupsClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenSearchGroupsThrowsException() {
+  public void searchGroups_whenUnauthenticated_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       new CloudIdentityGroupsClient.Options(INVALID_CUSTOMER_ID),
@@ -511,7 +511,7 @@ public class ITestCloudIdentityGroupsClient {
   }
 
   @Test
-  public void whenQueryInvalid_ThenSearchGroupsThrowsException() {
+  public void searchGroups_whenQueryInvalid_thenThrowsException() {
     var client = new CloudIdentityGroupsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       new CloudIdentityGroupsClient.Options(

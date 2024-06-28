@@ -37,7 +37,7 @@ public class TestSmtpClient {
   //---------------------------------------------------------------------
 
   @Test
-  public void whenOptionsContainPassword_ThenCreateAuthenticatorUsesPassword() throws Exception {
+  public void createAuthenticator_whenOptionsContainPassword() throws Exception {
     var options = new SmtpClient.Options(
       "host",
       2525,
@@ -54,7 +54,7 @@ public class TestSmtpClient {
   }
 
   @Test
-  public void whenOptionsContainSecretPath_ThenCreateAuthenticatorUsesPasswordFromSecret() throws Exception {
+  public void createAuthenticator_whenOptionsContainSecretPath() throws Exception {
     var options = new SmtpClient.Options(
       "host",
       2525,

@@ -13,7 +13,7 @@ public class ITestIamCredentialsClient {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenUnauthenticated_ThenSignJwtThrowsException() {
+  public void signJwt_whenUnauthenticated_thenThrowsException() {
     var adapter = new IamCredentialsClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       HttpTransport.Options.DEFAULT);
@@ -27,7 +27,7 @@ public class ITestIamCredentialsClient {
   }
 
   @Test
-  public void whenCallerHasPermission_ThenSignJwtSucceeds() throws Exception {
+  public void signJwt() throws Exception {
     var adapter = new IamCredentialsClient(
       ITestEnvironment.APPLICATION_CREDENTIALS,
       HttpTransport.Options.DEFAULT);

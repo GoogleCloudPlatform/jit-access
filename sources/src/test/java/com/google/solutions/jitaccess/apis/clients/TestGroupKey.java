@@ -33,7 +33,7 @@ public class TestGroupKey {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenIdHasPrefix_ThenConstructorStripsPrefix() {
+  public void constructor_whenIdHasPrefix() {
     assertEquals("1", new GroupKey("1").id);
     assertEquals("1", new GroupKey("groups/1").id);
   }
@@ -43,7 +43,7 @@ public class TestGroupKey {
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsPrefixedId() {
+  public void toString_returnsPrefixedId() {
     assertEquals("groups/1", new GroupKey("1").toString());
   }
 
@@ -52,7 +52,7 @@ public class TestGroupKey {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     GroupKey id1 = new GroupKey("group-1");
     GroupKey id2 = new GroupKey("group-1");
 
@@ -61,14 +61,14 @@ public class TestGroupKey {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     GroupKey id1 = new GroupKey("group-1");
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     GroupKey id1 = new GroupKey("id-1");
     GroupKey id2 = new GroupKey("id-2");
 
@@ -77,14 +77,14 @@ public class TestGroupKey {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     GroupKey id1 = new GroupKey("group-1");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     var id = new GroupKey("group-1");
     var email = new UserId("group-1@example.com");
 

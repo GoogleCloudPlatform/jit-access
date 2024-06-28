@@ -26,10 +26,13 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.util.LinkedList;
 
+/**
+ * Contains utility methods for formatting durations.
+ */
 public class DurationFormatter {
   private DurationFormatter() {}
 
-  private static String pluralize(long num, String unit) {
+  private static @NotNull String pluralize(long num, String unit) {
     return String.format(
       "%d %s%s",
       num,

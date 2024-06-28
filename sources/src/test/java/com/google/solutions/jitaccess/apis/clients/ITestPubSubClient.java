@@ -31,8 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ITestPubSubClient {
+
+  // -------------------------------------------------------------------------
+  // publish.
+  // -------------------------------------------------------------------------
+
   @Test
-  public void whenUnauthenticated_ThenPublishThrowsException() {
+  public void publish_whenUnauthenticated_ThenThrowsException() {
     var adapter = new PubSubClient(
       ITestEnvironment.INVALID_CREDENTIAL,
       HttpTransport.Options.DEFAULT);
@@ -45,7 +50,7 @@ public class ITestPubSubClient {
   }
 
   @Test
-  public void whenCallerLacksPermission_ThenAddProjectIamBindingThrowsException() {
+  public void publish_whenCallerLacksPermission_ThenThrowsException() {
     var adapter = new PubSubClient(
       ITestEnvironment.NO_ACCESS_CREDENTIALS,
       HttpTransport.Options.DEFAULT);
@@ -57,7 +62,7 @@ public class ITestPubSubClient {
   }
 
   @Test
-  public void whenAuthenticated_ThenPublishSucceeds() throws Exception {
+  public void publish() throws Exception {
     // if project id configured but no topic name, just skip the test
     Assumptions.assumeTrue(ITestEnvironment.PROJECT_ID != null);
     Assumptions.assumeTrue(ITestEnvironment.PUBSUB_TOPIC != null);
