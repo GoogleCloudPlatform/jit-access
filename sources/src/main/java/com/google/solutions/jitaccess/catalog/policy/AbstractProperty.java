@@ -47,13 +47,17 @@ abstract class AbstractProperty<T> implements Property {
     @Nullable T maxInclusive
   ) {
     this.type = type;
-    this.name = name;
+    this.name = name; // TODO: check syntax.
     this.displayName = displayName;
     this.minInclusive = minInclusive;
     this.maxInclusive = maxInclusive;
   }
 
-  protected AbstractProperty(@NotNull Class<T> type, @NotNull String name, @NotNull String displayName) {
+  protected AbstractProperty(
+    @NotNull Class<T> type,
+    @NotNull String name,
+    @NotNull String displayName
+  ) {
     this(type, name, displayName, null, null);
   }
 
@@ -61,27 +65,31 @@ abstract class AbstractProperty<T> implements Property {
    * @return name of the property.
    */
   @Override
-  public String name() {
+  public @NotNull String name() {
     return name;
   }
 
   /**
-   * @return description of the property.
+   * @return display name of the property.
    */
   @Override
-  public String displayName() {
+  public @NotNull String displayName() {
     return displayName;
   }
 
   /**
    * Convert string representation to the typed representation.
+   *
+   * @throws IllegalArgumentException when a conversion is not possible.
    */
-  protected abstract T convertFromString(@Nullable String value);
+  protected abstract @NotNull T convertFromString(@Nullable String value);
 
   /**
    * Convert to string representation.
+   *
+   * @throws IllegalArgumentException when a conversion isn ot possible.
    */
-  protected abstract String convertToString(@Nullable T value);
+  protected abstract @NotNull String convertToString(@Nullable T value);
 
 
   protected void validateNotNull(Object value) {

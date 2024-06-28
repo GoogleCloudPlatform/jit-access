@@ -87,12 +87,12 @@ public record SystemPolicy(
   }
 
   @Override
-  public Optional<Policy> parent() {
+  public @NotNull Optional<Policy> parent() {
     return Optional.of(this.environment);
   }
 
   @Override
-  public Optional<AccessControlList> accessControlList() {
+  public @NotNull Optional<AccessControlList> accessControlList() {
     return Optional.empty();
   }
 

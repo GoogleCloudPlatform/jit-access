@@ -70,7 +70,7 @@ public enum PolicyRight {
     return mask;
   }
 
-  public static EnumSet<PolicyRight> parse(@NotNull String list) {
+  public static @NotNull EnumSet<PolicyRight> parse(@NotNull String list) {
     return EnumSet.copyOf(
       Arrays.asList(list.split(","))
         .stream()

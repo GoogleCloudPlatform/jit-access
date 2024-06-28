@@ -31,6 +31,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * Catalog of groups that a subject can access.
+ *
+ * This class serves as the "entry point" for the API/UI to
+ * lookup or join groups.
+ */
 public class Catalog {
   private final @NotNull Map<String, EnvironmentPolicy> environments;
   private final @NotNull Subject subject;
@@ -54,7 +60,7 @@ public class Catalog {
     this.groupMapping = groupMapping;
   }
 
-  public Optional<EnvironmentPolicy> environment(@NotNull String name) {
+  public @NotNull Optional<EnvironmentPolicy> environment(@NotNull String name) {
     //
     // NB. No access check required.
     //

@@ -62,7 +62,7 @@ public record EnvironmentPolicy(
     this(name, description, new LinkedList<>());
   }
 
-  public Optional<SystemPolicy> system(@NotNull String name) {
+  public @NotNull Optional<SystemPolicy> system(@NotNull String name) {
     return this.systems
       .stream()
       .filter(s -> s.name().equals(name))
@@ -70,17 +70,17 @@ public record EnvironmentPolicy(
   }
 
   @Override
-  public String toString() {
+  public @NotNull String toString() {
     return this.name;
   }
 
   @Override
-  public Optional<Policy> parent() {
+  public @NotNull Optional<Policy> parent() {
     return Optional.empty();
   }
 
   @Override
-  public Optional<AccessControlList> accessControlList() {
+  public @NotNull Optional<AccessControlList> accessControlList() {
     return Optional.empty();
   }
 

@@ -30,7 +30,9 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * Requires group memberships to have an expiry.
+ * Constraint that requires group memberships to have
+ * an expiry. The expiry can be pre-defined (fixed) or
+ * user-defined (within a defined range).
  */
 public class ExpiryConstraint implements Constraint {
   public static final @NotNull String NAME = "__expiry";
@@ -54,10 +56,16 @@ public class ExpiryConstraint implements Constraint {
     this(duration, duration);
   }
 
+  /**
+   * @return minimum duration.
+   */
   public @NotNull Duration minDuration() {
     return minDuration;
   }
 
+  /**
+   * @return maximum duration.
+   */
   public @NotNull Duration maxDuration() {
     return maxDuration;
   }

@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -32,27 +33,27 @@ public interface Property {
   /**
    * @return display name of the property.
    */
-  String displayName();
+  @NotNull String displayName();
 
   /**
    * @return name of the property.
    */
-  String name();
+  @NotNull String name();
 
   /**
    * Type of the property.
    */
-  Class<?> type();
+  @NotNull Class<?> type();
 
   /**
    * Minimum allowed value, if constrained.
    */
-  Optional<String> minInclusive();
+  @NotNull Optional<String> minInclusive();
 
   /**
    * Maximum allowed value, if constrained.
    */
-  Optional<String> maxInclusive();
+  @NotNull Optional<String> maxInclusive();
 
   /**
    * Parse string value and assign to property.
@@ -62,5 +63,5 @@ public interface Property {
   /**
    * @return string value.
    */
-  @Nullable String get();
+  @Nullable String get(); // TODO: Consistency - allow null for properties?
 }

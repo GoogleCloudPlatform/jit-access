@@ -60,7 +60,7 @@ public class CelConstraint implements Constraint {
     @NotNull Collection<Variable> variables,
     @NotNull String expression
   ) {
-    this.name = name;
+    this.name = name; // TODO: check syntax
     this.displayName = displayName;
     this.variableDeclarations = variables;
     this.expression = expression;
@@ -169,10 +169,10 @@ public class CelConstraint implements Constraint {
      */
     private static final String NAME_PATTERN = "[A-Za-z\\_]+";
 
-    private final String name;
-    private final String displayName;
+    private final @NotNull String name;
+    private final @NotNull String displayName;
 
-    protected Variable(String name, String displayName) {
+    protected Variable(@NotNull String name, @NotNull String displayName) {
       Preconditions.checkArgument(
         name.matches(NAME_PATTERN),
         "Variable names must be alphanumeric");
@@ -181,15 +181,15 @@ public class CelConstraint implements Constraint {
       this.displayName = displayName;
     }
 
-    public String name() {
+    public @NotNull String name() {
       return name;
     }
 
-    public String displayName() {
+    public @NotNull String displayName() {
       return displayName;
     }
 
-    protected abstract Property bind(@NotNull GenericJson json);
+    protected abstract @NotNull Property bind(@NotNull GenericJson json);
   }
 
   public static class StringVariable extends Variable {
@@ -208,7 +208,7 @@ public class CelConstraint implements Constraint {
     }
 
     @Override
-    public Property bind(@NotNull GenericJson json) {
+    public @NotNull Property bind(@NotNull GenericJson json) {
       return new AbstractStringProperty(this.name(), this.displayName(), this.minLength, this.maxLength) {
         @Override
         protected void setCore(@Nullable String value) {
@@ -239,7 +239,7 @@ public class CelConstraint implements Constraint {
     }
 
     @Override
-    public Property bind(@NotNull GenericJson json) {
+    public @NotNull Property bind(@NotNull GenericJson json) {
       return new AbstractIntegerProperty(this.name(), this.displayName(), this.minInclusive, this.maxInclusive) {
         @Override
         protected void setCore(@Nullable Integer value) {
@@ -263,7 +263,7 @@ public class CelConstraint implements Constraint {
     }
 
     @Override
-    public Property bind(@NotNull GenericJson json) {
+    public @NotNull Property bind(@NotNull GenericJson json) {
       return new AbstractBooleanProperty(this.name(), this.displayName()) {
         @Override
         protected void setCore(@Nullable Boolean value) {

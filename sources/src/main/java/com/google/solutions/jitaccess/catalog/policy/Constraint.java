@@ -72,7 +72,15 @@ public interface Constraint {
     boolean execute() throws ConstraintException;
   }
 
+  /**
+   * A set of context variables that can be used during
+   * constraint evaluation.
+   */
   interface  Context {
+    /**
+     * Add a context variable that can be used during constraint
+     * evaluation.
+     */
     Context set(@NotNull String name, @NotNull Object val);
   }
 }

@@ -30,7 +30,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class AccessCheck {
+/**
+ * Check for whether a subject holds rights on a JIT group.
+ */
+public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
   private final @NotNull Subject subject;
   private final @NotNull JitGroupId groupId;
   private final @NotNull Policy policy;
@@ -94,6 +97,7 @@ public class AccessCheck {
   public @NotNull AccessCheck applyConstraints(
     @NotNull Policy.ConstraintClass constraintClass
   ) {
+    // TODO: Also evaluate parent policy constraints
     this.constraintChecks.addAll(
       this.policy.constraints(constraintClass)
         .stream()
@@ -120,7 +124,7 @@ public class AccessCheck {
     this.executed = true;
 
     //
-    // Evaluate ACL and constraints of the policy hierarchy.
+    // Evaluate ACLs of this policy and its parents.
     //
     var result = new Result(policy.checkAccess(
       this.subject,
@@ -164,14 +168,6 @@ public class AccessCheck {
       this.failedConstraints = new HashMap<>();
     }
 
-    public Collection<Constraint> satisfiedConstraints() {
-      return satisfiedConstraints;
-    }
-
-    public Collection<Constraint> unsatisfiedConstraints() {
-      return unsatisfiedConstraints;
-    }
-
     /**
      * Input used to perform check.
      */
@@ -180,15 +176,32 @@ public class AccessCheck {
     }
 
     /**
+     * @return satisified constraints.
+     */
+    public @NotNull Collection<Constraint> satisfiedConstraints() {
+      return satisfiedConstraints;
+    }
+
+    /**
+     * @return unsatisfied and failed constraints.
+     */
+    public @NotNull Collection<Constraint> unsatisfiedConstraints() {
+      return unsatisfiedConstraints;
+    }
+
+    /**
      * @return failed constraints and the exception they encountered.
      *
      * Failed constraints are always unsatisfied too.
      */
-    public Map<Constraint, Exception> failedConstraints() {
+    public @NotNull Map<Constraint, Exception> failedConstraints() {
       return failedConstraints;
     }
 
-    public Optional<Principal> activeMembership() {
+    /**
+     * @return information about the subject's existing membership, if any.
+     */
+    public @NotNull Optional<Principal> activeMembership() {
       return activeMembership;
     }
 
