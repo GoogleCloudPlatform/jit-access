@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRequestContextLogger {
   @Test
-  public void whenTraceIdAndUserIdSet_ThenWriteLogIncludesFields() {
+  public void info_whenTraceIdAndUserIdSet() {
     var buffer = new StringBuilder();
     var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     requestContext.authenticate(
@@ -51,7 +51,7 @@ public class TestRequestContextLogger {
   }
 
   @Test
-  public void whenTraceIdAndAccessLevelsSet_ThenWriteLogIncludesFields() {
+  public void info_whenTraceIdAndAccessLevelsSet() {
     var buffer = new StringBuilder();
     var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     requestContext.authenticate(
@@ -71,7 +71,7 @@ public class TestRequestContextLogger {
   }
 
   @Test
-  public void whenNotAuthenticated_ThenWriteLogSucceeds() {
+  public void error_whenNotAuthenticated() {
     var buffer = new StringBuilder();
     var requestContext = new RequestContext(Mockito.mock(SubjectResolver.class));
     var logger = new RequestContextLogger(buffer, requestContext);

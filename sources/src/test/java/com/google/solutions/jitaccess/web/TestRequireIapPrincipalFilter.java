@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
 
 public class TestRequireIapPrincipalFilter {
   @Test()
-  public void whenHeaderMissing_ThenFilterThrowsForbiddenException() {
+  public void filter_whenHeaderMissing_thenThrowsForbiddenException() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.getProjectId()).thenReturn("123");
     when(environment.getProjectNumber()).thenReturn("123");
@@ -54,7 +54,7 @@ public class TestRequireIapPrincipalFilter {
   }
 
   @Test
-  public void whenHeaderContainsMalformedJwt_ThenFilterThrowsForbiddenException() {
+  public void filter_whenHeaderContainsMalformedJwt_thenThrowsForbiddenException() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.getProjectId()).thenReturn("123");
     when(environment.getProjectNumber()).thenReturn("123");
@@ -73,7 +73,7 @@ public class TestRequireIapPrincipalFilter {
   }
 
   @Test
-  public void whenHeaderContainsInvalidJwt_ThenFilterThrowsForbiddenException() {
+  public void filter_whenHeaderContainsInvalidJwt_thenThrowsForbiddenException() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.getProjectId()).thenReturn("123");
     when(environment.getProjectNumber()).thenReturn("123");
@@ -102,7 +102,7 @@ public class TestRequireIapPrincipalFilter {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenDebugModeEnabledAndDebugHeaderMissing_ThenFilterThrowsForbiddenException() {
+  public void filter_whenDebugModeEnabledAndDebugHeaderMissing_thenThrowsForbiddenException() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.isDebugModeEnabled()).thenReturn(true);
 
@@ -116,7 +116,7 @@ public class TestRequireIapPrincipalFilter {
   }
 
   @Test
-  public void whenDebugModeEnabled_ThenFilterUsesDebugHeader() {
+  public void filter_whenDebugModeEnabled_thenUsesDebugHeader() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.isDebugModeEnabled()).thenReturn(true);
 
@@ -134,7 +134,7 @@ public class TestRequireIapPrincipalFilter {
   }
 
   @Test
-  public void whenRunsInCloudRun_returnsCorrectAudience() {
+  public void filter_whenRunsInCloudRun_returnsCorrectAudience() {
     RuntimeEnvironment environment = Mockito.mock(RuntimeEnvironment.class);
     when(environment.getProjectId()).thenReturn("123");
     when(environment.getProjectNumber()).thenReturn("123");

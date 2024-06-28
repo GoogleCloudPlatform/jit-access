@@ -92,7 +92,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenPathNotMapped_ThenGetReturnsError() throws Exception {
+  public void get_whenPathNotMapped() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/unknown", ExceptionMappers.ErrorEntity.class);
 
@@ -100,7 +100,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMethodNotMapped_ThenPostReturnsError() throws Exception {
+  public void get_whenMethodNotMapped_ThenPostReturnsError() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .post("/api/get", ExceptionMappers.ErrorEntity.class);
 
@@ -108,7 +108,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsIOException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsIOException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/io-exception", ExceptionMappers.ErrorEntity.class);
 
@@ -119,7 +119,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsAuthenticationException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsAuthenticationException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/auth-exception", ExceptionMappers.ErrorEntity.class);
 
@@ -130,7 +130,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsAccessException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsAccessException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/access-exception", ExceptionMappers.ErrorEntity.class);
 
@@ -141,7 +141,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsArgumentException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsArgumentException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/argument-exception", ExceptionMappers.ErrorEntity.class);
 
@@ -152,7 +152,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsNotFoundException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsNotFoundException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/notfound-exception", ExceptionMappers.ErrorEntity.class);
 
@@ -163,7 +163,7 @@ public class TestExceptionMapper {
   }
 
   @Test
-  public void whenMappedResourceThrowsResourceNotFoundException_ThenGetReturnsError() throws Exception {
+  public void get_whenMappedResourceThrowsResourceNotFoundException() throws Exception {
     var response = new RestDispatcher<>(new Resource(), SAMPLE_USER)
       .get("/api/resourcenotfound-exception", ExceptionMappers.ErrorEntity.class);
 

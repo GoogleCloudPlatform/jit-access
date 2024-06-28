@@ -46,18 +46,18 @@ public class TestIapAssertion {
   }
 
   // -------------------------------------------------------------------------
-  // getDeviceInfo.
+  // device.
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenGoogleClaimMissing_ThenGetDeviceInfoReturnsUnknownDevice() {
+  public void device_whenGoogleClaimSetMissing() {
     var assertion = new IapAssertion(new JsonWebToken.Payload());
 
     assertEquals(IapDevice.UNKNOWN, assertion.device());
   }
 
   @Test
-  public void whenGoogleClaimEmpty_ThenGetDeviceInfoReturnsDevice() {
+  public void device_whenGoogleClaimSetEmpty() {
     var assertion = new IapAssertion(new JsonWebToken.Payload()
       .set("google", Map.of()));
 
@@ -65,7 +65,7 @@ public class TestIapAssertion {
   }
 
   @Test
-  public void whenGoogleClaimSet_ThenGetDeviceInfoReturnsDevice() {
+  public void device_whenGoogleClaimSetPresent() {
     var assertion = new IapAssertion(new JsonWebToken.Payload()
       .set("google", Map.of("device_id", "device-1")));
 
@@ -74,7 +74,7 @@ public class TestIapAssertion {
   }
 
   @Test
-  public void whenGoogleClaimContainsAccessLevelsSet_ThenGetDeviceInfoReturnsDevice() {
+  public void device_whenGoogleClaimContainsAccessLevelsSet() {
     var assertion = new IapAssertion(new JsonWebToken.Payload()
       .set("google", Map.of(
         "device_id", "device-1",

@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestEmailMapping {
   @Test
-  public void nullExpression() {
+  public void emailFromUserId_whenExpressionIsNull() {
     var mapping = new EmailMapping();
     assertEquals(
       "user@example.com",
@@ -36,7 +36,7 @@ public class TestEmailMapping {
   }
 
   @Test
-  public void emptyExpression() {
+  public void emailFromUserId_whenExpressionIsEmpty() {
     var mapping = new EmailMapping("");
     assertEquals(
       "user@example.com",
@@ -44,7 +44,7 @@ public class TestEmailMapping {
   }
 
   @Test
-  public void userDotEmailExpression() {
+  public void emailFromUserId_withUserDotEmailExpression() {
     var expression ="user.email";
     assertEquals(
       "user@example.com",
@@ -52,7 +52,7 @@ public class TestEmailMapping {
   }
 
   @Test
-  public void substituteDomainExpression() {
+  public void emailFromUserId_withSubstituteDomainExpression() {
     var expression = "user.email.extract('{handle}@example.com') + '@test.example.com'";
     assertEquals(
       "user@test.example.com",
@@ -60,7 +60,7 @@ public class TestEmailMapping {
   }
 
   @Test
-  public void substituteDomainConditionallyExpression() {
+  public void emailFromUserId_withSubstituteDomainConditionallyExpression() {
     var expression =
       "user.email.endsWith('@external.example.com') " +
         "? user.email.extract('{handle}@external.example.com') + '@otherdomain.example' " +
@@ -75,7 +75,7 @@ public class TestEmailMapping {
   }
 
   @Test
-  public void invalidExpression() {
+  public void emailFromUserId_whenExpressionInvalid() {
     assertThrows(
       EmailMapping.MappingException.class,
       () -> new EmailMapping("user.email.extract(")

@@ -31,7 +31,7 @@ public class TestEmailAddress {
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsEmail() {
+  public void toString_returnsEmail() {
     assertEquals("test@example.com", new EmailAddress("test@example.com").toString());
   }
 
@@ -40,7 +40,7 @@ public class TestEmailAddress {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     EmailAddress id1 = new EmailAddress("bob@example.com");
     EmailAddress id2 = new EmailAddress("bob@example.com");
 
@@ -49,14 +49,14 @@ public class TestEmailAddress {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     EmailAddress id1 = new EmailAddress("bob@example.com");
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     EmailAddress id1 = new EmailAddress("alice@example.com");
     EmailAddress id2 = new EmailAddress("bob@example.com");
 
@@ -65,17 +65,16 @@ public class TestEmailAddress {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     EmailAddress id1 = new EmailAddress("bob@example.com");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     EmailAddress id1 = new EmailAddress("bob@example.com");
 
     assertFalse(id1.equals(""));
   }
-
 }

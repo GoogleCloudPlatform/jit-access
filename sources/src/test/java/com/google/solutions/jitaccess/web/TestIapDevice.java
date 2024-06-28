@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestIapDevice {
   @Test
-  public void toStringReturnsDeviceId() {
+  public void toString_returnsDeviceId() {
     assertEquals("device-1", new IapDevice("device-1", List.of()).toString());
   }
 
@@ -39,7 +39,7 @@ public class TestIapDevice {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     IapDevice id1 = new IapDevice("device-1", List.of());
     IapDevice id2 = new IapDevice("device-1", List.of());
 
@@ -48,14 +48,14 @@ public class TestIapDevice {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     IapDevice id1 = new IapDevice("device-1", List.of());
 
     assertTrue(id1.equals(id1));
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     IapDevice id1 = new IapDevice("device-1", List.of());
     IapDevice id2 = new IapDevice("device-1", List.of("level-1"));
 
@@ -64,14 +64,14 @@ public class TestIapDevice {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     IapDevice id1 = new IapDevice("device-1", List.of());
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     IapDevice id1 = new IapDevice("device-1", List.of());
 
     assertFalse(id1.equals(""));

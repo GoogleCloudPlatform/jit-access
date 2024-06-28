@@ -61,7 +61,7 @@ public class TestJitGroupId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     JitGroupId id1 = new JitGroupId("env", "system", "name");
     JitGroupId id2 = new JitGroupId("env", "system", "name");
 
@@ -71,7 +71,7 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalentButDifferInCasing() {
     JitGroupId id1 = new JitGroupId("env", "system", "name");
     JitGroupId id2 = new JitGroupId("env", "system", "Name");
 
@@ -81,7 +81,7 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     JitGroupId id1 = new JitGroupId("env", "system", "name");
 
     assertTrue(id1.equals(id1));
@@ -89,7 +89,7 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenEnvironmentsDiffer_ThenEqualsReturnsFalse() {
+  public void equals_whenEnvironmentsDiffer() {
     JitGroupId id1 = new JitGroupId("env-1", "system", "name");
     JitGroupId id2 = new JitGroupId("env-2", "system", "name");
 
@@ -99,7 +99,7 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenSystemsDiffer_ThenEqualsReturnsFalse() {
+  public void equals_whenSystemsDiffer() {
     JitGroupId id1 = new JitGroupId("env", "system-1", "name");
     JitGroupId id2 = new JitGroupId("env", "system-2", "name");
 
@@ -109,7 +109,7 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenNamesDiffer_ThenEqualsReturnsFalse() {
+  public void equals_whenNamesDiffer() {
     JitGroupId id1 = new JitGroupId("env", "system", "name-1");
     JitGroupId id2 = new JitGroupId("env", "system", "name-2");
 
@@ -119,14 +119,14 @@ public class TestJitGroupId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     JitGroupId id1 = new JitGroupId("env", "system", "name");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     JitGroupId id1 = new JitGroupId("env", "system", "name");
 
     assertFalse(id1.equals(""));

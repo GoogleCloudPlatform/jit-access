@@ -31,7 +31,7 @@ public class TestUserId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsEmailInLowerCase() {
+  public void toString_returnsEmailInLowerCase() {
     assertEquals("test@example.com", new UserId("test@example.com").toString());
     assertEquals("test@example.com", new UserId("Test@Example.com").toString());
   }
@@ -41,7 +41,7 @@ public class TestUserId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     UserId id1 = new UserId("bob@example.com");
     UserId id2 = new UserId("bob@example.com");
 
@@ -51,7 +51,7 @@ public class TestUserId {
   }
 
   @Test
-  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalentButDifferInCasing() {
     UserId id1 = new UserId("Bob@Example.Com");
     UserId id2 = new UserId("bob@example.com");
 
@@ -61,7 +61,7 @@ public class TestUserId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     UserId id1 = new UserId("bob@example.com");
 
     assertTrue(id1.equals(id1));
@@ -69,7 +69,7 @@ public class TestUserId {
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     UserId id1 = new UserId("alice@example.com");
     UserId id2 = new UserId("bob@example.com");
 
@@ -79,14 +79,14 @@ public class TestUserId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     UserId id1 = new UserId("bob@example.com");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     UserId id1 = new UserId("bob@example.com");
 
     assertFalse(id1.equals(""));

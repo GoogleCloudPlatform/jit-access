@@ -51,7 +51,7 @@ public class TestAccessControlList {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenAclEmpty_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAclEmpty() {
     var acl = new AccessControlList(Set.of());
     var subject = new TestSubject(TEST_USER, Set.of());
 
@@ -60,7 +60,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAclDoesNotIncludeAnyEntriesForSubject_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAclDoesNotIncludeAnyEntriesForSubject() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER_OTHER, Rights.READ | Rights.WRITE | Rights.EXECUTE)
       .allow(TEST_GROUP_1, Rights.READ | Rights.WRITE | Rights.EXECUTE)
@@ -76,7 +76,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAclHasRightsSpreadOverMultipleEntries_ThenIsAllowedReturnsTrue() {
+  public void isAllowed_whenAclHasRightsSpreadOverMultipleEntries() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .allow(TEST_USER, Rights.WRITE)
@@ -93,7 +93,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAclHasRightsSpreadOverMultiplePrincipals_ThenIsAllowedReturnsTrue() {
+  public void isAllowed_whenAclHasRightsSpreadOverMultiplePrincipals() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .allow(TEST_GROUP_1, Rights.WRITE | Rights.EXECUTE)
@@ -110,7 +110,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAclOnlyHasSubsetOfRights_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAclOnlyHasSubsetOfRights() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .build();
@@ -123,7 +123,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenPrincipalExpired_ThenIsAllowedIgnoresPrincipal() {
+  public void isAllowed_whenPrincipalExpired() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .allow(TEST_GROUP_1, Rights.EXECUTE)
@@ -144,7 +144,7 @@ public class TestAccessControlList {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenAclDeniesAllRights_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAclDeniesAllRights() {
     var acl = new AccessControlList.Builder()
       .deny(TEST_USER, Rights.READ | Rights.WRITE)
       .deny(TEST_USER, Rights.EXECUTE)
@@ -160,7 +160,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAclDeniesSomeRights_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAclDeniesSomeRights() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ | Rights.WRITE | Rights.EXECUTE)
       .deny(TEST_GROUP_1, Rights.EXECUTE)
@@ -176,7 +176,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAllowEntryShadowedByDenyEntry_ThenIsAllowedReturnsFalse() {
+  public void isAllowed_whenAllowEntryShadowedByDenyEntry() {
     var acl = new AccessControlList.Builder()
       .deny(TEST_USER, Rights.READ)
       .allow(TEST_USER, Rights.READ)
@@ -194,14 +194,14 @@ public class TestAccessControlList {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenAclEmpty_ThenAllowedPrincipalsIsEmpty() {
+  public void allowedPrincipals_whenAclEmpty() {
     var acl = new AccessControlList.Builder().build();
 
     assertEquals(0, acl.allowedPrincipals(Rights.READ).size());
   }
 
   @Test
-  public void whenNoPrincipalHasRequiredRights_ThenAllowedPrincipalsIsEmpty() {
+  public void allowedPrincipals_whenNoPrincipalHasRequiredRights() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ | Rights.WRITE)
       .allow(TEST_USER_OTHER, Rights.READ)
@@ -211,7 +211,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenPrincipalHasRightsSpreadOverMultipleEntries_ThenAllowedPrincipalReturnsPrincipal() {
+  public void allowedPrincipals_whenPrincipalHasRightsSpreadOverMultipleEntries() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .allow(TEST_USER, Rights.WRITE)
@@ -223,7 +223,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenPrincipalsHaveSubsetOfRights_ThenAllowedPrincipalsIsEmpty() {
+  public void allowedPrincipals_whenPrincipalsHaveSubsetOfRights() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ)
       .allow(TEST_GROUP_1, Rights.READ | Rights.WRITE)
@@ -237,7 +237,7 @@ public class TestAccessControlList {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenAclDeniesSomeRights_ThenAllowedPrincipalsIsEmpty() {
+  public void allowedPrincipals_whenAclDeniesSomeRights() {
     var acl = new AccessControlList.Builder()
       .allow(TEST_USER, Rights.READ | Rights.WRITE | Rights.EXECUTE)
       .deny(TEST_USER, Rights.EXECUTE)
@@ -248,7 +248,7 @@ public class TestAccessControlList {
   }
 
   @Test
-  public void whenAllowEntryShadowedByDenyEntry_ThenAllowedPrincipalsIsEmpty() {
+  public void allowedPrincipals_whenAllowEntryShadowedByDenyEntry() {
     var acl = new AccessControlList.Builder()
       .deny(TEST_USER, Rights.READ)
       .allow(TEST_USER, Rights.READ)

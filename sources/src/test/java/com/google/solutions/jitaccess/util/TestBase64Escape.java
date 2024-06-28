@@ -34,12 +34,12 @@ public class TestBase64Escape {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenStringIsNull_ThenEscapeReturnsNull() {
+  public void escape_whenStringIsNull() {
     assertNull(Base64Escape.escape(null));
   }
 
   @Test
-  public void whenStringNotIsNull_ThenEscapeReturnsBase64() {
+  public void escape_whenStringNotIsNull() {
     assertEquals("", Base64Escape.escape(""));
     assertEquals("YQ==", Base64Escape.escape("a"));
     assertEquals("dGVzdCE=", Base64Escape.escape("test!"));
@@ -50,12 +50,12 @@ public class TestBase64Escape {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenStringIsNull_ThenUnescapeReturnsNull() {
+  public void unescape_whenStringIsNull() {
     assertNull(Base64Escape.unescape(null));
   }
 
   @Test
-  public void whenStringNotIsNull_ThenUnescapeReturnsText() {
+  public void unescape_whenStringNotIsNull() {
     assertEquals("", Base64Escape.unescape(""));
     assertEquals("a", Base64Escape.unescape("YQ=="));
     assertEquals("test!", Base64Escape.unescape("dGVzdCE="));

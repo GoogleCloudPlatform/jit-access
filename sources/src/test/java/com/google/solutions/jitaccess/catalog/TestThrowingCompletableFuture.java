@@ -45,7 +45,7 @@ public class TestThrowingCompletableFuture {
   //---------------------------------------------------------------------------
 
   @Test
-  public void whenFutureThrowsIoException_ThenAwaitAndRethrowPropagatesException() {
+  public void awaitAndRethrow_whenFutureThrowsIoException() {
     var future = ThrowingCompletableFuture.<String>submit(
       () -> { throw new IOException("IO!"); },
       new SynchronousExecutor());
@@ -56,7 +56,7 @@ public class TestThrowingCompletableFuture {
   }
 
   @Test
-  public void whenFutureThrowsAccessException_ThenAwaitAndRethrowPropagatesException() {
+  public void awaitAndRethrow_whenFutureThrowsAccessException() {
     var future = ThrowingCompletableFuture.<String>submit(
       () -> { throw new AccessDeniedException("Access!"); },
       new SynchronousExecutor());
@@ -66,7 +66,7 @@ public class TestThrowingCompletableFuture {
       () -> ThrowingCompletableFuture.awaitAndRethrow(future));
   }
   @Test
-  public void whenFutureThrowsOtherException_ThenAwaitAndRethrowWrapsException() {
+  public void awaitAndRethrow_whenFutureThrowsOtherException() {
     var future = ThrowingCompletableFuture.<String>submit(
       () -> { throw new RuntimeException("Runtime!"); },
       new SynchronousExecutor());

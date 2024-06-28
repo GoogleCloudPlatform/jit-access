@@ -49,7 +49,7 @@ public class TestGroupResolver {
   }
 
   @Test
-  public void whenSetEmpty_ThenExpandReturnsEquivalentSet() throws Exception {
+  public void expand_whenSetEmpty() throws Exception {
     var groupsClient = mock(CloudIdentityGroupsClient.class);
     var expander = new GroupResolver(groupsClient, new SynchronousExecutor());
 
@@ -59,7 +59,7 @@ public class TestGroupResolver {
   }
 
   @Test
-  public void whenSetContainsNoGroups_ThenExpandReturnsEquivalentSet() throws Exception {
+  public void expand_whenSetContainsNoGroups() throws Exception {
     var groupsClient = mock(CloudIdentityGroupsClient.class);
     var expander = new GroupResolver(groupsClient, new SynchronousExecutor());
 
@@ -74,7 +74,7 @@ public class TestGroupResolver {
   }
 
   @Test
-  public void whenSetContainsGroups_ThenExpandReturnsExpandedSet() throws Exception {
+  public void expand_whenSetContainsGroups() throws Exception {
     var member1 = new UserId("member-1@example.com");
     var member2 = new GroupId("member-1@example.com");
 

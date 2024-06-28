@@ -32,7 +32,7 @@ public class TestGroupId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsEmailInLowerCase() {
+  public void toString_returnsEmailInLowerCase() {
     Assertions.assertEquals("test@example.com", new GroupId("test@example.com").toString());
     Assertions.assertEquals("test@example.com", new GroupId("Test@Example.com").toString());
   }
@@ -42,7 +42,7 @@ public class TestGroupId {
   // -------------------------------------------------------------------------
 
   @Test
-  public void whenObjectAreEquivalent_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalent() {
     GroupId id1 = new GroupId("group@example.com");
     GroupId id2 = new GroupId("group@example.com");
 
@@ -52,7 +52,7 @@ public class TestGroupId {
   }
 
   @Test
-  public void whenObjectAreEquivalentButDifferInCasing_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreEquivalentButDifferInCasing() {
     GroupId id1 = new GroupId("Group@Example.com");
     GroupId id2 = new GroupId("group@example.com");
 
@@ -62,7 +62,7 @@ public class TestGroupId {
   }
 
   @Test
-  public void whenObjectAreSame_ThenEqualsReturnsTrue() {
+  public void equals_whenObjectAreSame() {
     GroupId id1 = new GroupId("group@example.com");
 
     assertTrue(id1.equals(id1));
@@ -70,7 +70,7 @@ public class TestGroupId {
   }
 
   @Test
-  public void whenObjectAreMotEquivalent_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectAreMotEquivalent() {
     GroupId id1 = new GroupId("alice@example.com");
     GroupId id2 = new GroupId("group@example.com");
 
@@ -80,14 +80,14 @@ public class TestGroupId {
   }
 
   @Test
-  public void whenObjectIsNull_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsNull() {
     GroupId id1 = new GroupId("group@example.com");
 
     assertFalse(id1.equals(null));
   }
 
   @Test
-  public void whenObjectIsDifferentType_ThenEqualsReturnsFalse() {
+  public void equals_whenObjectIsDifferentType() {
     GroupId id1 = new GroupId("group@example.com");
 
     assertFalse(id1.equals(""));

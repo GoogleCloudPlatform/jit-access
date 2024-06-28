@@ -42,7 +42,7 @@ public class TestSystemPolicy {
     "123456789_1234567",
     "with spaces",
     "?"})
-  public void whenNameInvalid_ThenConstructorThrowsException(String name) {
+  public void constructor_whenNameInvalid(String name) {
     var environment = new EnvironmentPolicy("env", "");
     assertThrows(
       IllegalArgumentException.class,
@@ -57,7 +57,7 @@ public class TestSystemPolicy {
   //---------------------------------------------------------------------------
 
   @Test
-  public void toStringReturnsName() {
+  public void toString_returnsName() {
     var environment = new EnvironmentPolicy("env", "");
     var system = new SystemPolicy(environment, "system-1", "");
 
