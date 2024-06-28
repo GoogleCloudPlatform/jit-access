@@ -60,7 +60,7 @@ class RequestContextLogger extends JsonLogger {
   }
 
   @Override
-  protected @NotNull @NotNull Map<String, String> createLabels(String eventId) {
+  protected @NotNull Map<String, String> createLabels(String eventId) {
     var labels = super.createLabels(eventId);
 
     if (this.requestContext.isAuthenticated()) {
