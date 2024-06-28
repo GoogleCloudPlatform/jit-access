@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestThrowingCompletableFuture {
 
-  private class SynchronousExecutor implements Executor {
+  private static class SynchronousExecutor implements Executor {
 
     @Override
     public void execute(Runnable command) {

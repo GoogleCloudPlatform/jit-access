@@ -87,7 +87,7 @@ abstract class AbstractProperty<T> implements Property {
   /**
    * Convert to string representation.
    *
-   * @throws IllegalArgumentException when a conversion isn ot possible.
+   * @throws IllegalArgumentException when a conversion is not possible.
    */
   protected abstract @NotNull String convertToString(@Nullable T value);
 

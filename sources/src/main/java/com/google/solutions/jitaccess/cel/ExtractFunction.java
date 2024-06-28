@@ -50,7 +50,7 @@ public class ExtractFunction  {
       ExtractFunction::execute
     );
 
-  static String execute(String value, String template) throws CelEvaluationException {
+  static String execute(String value, String template) {
     var openingBraceIndex = template.indexOf('{');
     var closingBraceIndex = template.indexOf('}');
 

@@ -44,7 +44,7 @@ public class TestCelConstraint {
   //---------------------------------------------------------------------------
 
   @Test
-  public void execute_whenExpressionInvalid_throwsException() throws Exception {
+  public void execute_whenExpressionInvalid_throwsException() {
     var constraint = new CelConstraint(
       "name",
       "display name",
@@ -91,7 +91,7 @@ public class TestCelConstraint {
   //---------------------------------------------------------------------------
 
   @Test
-  public void execute_whenInputMissing_throwsException() throws Exception {
+  public void execute_whenInputMissing_throwsException() {
     var constraint = new CelConstraint(
       "name",
       "display name",

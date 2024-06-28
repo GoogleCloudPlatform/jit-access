@@ -24,7 +24,7 @@ package com.google.solutions.jitaccess.web.rest;
 import com.google.solutions.jitaccess.catalog.Logger;
 import com.google.solutions.jitaccess.catalog.ThrowingCompletableFuture;
 import com.google.solutions.jitaccess.apis.clients.Diagnosable;
-import com.google.solutions.jitaccess.web.LogEvents;
+import com.google.solutions.jitaccess.web.EventIds;
 import com.google.solutions.jitaccess.web.RuntimeEnvironment;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Instance;
@@ -84,7 +84,7 @@ public class HealthResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("ready")
-  public @NotNull jakarta.ws.rs.core.Response checkReadiness() throws ExecutionException, InterruptedException {
+  public @NotNull jakarta.ws.rs.core.Response checkReadiness() {
     //
     // Diagnose all services that support self-diagnosis.
     //
@@ -111,7 +111,7 @@ public class HealthResource {
 
     for (var result : results) {
       if (!result.successful()) {
-        this.logger.warn(LogEvents.API_HEALTH, result.toString());
+        this.logger.warn(EventIds.API_HEALTH, result.toString());
       }
     }
 

@@ -81,7 +81,7 @@ public class TestExpiryConstraint {
   }
 
   @Test
-  public void createCheck_whenUserDefinedDurationAndInputInvalid_thenThrowsException() throws Exception {
+  public void createCheck_whenUserDefinedDurationAndInputInvalid_thenThrowsException() {
     var check = USER_DEFINED.createCheck();
 
     assertSame(USER_DEFINED, check.constraint());
@@ -94,7 +94,7 @@ public class TestExpiryConstraint {
   }
 
   @Test
-  public void createCheck_whenUserDefinedDurationAndInputOutOfRange_thenSetFails() throws Exception {
+  public void createCheck_whenUserDefinedDurationAndInputOutOfRange_thenSetFails() {
     var check = USER_DEFINED.createCheck();
 
     assertSame(USER_DEFINED, check.constraint());

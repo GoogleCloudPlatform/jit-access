@@ -32,7 +32,7 @@ public class TestPolicy {
     return subject;
   }
 
-  private class SamplePolicy implements  Policy {
+  private static class SamplePolicy implements  Policy {
     @Override
     public @NotNull Collection<Constraint> constraints(ConstraintClass action) {
       return List.of();

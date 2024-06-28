@@ -143,7 +143,7 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   // -------------------------------------------------------------------------
 
   /**
-   * Parse a string into a JIT Group Id.
+   * Parse a string into a JIT Group ID.
    *
    * @return ID if parsing was successful, empty otherwise.
    */

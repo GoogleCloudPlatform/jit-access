@@ -46,7 +46,7 @@ public class TestAbstractProperty {
   // Duration.
   //---------------------------------------------------------------------------
 
-  private class DurationProperty extends AbstractDurationProperty {
+  private static class DurationProperty extends AbstractDurationProperty {
     private @Nullable Duration value;
 
     public DurationProperty(Duration min, Duration max) {
@@ -117,7 +117,7 @@ public class TestAbstractProperty {
   // Integer.
   //---------------------------------------------------------------------------
 
-  private class IntegerProperty extends AbstractIntegerProperty {
+  private static class IntegerProperty extends AbstractIntegerProperty {
     private @Nullable Integer value;
 
     public IntegerProperty(Integer min, Integer max) {
@@ -188,7 +188,7 @@ public class TestAbstractProperty {
   // Boolean.
   //---------------------------------------------------------------------------
 
-  private class BooleanProperty extends AbstractBooleanProperty {
+  private static class BooleanProperty extends AbstractBooleanProperty {
     private @Nullable Boolean value;
 
     public BooleanProperty() {
@@ -234,7 +234,7 @@ public class TestAbstractProperty {
   // String.
   //---------------------------------------------------------------------------
 
-  private class StringProperty extends AbstractStringProperty {
+  private static class StringProperty extends AbstractStringProperty {
     private @Nullable String value;
 
     public StringProperty() {

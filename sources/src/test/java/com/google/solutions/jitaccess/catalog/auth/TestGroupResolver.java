@@ -40,7 +40,7 @@ public class TestGroupResolver {
   private static final GroupId TEST_GROUP_1 = new GroupId("group-1@example.com");
   private static final GroupId TEST_GROUP_2 = new GroupId("group-2@example.com");
 
-  private class SynchronousExecutor implements Executor {
+  private static class SynchronousExecutor implements Executor {
 
     @Override
     public void execute(Runnable command) {

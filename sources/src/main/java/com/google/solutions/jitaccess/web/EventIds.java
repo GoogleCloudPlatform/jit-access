@@ -21,10 +21,10 @@
 
 package com.google.solutions.jitaccess.web;
 
-public class LogEvents {// TODO: rename or remove?
+public class EventIds {
   public static final String API_HEALTH = "api.checkHealth";
   public static final String RUNTIME_STARTUP = "runtime.startup";
 
-  private LogEvents() {
+  private EventIds() {
   }
 }

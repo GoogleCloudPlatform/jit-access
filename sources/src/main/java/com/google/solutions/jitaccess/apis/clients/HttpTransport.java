@@ -101,6 +101,6 @@ public class HttpTransport {
     Duration readTimeout,
     Duration writeTimeout
   ) {
-    public static @NotNull Options DEFAULT = new Options(Duration.ZERO, Duration.ZERO, Duration.ZERO);
+    public static final @NotNull Options DEFAULT = new Options(Duration.ZERO, Duration.ZERO, Duration.ZERO);
   }
 }

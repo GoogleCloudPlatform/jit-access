@@ -150,7 +150,7 @@ public class ExpiryConstraint implements Constraint {
       }
 
       @Override
-      public boolean execute() throws ConstraintException {
+      public boolean execute() {
         if (isFixedDuration()) {
           return true;
         }

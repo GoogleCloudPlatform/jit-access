@@ -40,7 +40,7 @@ public class TestAccessControlList {
     Set<Principal> principals) implements Subject {
   }
 
-  private class Rights {
+  private static class Rights {
     public static final int READ = 1;
     public static final int WRITE = 2;
     public static final int EXECUTE = 4;

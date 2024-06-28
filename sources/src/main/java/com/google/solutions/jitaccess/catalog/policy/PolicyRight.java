@@ -46,7 +46,7 @@ public enum PolicyRight {
    */
   APPROVE_SELF(VIEW.value + 8);
 
-  private int value;
+  private final int value;
 
   PolicyRight(int value) {
     this.value = value;

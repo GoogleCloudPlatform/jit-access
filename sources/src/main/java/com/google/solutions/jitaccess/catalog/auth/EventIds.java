@@ -25,5 +25,5 @@ package com.google.solutions.jitaccess.catalog.auth;
  * Log event IDs used by this package.
  */
 class EventIds {
-  public static String SUBJECT_RESOLUTION = "auth.subject.resolve";
+  public static final String SUBJECT_RESOLUTION = "auth.subject.resolve";
 }

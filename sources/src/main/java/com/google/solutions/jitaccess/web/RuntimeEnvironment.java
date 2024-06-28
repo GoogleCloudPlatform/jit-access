@@ -125,7 +125,7 @@ public class RuntimeEnvironment {
 
     if (!this.configuration.isSmtpConfigured()) {
       logger.warn(
-        LogEvents.RUNTIME_STARTUP,
+        EventIds.RUNTIME_STARTUP,
         "The SMTP configuration is incomplete");
     }
 
@@ -163,7 +163,7 @@ public class RuntimeEnvironment {
         }
 
         logger.info(
-          LogEvents.RUNTIME_STARTUP,
+          EventIds.RUNTIME_STARTUP,
           String.format("Running in project %s (%s) as %s, version %s",
             this.projectId,
             this.projectNumber,
@@ -172,7 +172,7 @@ public class RuntimeEnvironment {
       }
       catch (IOException e) {
         logger.error(
-          LogEvents.RUNTIME_STARTUP,
+          EventIds.RUNTIME_STARTUP,
           "Failed to lookup instance metadata", e);
         throw new RuntimeException("Failed to initialize runtime environment", e);
       }
@@ -234,7 +234,7 @@ public class RuntimeEnvironment {
       }
 
       logger.warn(
-        LogEvents.RUNTIME_STARTUP,
+        EventIds.RUNTIME_STARTUP,
         String.format("Running in development mode as %s", this.applicationPrincipal));
     }
     else {

@@ -41,7 +41,7 @@ public class TestExceptionMapper {
   private static final UserId SAMPLE_USER = new UserId("user-1@example.com");
 
   @Path("/api/")
-  public class Resource {
+  public static class Resource {
     @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)

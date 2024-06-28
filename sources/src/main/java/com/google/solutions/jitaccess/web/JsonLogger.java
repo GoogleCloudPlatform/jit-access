@@ -128,7 +128,7 @@ public class JsonLogger implements Logger {
   /**
    * Entry that, when serialized to JSON, can be parsed and interpreted by Cloud Logging.
    */
-  public class LogEntry {
+  public static class LogEntry {
     @JsonProperty("severity")
     private final @NotNull String severity;
 

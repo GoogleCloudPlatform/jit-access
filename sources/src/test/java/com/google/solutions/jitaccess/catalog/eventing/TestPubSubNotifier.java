@@ -42,7 +42,7 @@ public class TestPubSubNotifier {
   // sendNotification.
   // -------------------------------------------------------------------------
 
-  private class SampleNotification extends Notifier.Notification {
+  private static class SampleNotification extends Notifier.Notification {
 
     protected SampleNotification(
       Collection<UserId> toRecipients,

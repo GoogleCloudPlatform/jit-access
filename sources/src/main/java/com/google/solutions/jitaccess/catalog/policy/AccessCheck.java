@@ -155,10 +155,10 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
 
   public class Result {
     private final boolean isSubjectInAcl;
-    private Optional<Principal> activeMembership;
-    private @NotNull LinkedList<Constraint> satisfiedConstraints;
-    private @NotNull LinkedList<Constraint> unsatisfiedConstraints;
-    private @NotNull Map<Constraint, Exception> failedConstraints;
+    private @NotNull Optional<Principal> activeMembership;
+    private final @NotNull LinkedList<Constraint> satisfiedConstraints;
+    private final @NotNull LinkedList<Constraint> unsatisfiedConstraints;
+    private final @NotNull Map<Constraint, Exception> failedConstraints;
 
     private Result(boolean isSubjectInAcl) {
       this.isSubjectInAcl = isSubjectInAcl;
@@ -176,7 +176,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
     }
 
     /**
-     * @return satisified constraints.
+     * @return satisfied constraints.
      */
     public @NotNull Collection<Constraint> satisfiedConstraints() {
       return satisfiedConstraints;
