@@ -80,7 +80,7 @@ public record ProjectId(
   }
 
   @Override
-  public String path() {
+  public @NotNull String path() {
     return RELATIVE_PREFIX + this.id;
   }
 }

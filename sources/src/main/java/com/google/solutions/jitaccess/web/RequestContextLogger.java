@@ -50,7 +50,7 @@ class RequestContextLogger extends JsonLogger {
   /**
    * Set Trace ID for current request.
    */
-  void setTraceId(String traceId) {
+  void setTraceId(@Nullable String traceId) {
     this.traceId = traceId;
   }
 
@@ -60,7 +60,7 @@ class RequestContextLogger extends JsonLogger {
   }
 
   @Override
-  protected Map<String, String> createLabels(String eventId) {
+  protected @NotNull @NotNull Map<String, String> createLabels(String eventId) {
     var labels = super.createLabels(eventId);
 
     if (this.requestContext.isAuthenticated()) {

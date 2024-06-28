@@ -137,7 +137,7 @@ class RuntimeConfiguration {
     this(key -> settings.get(key));
   }
 
-  public RuntimeConfiguration(Function<String, String> readSetting) {
+  public RuntimeConfiguration(@NotNull Function<String, String> readSetting) {
     this.readSetting = readSetting;
 
     this.customerId = new StringSetting(

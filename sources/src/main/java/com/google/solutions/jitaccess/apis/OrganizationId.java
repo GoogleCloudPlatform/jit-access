@@ -60,7 +60,7 @@ public record OrganizationId(//TODO: remove?
   }
 
   @Override
-  public String path() {
+  public @NotNull @NotNull String path() {
     return String.format("organizations/%s", this.id);
   }
 }

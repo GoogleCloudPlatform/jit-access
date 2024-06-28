@@ -113,7 +113,7 @@ public class CelConstraint implements Constraint {
     }
 
     @Override
-    public Constraint.Context addContext(@NotNull String name) {
+    public Constraint.@NotNull Context addContext(@NotNull String name) {
       var json = new GenericJson();
       this.variables.put(name, json);
       return new Context() {

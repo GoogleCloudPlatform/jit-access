@@ -92,6 +92,6 @@ public class UserResource { // TODO: test
 
   public record ApplicationInfo(
     @NotNull String version,
-    @NotNull boolean debugMode
+    boolean debugMode
   ) {}
 }

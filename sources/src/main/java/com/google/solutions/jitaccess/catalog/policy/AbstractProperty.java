@@ -117,19 +117,19 @@ abstract class AbstractProperty<T> implements Property {
   protected abstract @Nullable T getCore();
 
   @Override
-  public Class<?> type() {
+  public @NotNull Class<?> type() {
     return this.type;
   }
 
   @Override
-  public Optional<String> minInclusive() {
+  public @NotNull Optional<String> minInclusive() {
     return this.minInclusive != null
       ? Optional.of(convertToString(this.minInclusive))
       : Optional.empty();
   }
 
   @Override
-  public Optional<String> maxInclusive() {
+  public @NotNull Optional<String> maxInclusive() {
     return this.maxInclusive != null
       ? Optional.of(convertToString(this.maxInclusive))
       : Optional.empty();

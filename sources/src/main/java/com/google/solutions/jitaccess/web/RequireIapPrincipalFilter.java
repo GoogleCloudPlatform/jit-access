@@ -80,7 +80,7 @@ public class RequireIapPrincipalFilter implements ContainerRequestFilter {
   /**
    * Authenticate request using IAP assertion.
    */
-  private @NotNull void authenticateIapRequest(@NotNull ContainerRequestContext requestContext) {
+  private void authenticateIapRequest(@NotNull ContainerRequestContext requestContext) {
     //
     // Read IAP assertion header and validate it.
     //
@@ -124,7 +124,7 @@ public class RequireIapPrincipalFilter implements ContainerRequestFilter {
   /**
    * Pseudo-authenticate request using debug header. Only used in debug mode.
    */
-  private @NotNull void authenticateDebugRequest(@NotNull ContainerRequestContext context) {
+  private void authenticateDebugRequest(@NotNull ContainerRequestContext context) {
     assert this.runtimeEnvironment.isDebugModeEnabled();
 
     var debugPrincipalName = context.getHeaderString(DEBUG_PRINCIPAL_HEADER);

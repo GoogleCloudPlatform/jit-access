@@ -120,7 +120,7 @@ public class GroupsResource {//TODO: test
   ) {}
 
   public record MembershipInfo(
-    @NotNull boolean active,
+    boolean active,
     @Nullable Long expiry
   ) {}
 
