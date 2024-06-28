@@ -24,7 +24,7 @@ package com.google.solutions.jitaccess.catalog.auth;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A routable email address.
+ * A route-able email address.
  */
 public record EmailAddress(
   @NotNull String value

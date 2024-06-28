@@ -21,19 +21,22 @@
 
 package com.google.solutions.jitaccess.catalog.auth;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 
 /**
- * Represents the device a user is using.
+ * Information about a user's device and the ACM access
+ * levels it satisfies.
  */
 public interface Device {
   /**
-   * @return the device's ID
+   * @return the device's ID.
    */
-  String deviceId();
+  @NotNull String deviceId();
 
   /**
    * @return list of satisfied ACM access levels.
    */
-  Collection<String> accessLevels();
+  @NotNull Collection<String> accessLevels();
 }

@@ -61,10 +61,13 @@ public class SubjectResolver {
     this.logger = logger;
   }
 
-  Set<Principal> resolveJitGroups(
+  @NotNull Set<Principal> resolveJitGroups(
     @NotNull UserId user,
     @NotNull List<CloudIdentityGroupsClient.MembershipId> memberships
   ) {
+    //
+    // Lookup details for each membership.
+    //
     List<CompletableFuture<Membership>> membershipFutures = memberships
       .stream()
       .map(membershipId -> ThrowingCompletableFuture.submit(
@@ -138,7 +141,7 @@ public class SubjectResolver {
    * - groups
    *
    */
-  public Subject resolve(
+  public @NotNull Subject resolve(
     @NotNull UserId user
   ) throws AccessException, IOException {
     //

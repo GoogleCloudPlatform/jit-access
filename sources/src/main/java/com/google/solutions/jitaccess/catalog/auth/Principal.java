@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Instant;
 
 /**
- * Information about a principal.
+ * A principal that can be used in access checks.
  *
  * @param id unique principal Id.
  * @param expiry optional expiry date.

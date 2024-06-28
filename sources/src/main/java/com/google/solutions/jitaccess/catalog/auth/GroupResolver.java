@@ -36,7 +36,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 /**
- * Expands group memberships.
+ * Expands group memberships using the Cloud Identity
+ * Groups API.
  */
 public class GroupResolver {
   private final @NotNull CloudIdentityGroupsClient groupsClient;
@@ -74,8 +75,13 @@ public class GroupResolver {
    * set of principals might again contain a set of groups.
    * To fully resolve all groups, call this method until the
    * set contains no more groups.
+   *
+   * While Cloud Identity API does support looking
+   * up nested group memberships, the functionality is only
+   * available in premium SKUs, and we therefore don't use
+   * it here.
    */
-  Set<PrincipalId> expand(
+  @NotNull Set<PrincipalId> expand(
     @NotNull Set<PrincipalId> principals
   ) throws AccessException, IOException {
     var groups = principals

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * ID of a Google Cloud organization.
  */
-public record OrganizationId(
+public record OrganizationId(//TODO: remove?
   @NotNull String id
 ) implements Comparable<OrganizationId>, ResourceId {
   public OrganizationId {

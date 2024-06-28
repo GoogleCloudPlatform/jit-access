@@ -35,19 +35,8 @@ import java.util.Optional;
 public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
   public static final String TYPE = "jit-group";
 
-  /**
-   * Environment that this group applies to.
-   */
   private final @NotNull String environment;
-
-  /**
-   * System that this group applies to.
-   */
   private final @NotNull String system;
-
-  /**
-   * Name of the group.
-   */
   private final @NotNull String name;
 
   public JitGroupId(
@@ -67,15 +56,24 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
     this.name = name.toLowerCase();
   }
 
-  public String environment() {
+  /**
+   * Environment that this group applies to.
+   */
+  public @NotNull String environment() {
     return environment;
   }
 
-  public String system() {
+  /**
+   * System that this group applies to.
+   */
+  public @NotNull String system() {
     return system;
   }
 
-  public String name() {
+  /**
+   * Name of the group.
+   */
+  public @NotNull String name() {
     return name;
   }
 
@@ -146,8 +144,10 @@ public class JitGroupId implements Comparable<JitGroupId>, PrincipalId {
 
   /**
    * Parse a string into a JIT Group Id.
+   *
+   * @return ID if parsing was successful, empty otherwise.
    */
-  public static Optional<JitGroupId> parse(@Nullable String s) {
+  public static @NotNull Optional<JitGroupId> parse(@Nullable String s) {
     if (Strings.isNullOrEmpty(s) || s.isBlank()) {
       return Optional.empty();
     }

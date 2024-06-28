@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * ID of a Google Cloud folder.
  */
-public record FolderId(
+public record FolderId(//TODO: remove?
   @NotNull String id
 ) implements Comparable<FolderId>, ResourceId {
   public FolderId {

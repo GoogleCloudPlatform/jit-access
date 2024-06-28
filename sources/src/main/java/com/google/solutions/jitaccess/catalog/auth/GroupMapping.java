@@ -56,7 +56,7 @@ public class GroupMapping {
   /**
    * Determine JIT Group corresponding to a group email.
    */
-  public JitGroupId jitGroupFromGroup(GroupId group) {
+  public @NotNull JitGroupId jitGroupFromGroup(GroupId group) {
     var matcher = this.pattern.matcher(group.email);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(
@@ -72,7 +72,7 @@ public class GroupMapping {
   /**
    * Determine group email corresponding to a JIT Group.
    */
-  public GroupId groupFromJitGroup(JitGroupId group) {
+  public @NotNull GroupId groupFromJitGroup(JitGroupId group) {
     var handle = String.join(".", new String[] {
       PREFIX,
       group.environment(),

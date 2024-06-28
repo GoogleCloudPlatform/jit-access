@@ -30,6 +30,7 @@ import dev.cel.compiler.CelCompilerFactory;
 import dev.cel.parser.CelStandardMacro;
 import dev.cel.runtime.CelRuntime;
 import dev.cel.runtime.CelRuntimeFactory;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -72,8 +73,10 @@ public class EmailMapping {
 
   /**
    * Map a user ID to an email address.
+   *
+   * @throws MappingException when mapping fails.
    */
-  public EmailAddress emailFromUserId(UserId userId) throws MappingException {
+  public @NotNull EmailAddress emailFromUserId(UserId userId) throws MappingException {
     if (this.celExpression == null || this.celExpression.isBlank()) {
       //
       // Use the user's ID as email address.
@@ -118,14 +121,14 @@ public class EmailMapping {
   }
 
   public static class MappingException extends RuntimeException {
-    public MappingException(UserId input, Exception cause) {
+    MappingException(UserId input, Exception cause) {
       super(
         String.format(
           "The email mapping expression failed to transform the user ID '%s' into a valid email address",
           input),
         cause);
     }
-    public MappingException(UserId input, String issue) {
+    MappingException(UserId input, String issue) {
       super(String.format(
         "The email mapping expression failed to transform the user ID '%s' into a valid email address: %s",
         input,
