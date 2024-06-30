@@ -35,6 +35,7 @@ abstract class AbstractProperty<T> implements Property {
   private final  @NotNull Class<T> type;
   private final @NotNull String name;
   private final @NotNull String displayName;
+  private final boolean isRequired;
 
   protected final @Nullable T minInclusive;
   protected final @Nullable T maxInclusive;
@@ -43,12 +44,14 @@ abstract class AbstractProperty<T> implements Property {
     @NotNull Class<T> type,
     @NotNull String name,
     @NotNull String displayName,
+    boolean isRequired,
     @Nullable T minInclusive,
     @Nullable T maxInclusive
   ) {
     this.type = type;
     this.name = name; // TODO: check syntax.
     this.displayName = displayName;
+    this.isRequired = isRequired;
     this.minInclusive = minInclusive;
     this.maxInclusive = maxInclusive;
   }
@@ -56,9 +59,10 @@ abstract class AbstractProperty<T> implements Property {
   protected AbstractProperty(
     @NotNull Class<T> type,
     @NotNull String name,
-    @NotNull String displayName
+    @NotNull String displayName,
+    boolean isRequired
   ) {
-    this(type, name, displayName, null, null);
+    this(type, name, displayName, isRequired, null, null);
   }
 
   /**
@@ -77,33 +81,33 @@ abstract class AbstractProperty<T> implements Property {
     return displayName;
   }
 
+  @Override
+  public boolean isRequired() {
+    return isRequired;
+  }
+
   /**
    * Convert string representation to the typed representation.
    *
    * @throws IllegalArgumentException when a conversion is not possible.
    */
-  protected abstract @NotNull T convertFromString(@Nullable String value);
+  protected abstract @Nullable T convertFromString(@Nullable String value);
 
   /**
    * Convert to string representation.
    *
    * @throws IllegalArgumentException when a conversion is not possible.
    */
-  protected abstract @NotNull String convertToString(@Nullable T value);
-
-
-  protected void validateNotNull(Object value) {
-    Preconditions.checkNotNull(
-      value,
-      String.format("%s must be assigned a value", this.name()));
-  }
+  protected abstract @Nullable String convertToString(@Nullable T value);
 
   /**
    * Validate the value.
    * @throws IllegalArgumentException if the value is invalid.
    */
   protected void validateRange(@Nullable T value) {
-    validateNotNull(value);
+    Preconditions.checkArgument(
+      !this.isRequired || value != null,
+      String.format("%s must be assigned a value", this.name()));
   }
 
   /**
@@ -138,7 +142,6 @@ abstract class AbstractProperty<T> implements Property {
   @Override
   public final void set(@Nullable String s) {
     var value = convertFromString(s);
-    validateNotNull(value);
     validateRange(value);
     setCore(value);
   }
@@ -160,35 +163,36 @@ abstract class AbstractDurationProperty extends AbstractProperty<Duration> {
   protected AbstractDurationProperty(
     @NotNull String name,
     @NotNull String displayName,
+    boolean isRequired,
     @Nullable Duration minInclusive,
     @Nullable Duration maxInclusive)
   {
-    super(Duration.class, name, displayName, minInclusive, maxInclusive);
+    super(Duration.class, name, displayName, isRequired, minInclusive, maxInclusive);
   }
 
   @Override
   protected void validateRange(@Nullable Duration value) {
-    if (this.minInclusive != null && value.compareTo(this.minInclusive) < 0) {
+    super.validateRange(value);
+
+    if (value != null && this.minInclusive != null && value.compareTo(this.minInclusive) < 0) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too small", this.name()));
     }
 
-    if (this.maxInclusive != null && value.compareTo(this.maxInclusive) > 0) {
+    if (value != null && this.maxInclusive != null && value.compareTo(this.maxInclusive) > 0) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too large", this.name()));
     }
   }
 
   @Override
-  protected Duration convertFromString(@Nullable String value) {
-    validateNotNull(value);
-    return Duration.ofSeconds(Integer.parseInt(value.trim()));
+  protected @Nullable Duration convertFromString(@Nullable String value) {
+    return value != null ? Duration.ofSeconds(Integer.parseInt(value.trim())) : null;
   }
 
   @Override
-  protected String convertToString(@Nullable Duration value) {
-    validateNotNull(value);
-    return String.valueOf(value.toSeconds());
+  protected @Nullable String convertToString(@Nullable Duration value) {
+    return value != null ? String.valueOf(value.toSeconds()) : null;
   }
 }
 
@@ -199,35 +203,36 @@ abstract class AbstractIntegerProperty extends AbstractProperty<Integer> {
   protected AbstractIntegerProperty(
     @NotNull String name,
     @NotNull String displayName,
+    boolean isRequired,
     @Nullable Integer minInclusive,
     @Nullable Integer maxInclusive)
   {
-    super(int.class, name, displayName, minInclusive, maxInclusive);
+    super(int.class, name, displayName, isRequired, minInclusive, maxInclusive);
   }
 
   @Override
   protected void validateRange(@Nullable Integer value) {
-    if (this.minInclusive != null && value < this.minInclusive) {
+    super.validateRange(value);
+
+    if (value != null && this.minInclusive != null && value < this.minInclusive) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too small", this.name()));
     }
 
-    if (this.maxInclusive != null && value > this.maxInclusive) {
+    if (value != null && this.maxInclusive != null && value > this.maxInclusive) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too large", this.name()));
     }
   }
 
   @Override
-  protected Integer convertFromString(@Nullable String value) {
-    validateNotNull(value);
-    return Integer.parseInt(value.trim());
+  protected @Nullable Integer convertFromString(@Nullable String value) {
+    return value != null ? Integer.parseInt(value.trim()) : null;
   }
 
   @Override
-  protected String convertToString(@Nullable Integer value) {
-    validateNotNull(value);
-    return String.valueOf(value);
+  protected @Nullable String convertToString(@Nullable Integer value) {
+    return value != null ? String.valueOf(value) : null;
   }
 }
 
@@ -237,21 +242,20 @@ abstract class AbstractIntegerProperty extends AbstractProperty<Integer> {
 abstract class AbstractBooleanProperty extends AbstractProperty<Boolean> {
   protected AbstractBooleanProperty(
     @NotNull String name,
-    @NotNull String displayName)
+    @NotNull String displayName,
+    boolean isRequired)
   {
-    super(Boolean.class, name, displayName);
+    super(Boolean.class, name, displayName, isRequired);
   }
 
   @Override
-  protected Boolean convertFromString(@Nullable String value) {
-    validateNotNull(value);
-    return Boolean.parseBoolean(value.trim());
+  protected @Nullable Boolean convertFromString(@Nullable String value) {
+    return value != null ? Boolean.parseBoolean(value.trim()) : null;
   }
 
   @Override
-  protected String convertToString(@Nullable Boolean value) {
-    validateNotNull(value);
-    return value.toString();
+  protected @Nullable String convertToString(@Nullable Boolean value) {
+    return value != null ? value.toString() : null;
   }
 }
 
@@ -264,6 +268,7 @@ abstract class AbstractStringProperty extends AbstractProperty<String> {
   protected AbstractStringProperty(
     @NotNull String name,
     @NotNull String displayName,
+    boolean isRequired,
     @NotNull int minLength,
     @NotNull int maxLength)
   {
@@ -271,6 +276,7 @@ abstract class AbstractStringProperty extends AbstractProperty<String> {
       String.class,
       name,
       displayName,
+      isRequired,
       String.valueOf(minLength),
       String.valueOf(maxLength));
 
@@ -280,24 +286,26 @@ abstract class AbstractStringProperty extends AbstractProperty<String> {
 
   @Override
   protected void validateRange(@Nullable String value) {
-    if (value.length() < this.minLength) {
+    super.validateRange(value);
+
+    if (value != null && value.length() < this.minLength) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too short", this.name()));
     }
 
-    if (value.length() > this.maxLength) {
+    if (value != null && value.length() > this.maxLength) {
       throw new IllegalArgumentException(
         String.format("The value for %s is too long", this.name()));
     }
   }
 
   @Override
-  protected String convertFromString(@Nullable String value) {
-    return value.trim();
+  protected @Nullable String convertFromString(@Nullable String value) {
+    return value != null ? value.trim() : null;
   }
 
   @Override
-  protected String convertToString(@Nullable String value) {
+  protected @Nullable String convertToString(@Nullable String value) {
     return value;
   }
 }

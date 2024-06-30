@@ -209,7 +209,7 @@ public class CelConstraint implements Constraint {
 
     @Override
     public @NotNull Property bind(@NotNull GenericJson json) {
-      return new AbstractStringProperty(this.name(), this.displayName(), this.minLength, this.maxLength) {
+      return new AbstractStringProperty(this.name(), this.displayName(), true, this.minLength, this.maxLength) {
         @Override
         protected void setCore(@Nullable String value) {
           json.set(this.name(), value);
@@ -240,7 +240,7 @@ public class CelConstraint implements Constraint {
 
     @Override
     public @NotNull Property bind(@NotNull GenericJson json) {
-      return new AbstractIntegerProperty(this.name(), this.displayName(), this.minInclusive, this.maxInclusive) {
+      return new AbstractIntegerProperty(this.name(), this.displayName(), true, this.minInclusive, this.maxInclusive) {
         @Override
         protected void setCore(@Nullable Integer value) {
           json.set(this.name(), value);
@@ -264,7 +264,7 @@ public class CelConstraint implements Constraint {
 
     @Override
     public @NotNull Property bind(@NotNull GenericJson json) {
-      return new AbstractBooleanProperty(this.name(), this.displayName()) {
+      return new AbstractBooleanProperty(this.name(), this.displayName(), true) {
         @Override
         protected void setCore(@Nullable Boolean value) {
           json.set(this.name(), value);

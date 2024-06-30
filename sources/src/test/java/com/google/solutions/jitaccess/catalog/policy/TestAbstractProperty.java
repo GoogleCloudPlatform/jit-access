@@ -14,7 +14,7 @@ public class TestAbstractProperty {
 
   @Test
   public void basicProperties() {
-    var property = new AbstractProperty<String>(String.class, "name", "display name") {
+    var property = new AbstractProperty<String>(String.class, "name", "display name", false) {
 
       @Override
       protected String convertFromString(@Nullable String value) {
@@ -49,8 +49,8 @@ public class TestAbstractProperty {
   private static class DurationProperty extends AbstractDurationProperty {
     private @Nullable Duration value;
 
-    public DurationProperty(Duration min, Duration max) {
-      super("name", "display name", min, max);
+    public DurationProperty(Duration min, Duration max, boolean isRequired) {
+      super("name", "display name", isRequired, min, max);
     }
 
     @Override
@@ -66,10 +66,12 @@ public class TestAbstractProperty {
 
   @Test
   public void duration_whenInvalid_thenSetThrowsException() {
-    var property = new DurationProperty(null, null);
+    var property = new DurationProperty(null, null, true);
+
+    assertTrue(property.isRequired());
 
     assertThrows(
-      NullPointerException.class,
+      IllegalArgumentException.class,
       () -> property.set(null));
     assertThrows(
       IllegalArgumentException.class,
@@ -80,8 +82,17 @@ public class TestAbstractProperty {
   }
 
   @Test
+  public void duration_whenNotRequired() {
+    var property = new DurationProperty(null, null, false);
+
+    assertFalse(property.isRequired());
+    property.set(null);
+    assertNull(property.get());
+  }
+
+  @Test
   public void duration_whenOutOfRange_thenSetThrowsException() {
-    var property = new DurationProperty(Duration.ofSeconds(1), Duration.ofSeconds(3));
+    var property = new DurationProperty(Duration.ofSeconds(1), Duration.ofSeconds(3), true);
 
     assertThrows(
       IllegalArgumentException.class,
@@ -93,7 +104,7 @@ public class TestAbstractProperty {
 
   @Test
   public void duration_whenInRange_thenSetSucceeds() {
-    var property = new DurationProperty(Duration.ofSeconds(1), Duration.ofSeconds(3));
+    var property = new DurationProperty(Duration.ofSeconds(1), Duration.ofSeconds(3), true);
 
     property.set(" 1  ");
     assertEquals("1", property.get());
@@ -104,7 +115,7 @@ public class TestAbstractProperty {
 
   @Test
   public void duration_whenRangeUnbounded_thenSetSucceeds() {
-    var property = new DurationProperty(null, null);
+    var property = new DurationProperty(null, null, false);
 
     property.set(" -1  ");
     assertEquals("-1", property.get());
@@ -120,8 +131,8 @@ public class TestAbstractProperty {
   private static class IntegerProperty extends AbstractIntegerProperty {
     private @Nullable Integer value;
 
-    public IntegerProperty(Integer min, Integer max) {
-      super("name", "display name", min, max);
+    public IntegerProperty(Integer min, Integer max, boolean isRequired) {
+      super("name", "display name", isRequired, min, max);
     }
 
     @Override
@@ -137,10 +148,12 @@ public class TestAbstractProperty {
 
   @Test
   public void integer_whenInvalid_thenSetThrowsException() {
-    var property = new IntegerProperty(null, null);
+    var property = new IntegerProperty(null, null, true);
+
+    assertTrue(property.isRequired());
 
     assertThrows(
-      NullPointerException.class,
+      IllegalArgumentException.class,
       () -> property.set(null));
     assertThrows(
       IllegalArgumentException.class,
@@ -151,8 +164,17 @@ public class TestAbstractProperty {
   }
 
   @Test
+  public void integer_whenNotRequired() {
+    var property = new IntegerProperty(null, null, false);
+
+    assertFalse(property.isRequired());
+    property.set(null);
+    assertNull(property.get());
+  }
+
+  @Test
   public void integer_whenOutOfRange_thenSetThrowsException() {
-    var property = new IntegerProperty(1, 3);
+    var property = new IntegerProperty(1, 3, true);
 
     assertThrows(
       IllegalArgumentException.class,
@@ -164,7 +186,7 @@ public class TestAbstractProperty {
 
   @Test
   public void integer_whenInRange_thenSetSucceeds() {
-    var property = new IntegerProperty(1, 3);
+    var property = new IntegerProperty(1, 3, true);
 
     property.set(" 1  ");
     assertEquals("1", property.get());
@@ -175,7 +197,7 @@ public class TestAbstractProperty {
 
   @Test
   public void integer_whenRangeUnbounded_thenSetSucceeds() {
-    var property = new IntegerProperty(null, null);
+    var property = new IntegerProperty(null, null, true);
 
     property.set(String.valueOf(Integer.MIN_VALUE));
     assertEquals(String.valueOf(Integer.MIN_VALUE), property.get());
@@ -191,8 +213,8 @@ public class TestAbstractProperty {
   private static class BooleanProperty extends AbstractBooleanProperty {
     private @Nullable Boolean value;
 
-    public BooleanProperty() {
-      super("name", "display name");
+    public BooleanProperty(boolean isRequired) {
+      super("name", "display name", isRequired);
     }
 
     @Override
@@ -209,16 +231,18 @@ public class TestAbstractProperty {
 
   @Test
   public void boolean_whenInvalid_thenSetThrowsException() {
-    var property = new BooleanProperty();
+    var property = new BooleanProperty(true);
+
+    assertTrue(property.isRequired());
 
     assertThrows(
-      NullPointerException.class,
+      IllegalArgumentException.class,
       () -> property.set(null));
   }
 
   @Test
   public void boolean_whenInRange_thenSetSucceeds() {
-    var property = new BooleanProperty();
+    var property = new BooleanProperty(true);
 
     property.set(" TRUE");
     assertEquals("true", property.get());
@@ -230,6 +254,15 @@ public class TestAbstractProperty {
     assertEquals("false", property.get());
   }
 
+  @Test
+  public void boolean_whenNotRequired() {
+    var property = new BooleanProperty(false);
+
+    assertFalse(property.isRequired());
+    property.set(null);
+    assertNull(property.get());
+  }
+
   //---------------------------------------------------------------------------
   // String.
   //---------------------------------------------------------------------------
@@ -237,8 +270,8 @@ public class TestAbstractProperty {
   private static class StringProperty extends AbstractStringProperty {
     private @Nullable String value;
 
-    public StringProperty() {
-      super("name", "display name", 2, 5);
+    public StringProperty(boolean isRequired) {
+      super("name", "display name", isRequired, 2, 5);
     }
 
     @Override
@@ -254,16 +287,27 @@ public class TestAbstractProperty {
 
   @Test
   public void string_whenInvalid_thenSetThrowsException() {
-    var property = new StringProperty();
+    var property = new StringProperty(true);
+
+    assertTrue(property.isRequired());
 
     assertThrows(
-      NullPointerException.class,
+      IllegalArgumentException.class,
       () -> property.set(null));
   }
 
   @Test
+  public void string_whenNotRequired() {
+    var property = new StringProperty(false);
+
+    assertFalse(property.isRequired());
+    property.set(null);
+    assertNull(property.get());
+  }
+
+  @Test
   public void string_whenOutOfRange_thenSetThrowsException() {
-    var property = new StringProperty();
+    var property = new StringProperty(true);
 
     assertThrows(
       IllegalArgumentException.class,
@@ -275,7 +319,7 @@ public class TestAbstractProperty {
 
   @Test
   public void string_whenInRange_thenSetSucceeds() {
-    var property = new StringProperty();
+    var property = new StringProperty(true);
 
     property.set(" test     ");
     assertEquals("test", property.get());

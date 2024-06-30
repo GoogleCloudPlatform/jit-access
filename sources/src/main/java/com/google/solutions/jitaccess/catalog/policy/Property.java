@@ -56,6 +56,11 @@ public interface Property {
   @NotNull Optional<String> maxInclusive();
 
   /**
+   * Indicates whether a non-null value is required.
+   */
+  boolean isRequired();
+
+  /**
    * Parse string value and assign to property.
    */
   void set(@Nullable String s);
@@ -63,5 +68,5 @@ public interface Property {
   /**
    * @return string value.
    */
-  @Nullable String get(); // TODO: Consistency - allow null for properties?
+  @Nullable String get();
 }

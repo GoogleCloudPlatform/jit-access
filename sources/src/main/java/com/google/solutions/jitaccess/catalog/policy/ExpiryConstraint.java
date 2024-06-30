@@ -122,7 +122,7 @@ public class ExpiryConstraint implements Constraint {
           return List.of();
         }
         else {
-          return List.of(new AbstractDurationProperty(NAME, "Expiry", minDuration, maxDuration) {
+          return List.of(new AbstractDurationProperty(NAME, "Expiry", true, minDuration, maxDuration) {
             @Override
             protected void setCore(@Nullable Duration value) {
               userProvidedDuration = value;
