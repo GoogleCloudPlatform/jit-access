@@ -26,7 +26,7 @@ import com.google.solutions.jitaccess.catalog.auth.GroupMapping;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
-import com.google.solutions.jitaccess.catalog.policy.PolicyRight;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -92,7 +92,7 @@ public class Catalog {
       .flatMap(sys -> sys.group(groupId.name()));
 
     if (!group.isPresent() || !group.get()
-      .createAccessCheck(this.subject, EnumSet.of(PolicyRight.VIEW))
+      .createAccessCheck(this.subject, EnumSet.of(PolicyAccess.VIEW))
       .execute()
       .isSubjectInAcl()) {
       throw new AccessDeniedException(
@@ -123,7 +123,7 @@ public class Catalog {
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
         if (group
-          .createAccessCheck(this.subject, EnumSet.of(PolicyRight.VIEW))
+          .createAccessCheck(this.subject, EnumSet.of(PolicyAccess.VIEW))
           .execute()
           .isSubjectInAcl()) {
           //

@@ -28,10 +28,10 @@ import java.util.EnumSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestPolicyRight {
+public class TestPolicyAccess {
   @Test
   public void view() {
-    assertTrue((PolicyRight.JOIN.toMask() & PolicyRight.VIEW.toMask()) != 0);
+    assertTrue((PolicyAccess.JOIN.toMask() & PolicyAccess.VIEW.toMask()) != 0);
   }
 
   //---------------------------------------------------------------------------
@@ -41,29 +41,29 @@ public class TestPolicyRight {
   @Test
   public void parse_join() {
     assertEquals(
-      EnumSet.of(PolicyRight.JOIN),
-      PolicyRight.parse("Join  "));
+      EnumSet.of(PolicyAccess.JOIN),
+      PolicyAccess.parse("Join  "));
   }
 
   @Test
   public void parse_approveSelf() {
     assertEquals(
-      EnumSet.of(PolicyRight.APPROVE_SELF),
-      PolicyRight.parse(" approve_self  "));
+      EnumSet.of(PolicyAccess.APPROVE_SELF),
+      PolicyAccess.parse(" approve_self  "));
   }
 
   @Test
   public void parse_approveOthers() {
     assertEquals(
-      EnumSet.of(PolicyRight.APPROVE_OTHERS),
-      PolicyRight.parse("APPROVE_OTHERS"));
+      EnumSet.of(PolicyAccess.APPROVE_OTHERS),
+      PolicyAccess.parse("APPROVE_OTHERS"));
   }
 
   @Test
   public void parse_list() {
     assertEquals(
-      EnumSet.of(PolicyRight.JOIN, PolicyRight.APPROVE_SELF),
-      PolicyRight.parse("Join,approve_self,,  "));
+      EnumSet.of(PolicyAccess.JOIN, PolicyAccess.APPROVE_SELF),
+      PolicyAccess.parse("Join,approve_self,,  "));
   }
 
   //---------------------------------------------------------------------------
@@ -72,10 +72,10 @@ public class TestPolicyRight {
 
   @Test
   public void toString_returnsCanonicalFormat() {
-    assertEquals("JOIN", PolicyRight.JOIN.toString());
+    assertEquals("JOIN", PolicyAccess.JOIN.toString());
     assertEquals(
       "[JOIN, APPROVE_OTHERS, APPROVE_SELF]",
-      PolicyRight
+      PolicyAccess
         .parse("JOIN,approve_self,,approve_self,approve_others  ")
         .toString());
   }

@@ -125,7 +125,7 @@ public class TestCatalog {
       new AccessControlList(
         List.of(new AccessControlList.AllowedEntry(
           SAMPLE_USER,
-          PolicyRight.VIEW.toMask()))),
+          PolicyAccess.VIEW.toMask()))),
       Map.of());
 
     var catalog = new Catalog(
@@ -157,7 +157,7 @@ public class TestCatalog {
       new AccessControlList(
         List.of(new AccessControlList.AllowedEntry(
           SAMPLE_USER,
-          PolicyRight.VIEW.toMask()))),
+          PolicyAccess.VIEW.toMask()))),
       Map.of());
     var deniedGroup = new JitGroupPolicy(
       system,

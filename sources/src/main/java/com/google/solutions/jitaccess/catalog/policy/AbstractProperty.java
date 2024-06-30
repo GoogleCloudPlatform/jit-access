@@ -49,7 +49,7 @@ abstract class AbstractProperty<T> implements Property {
     @Nullable T maxInclusive
   ) {
     this.type = type;
-    this.name = name; // TODO: check syntax.
+    this.name = name;
     this.displayName = displayName;
     this.isRequired = isRequired;
     this.minInclusive = minInclusive;

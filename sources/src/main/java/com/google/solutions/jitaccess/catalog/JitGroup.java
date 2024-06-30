@@ -22,12 +22,10 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.catalog.auth.GroupId;
-import com.google.solutions.jitaccess.catalog.auth.GroupMapping;
-import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
 import com.google.solutions.jitaccess.catalog.policy.Policy;
-import com.google.solutions.jitaccess.catalog.policy.PolicyRight;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -71,7 +69,7 @@ public class JitGroup {
     // constraints might be unsatisfied.
     //
     var result = group
-      .createAccessCheck(this.catalog.subject(), EnumSet.of(PolicyRight.JOIN))
+      .createAccessCheck(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
       .applyConstraints(Policy.ConstraintClass.JOIN)
       .execute();
 

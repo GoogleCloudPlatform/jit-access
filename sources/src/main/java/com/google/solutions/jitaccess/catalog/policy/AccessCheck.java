@@ -37,7 +37,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
   private final @NotNull Subject subject;
   private final @NotNull JitGroupId groupId;
   private final @NotNull Policy policy;
-  private final @NotNull EnumSet<PolicyRight> requiredRights;
+  private final @NotNull EnumSet<PolicyAccess> requiredRights;
 
   private final @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
 
@@ -47,7 +47,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
     @NotNull Policy policy,
     @NotNull Subject subject,
     @NotNull JitGroupId groupId,
-    @NotNull EnumSet<PolicyRight> requiredRights
+    @NotNull EnumSet<PolicyAccess> requiredRights
   ) {
     Preconditions.checkArgument(
       !requiredRights.isEmpty(),

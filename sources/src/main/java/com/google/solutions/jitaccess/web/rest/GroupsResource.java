@@ -76,7 +76,7 @@ public class GroupsResource {//TODO: test
         .map(a -> new JoinAccessInfo(
           new MembershipInfo(
             a.activeMembership().isPresent(),
-            a.activeMembership().map(p -> p.expiry().getEpochSecond()).orElse(null)),
+            a.activeMembership().map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null).orElse(null)),
           a.satisfiedConstraints().stream()
             .map(c -> new ConstraintInfo(c.name(), c.displayName()))
             .toList(),
@@ -134,7 +134,7 @@ public class GroupsResource {//TODO: test
     @NotNull String name,
     @NotNull String description,
     @NotNull String type,
-    @NotNull String value,
+    @NotNull String value, // TODO: is-required
     @Nullable String minInclusive,
     @Nullable String maxInclusive
   ) {}

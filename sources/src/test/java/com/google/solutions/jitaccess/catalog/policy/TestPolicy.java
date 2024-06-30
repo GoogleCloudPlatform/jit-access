@@ -59,7 +59,7 @@ public class TestPolicy {
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 
   @Test
@@ -73,7 +73,7 @@ public class TestPolicy {
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 
   @Test
@@ -101,7 +101,7 @@ public class TestPolicy {
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 
   @Test
@@ -131,7 +131,7 @@ public class TestPolicy {
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 
   @Test
@@ -161,7 +161,7 @@ public class TestPolicy {
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 
   @Test
@@ -184,13 +184,13 @@ public class TestPolicy {
       @Override
       public @NotNull Optional<AccessControlList> accessControlList() {
         return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyRight.JOIN.toMask())
+          new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.JOIN.toMask())
         )));
       }
     };
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
-      EnumSet.of(PolicyRight.JOIN)));
+      EnumSet.of(PolicyAccess.JOIN)));
   }
 }

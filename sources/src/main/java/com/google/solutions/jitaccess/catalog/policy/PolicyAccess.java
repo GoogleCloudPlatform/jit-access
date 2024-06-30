@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-public enum PolicyRight {
+public enum PolicyAccess {
   /**
    * View a group. This right is included in all other rights.
    */
@@ -48,7 +48,7 @@ public enum PolicyRight {
 
   private final int value;
 
-  PolicyRight(int value) {
+  PolicyAccess(int value) {
     this.value = value;
   }
 
@@ -62,7 +62,7 @@ public enum PolicyRight {
   /**
    * @return bit field representation.
    */
-  public static int toMask(@NotNull EnumSet<PolicyRight> actions) {
+  public static int toMask(@NotNull EnumSet<PolicyAccess> actions) {
     int mask = 0;
     for (var action : actions) {
       mask |= action.value;
@@ -70,14 +70,14 @@ public enum PolicyRight {
     return mask;
   }
 
-  public static @NotNull EnumSet<PolicyRight> parse(@NotNull String list) {
+  public static @NotNull EnumSet<PolicyAccess> parse(@NotNull String list) {
     return EnumSet.copyOf(
       Arrays.asList(list.split(","))
         .stream()
         .map(String::trim)
         .map(String::toUpperCase)
         .filter(s -> !s.isBlank())
-        .map(PolicyRight::valueOf)
+        .map(PolicyAccess::valueOf)
         .toList());
   }
 }

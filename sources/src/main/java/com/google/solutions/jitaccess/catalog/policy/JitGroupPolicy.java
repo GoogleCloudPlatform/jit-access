@@ -73,7 +73,7 @@ public record JitGroupPolicy(
 
   public @NotNull AccessCheck createAccessCheck(
     @NotNull Subject subject,
-    @NotNull EnumSet<PolicyRight> requiredRights
+    @NotNull EnumSet<PolicyAccess> requiredRights
   ) {
     return new AccessCheck(
       this,

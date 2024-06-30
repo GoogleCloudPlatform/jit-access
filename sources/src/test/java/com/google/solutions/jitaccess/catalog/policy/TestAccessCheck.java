@@ -62,14 +62,14 @@ public class TestAccessCheck {
 
     var subject = createSubject(SAMPLE_USER, Set.of());
     var policy = Mockito.mock(Policy.class);
-    when(policy.checkAccess(subject, EnumSet.of(PolicyRight.JOIN)))
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
       .thenReturn(false);
 
     var check = new AccessCheck(
       policy,
       subject,
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
 
     assertFalse(check.execute().isSubjectInAcl());
   }
@@ -79,14 +79,14 @@ public class TestAccessCheck {
 
     var subject = createSubject(SAMPLE_USER, Set.of());
     var policy = Mockito.mock(Policy.class);
-    when(policy.checkAccess(subject, EnumSet.of(PolicyRight.JOIN)))
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
       .thenReturn(true);
 
     var check = new AccessCheck(
       policy,
       subject,
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
 
     assertTrue(check.execute().isSubjectInAcl());
   }
@@ -107,7 +107,7 @@ public class TestAccessCheck {
       policy,
       subject,
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
 
     var result = check.execute();
     assertFalse(result.activeMembership().isPresent());
@@ -125,7 +125,7 @@ public class TestAccessCheck {
       policy,
       subject,
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
 
     var result = check.execute();
     assertTrue(result.activeMembership().isPresent());
@@ -146,7 +146,7 @@ public class TestAccessCheck {
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
     var result = check.execute();
 
     assertTrue(result.satisfiedConstraints().isEmpty());
@@ -185,7 +185,7 @@ public class TestAccessCheck {
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
     check.applyConstraints(Policy.ConstraintClass.JOIN);
     check.input().get(0).set("42");
     check.input().get(1).set("sample");
@@ -216,7 +216,7 @@ public class TestAccessCheck {
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
     check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();
 
@@ -243,7 +243,7 @@ public class TestAccessCheck {
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
     check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();
 
@@ -271,7 +271,7 @@ public class TestAccessCheck {
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
-      EnumSet.of(PolicyRight.JOIN));
+      EnumSet.of(PolicyAccess.JOIN));
 
     check.applyConstraints(Policy.ConstraintClass.JOIN);
     var result = check.execute();

@@ -55,7 +55,7 @@ public interface Policy {
    */
   default boolean checkAccess(
     @NotNull Subject subject,
-    @NotNull EnumSet<PolicyRight> requiredRights
+    @NotNull EnumSet<PolicyAccess> requiredRights
   ) {
     //
     // Evaluate parent policy.
@@ -72,7 +72,7 @@ public interface Policy {
     if (this.accessControlList().isPresent() &&
       !this.accessControlList()
         .get()
-        .isAllowed(subject, PolicyRight.toMask(requiredRights))) {
+        .isAllowed(subject, PolicyAccess.toMask(requiredRights))) {
 
       //
       // This policy's ACL denies access.

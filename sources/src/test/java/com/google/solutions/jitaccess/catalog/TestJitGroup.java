@@ -21,7 +21,6 @@
 
 package com.google.solutions.jitaccess.catalog;
 
-import com.google.solutions.jitaccess.catalog.JitGroup;
 import com.google.solutions.jitaccess.catalog.auth.Principal;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.auth.UserId;
@@ -77,7 +76,7 @@ public class TestJitGroup {
       new AccessControlList(
         List.of(new AccessControlList.AllowedEntry(
           SAMPLE_USER,
-          PolicyRight.VIEW.toMask()))), // missing JOIN
+          PolicyAccess.VIEW.toMask()))), // missing JOIN
       Map.of());
 
     var group = new JitGroup(catalog, deniedGroup);
@@ -106,7 +105,7 @@ public class TestJitGroup {
       new AccessControlList(
         List.of(new AccessControlList.AllowedEntry(
           SAMPLE_USER,
-          PolicyRight.JOIN.toMask()))),
+          PolicyAccess.JOIN.toMask()))),
       Map.of(Policy.ConstraintClass.JOIN, List.of(createFailingConstraint())));
 
     var access = new JitGroup(catalog, deniedGroup).analyzeJoinAccess();
