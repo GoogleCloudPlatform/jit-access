@@ -22,10 +22,7 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.catalog.auth.GroupId;
-import com.google.solutions.jitaccess.catalog.policy.PolicyAnalysis;
-import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
-import com.google.solutions.jitaccess.catalog.policy.Policy;
-import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
+import com.google.solutions.jitaccess.catalog.policy.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
@@ -64,58 +61,91 @@ public class JitGroup {
   /**
    * @return details about possibly unmet constraints.
    */
-  public @NotNull Optional<PolicyAnalysis.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
-    var analysisAttempts = List.of(
-      // 1. Try join + self-approval.
-      EnumSet.of(PolicyAccess.JOIN, PolicyAccess.APPROVE_SELF),
+  public @NotNull Optional<JoinOperation> join() {//TODO: return JoinOperationBuilder, test
+    //
+    // 1. Try to join with self-approval.
+    //
+    // NB. Self approval requires that the subject satisfies also approval constraints.
+    //
+    var joinWithSelfApprovalAnalysis = group
+      .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN, PolicyAccess.APPROVE_SELF))
+      .applyConstraints(Policy.ConstraintClass.JOIN)
+      .applyConstraints(Policy.ConstraintClass.APPROVE);
+    if (joinWithSelfApprovalAnalysis
+      .execute()
+      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
+      //
+      // ACL grants access, return details about possibly unsatisfied constraints.
+      //
+      return Optional.of(new JoinOperation(joinWithSelfApprovalAnalysis));
+    }
 
-      // 2. Try join.
-      EnumSet.of(PolicyAccess.JOIN));
-
-    for (var attempt : analysisAttempts) {
-      var result = group
-        .analyze(this.catalog.subject(), attempt)
-        .applyConstraints(Policy.ConstraintClass.JOIN)
-        .execute();
-      if (result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
-        //
-        // ACL grants access, return details about possibly unsatisfied constraints.
-        //
-        return Optional.of(result);
-      }
+    //
+    // 2. Try to join with approval.
+    //
+    var joinAnalysis = group
+      .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
+      .applyConstraints(Policy.ConstraintClass.JOIN);
+    if (joinAnalysis
+      .execute()
+      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
+      //
+      // ACL grants access, return details about possibly unsatisfied constraints.
+      //
+      return Optional.of(new JoinOperation(joinAnalysis));
     }
 
     return Optional.empty();
   }
 
+  // public ApprovalOperation approve(@NotNull String token)
   //TODO: members()
 
 
-  public @NotNull Optional<JoinOperationBuilder> join() {
-    // check ACL w/o constraints
-    // if ok, return request
-    throw new RuntimeException("NIY");
-  }
+  public class JoinOperation {
+    private final @NotNull PolicyAnalysis analysis;
 
-  class JoinOperationBuilder {
-    // input
+    private JoinOperation(@NotNull PolicyAnalysis analysis) {
+      this.analysis = analysis;
+    }
+
+    /**
+     * @return input required to evaluate constraints.
+     */
+    public @NotNull List<Property> input() {
+      return this.analysis.input();
+    }
+
+    /**
+     * Perform a "dry run" to check if the join would succeed
+     * given the current input.
+     */
+    public @NotNull PolicyAnalysis.Result dryRun() {
+      //
+      // Re-run analysis using the latest inputs.
+      //
+      return this.analysis.execute();
+    }
+
     // analyze (w/ constraints + approval constraints if applicable)
     // build -> request
 
-    // build -> JoinOperation
+    // delegateForApproval -> ApprovalOp
+    // execute ->
   }
 
-  class DelegatedJoinOperationBuilder {
+  public class ApprovalOperation {
+    // requestingSubject
     // input
-    // analyze (w/ constraints)
-    // build -> JoinOperation
+    // dryRun (w/ constraints)
+    // execute ->
 
     // from token (-> approver constraints!)
     //   verify different users
   }
 
-  class JoinOperation {
-    // execute (w/ constraints)
-    // delegate -> token
-  }
+  //class JoinOperation {
+  //  // execute (w/ constraints)
+  //  // delegate -> token
+  //}
 }

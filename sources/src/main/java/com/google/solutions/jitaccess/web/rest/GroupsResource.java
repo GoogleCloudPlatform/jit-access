@@ -1,6 +1,5 @@
 package com.google.solutions.jitaccess.web.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
@@ -74,12 +73,15 @@ public class GroupsResource {//TODO: test
     @Nullable JoinAccessInfo access
   ) implements ResponseEntity {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
-      var joinAccessInfo = g.analyzeJoinAccess()
+      var joinAccessInfo = g.join()
+        .map(j -> j.dryRun())
         .map(a -> new JoinAccessInfo(
           a.requestedAccess().contains(PolicyAccess.APPROVE_SELF),
           new MembershipInfo(
             a.activeMembership().isPresent(),
-            a.activeMembership().map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null).orElse(null)),
+            a.activeMembership()
+              .map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null)
+              .orElse(null)),
           a.satisfiedConstraints().stream()
             .map(c -> new ConstraintInfo(c.name(), c.displayName()))
             .toList(),
@@ -114,6 +116,7 @@ public class GroupsResource {//TODO: test
   ) {}
 
   public record JoinAccessInfo(
+    // TODO: canJoin, canSelfApprove
     boolean allowSelfApproval,
     @NotNull MembershipInfo membership,
     @NotNull List<ConstraintInfo> satisfiedConstraints,

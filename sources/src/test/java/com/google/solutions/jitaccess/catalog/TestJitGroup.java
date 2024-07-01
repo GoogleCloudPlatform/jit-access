@@ -54,11 +54,11 @@ public class TestJitGroup {
   }
 
   // -------------------------------------------------------------------------
-  // analyzeJoinAccess.
+  // join.
   // -------------------------------------------------------------------------
 
   @Test
-  public void analyzeJoinAccess_whenNotAllowed_thenReturnsEmpty() {
+  public void join_whenNotAllowed_thenReturnsEmpty() {
     var subject = Mockito.mock(Subject.class);
     when(subject.principals())
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
@@ -82,11 +82,11 @@ public class TestJitGroup {
       .add(new SystemPolicy("system-1", "System")
         .add(deniedGroup));
 
-    assertFalse(group.analyzeJoinAccess().isPresent());
+    assertFalse(group.join().isPresent());
   }
 
   @Test
-  public void analyzeJoinAccess_whenAllowedButConstraintFails_thenReturnsDetails() throws Exception {
+  public void join_whenAllowedButConstraintFails_thenReturnsBuilder() throws Exception {
     var subject = Mockito.mock(Subject.class);
     when(subject.user())
       .thenReturn(SAMPLE_USER);
@@ -110,12 +110,13 @@ public class TestJitGroup {
       .add(new SystemPolicy("system-1", "System")
         .add(deniedGroup));
 
-    var access = new JitGroup(catalog, deniedGroup).analyzeJoinAccess();
+    var joinOp = new JitGroup(catalog, deniedGroup).join();
+    assertTrue(joinOp.isPresent());
 
-    assertTrue(access.isPresent());
-    assertTrue(access.get().isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
-    assertEquals(0, access.get().satisfiedConstraints().size());
-    assertEquals(1, access.get().unsatisfiedConstraints().size());
-    assertEquals(1, access.get().failedConstraints().size());
+    var analysis = joinOp.get().dryRun();
+    assertTrue(analysis.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertEquals(0, analysis.satisfiedConstraints().size());
+    assertEquals(1, analysis.unsatisfiedConstraints().size());
+    assertEquals(1, analysis.failedConstraints().size());
   }
 }

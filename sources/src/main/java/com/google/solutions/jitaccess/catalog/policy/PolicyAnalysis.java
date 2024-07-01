@@ -40,13 +40,11 @@ public class PolicyAnalysis {
   private final @NotNull EnumSet<PolicyAccess> requestedAccess;
   private final @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
 
-  private boolean executed = false;
-
   PolicyAnalysis(
     @NotNull Policy policy,
     @NotNull Subject subject,
     @NotNull JitGroupId groupId,
-    @NotNull EnumSet<PolicyAccess> requestedAccess
+    @NotNull EnumSet<PolicyAccess> requestedAccess // TODO: remove
   ) {
     Preconditions.checkArgument(
       !requestedAccess.isEmpty(),
@@ -139,13 +137,12 @@ public class PolicyAnalysis {
       .toList();
   }
 
+  /**
+   * Execute analysis.
+   *
+   * It's safe to execute the analysis multiple times.
+   */
   public Result execute() {
-    if (this.executed) {
-      throw new IllegalStateException("The check was executed already");
-    }
-
-    this.executed = true;
-
     //
     // Evaluate ACLs of this policy and its parents.
     //
