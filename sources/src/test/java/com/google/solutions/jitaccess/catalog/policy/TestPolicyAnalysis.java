@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class TestAccessCheck {
+public class TestPolicyAnalysis {
   private static final UserId SAMPLE_USER = new UserId("user@example.com");
   private static final JitGroupId SAMPLE_GROUPID = new JitGroupId("env-1", "system-1", "group-1");
 
@@ -54,44 +54,6 @@ public class TestAccessCheck {
   }
 
   //---------------------------------------------------------------------------
-  // ACL check.
-  //---------------------------------------------------------------------------
-
-  @Test
-  public void isSubjectInAcl_whenPolicyDeniesAccess() {
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-    var policy = Mockito.mock(Policy.class);
-    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
-      .thenReturn(false);
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyAccess.JOIN));
-
-    assertFalse(check.execute().isSubjectInAcl());
-  }
-
-  @Test
-  public void isSubjectInAcl_whenPolicyGrantsAccess() {
-
-    var subject = createSubject(SAMPLE_USER, Set.of());
-    var policy = Mockito.mock(Policy.class);
-    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
-      .thenReturn(true);
-
-    var check = new AccessCheck(
-      policy,
-      subject,
-      SAMPLE_GROUPID,
-      EnumSet.of(PolicyAccess.JOIN));
-
-    assertTrue(check.execute().isSubjectInAcl());
-  }
-
-  //---------------------------------------------------------------------------
   // Membership check.
   //---------------------------------------------------------------------------
 
@@ -103,7 +65,7 @@ public class TestAccessCheck {
 
     var subject = createSubject(SAMPLE_USER, Set.of());
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       subject,
       SAMPLE_GROUPID,
@@ -121,7 +83,7 @@ public class TestAccessCheck {
 
     var subject = createSubject(SAMPLE_USER, Set.of(SAMPLE_GROUPID));
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       subject,
       SAMPLE_GROUPID,
@@ -142,7 +104,7 @@ public class TestAccessCheck {
     when(policy.parent()).thenReturn(Optional.empty());
     when(policy.accessControlList()).thenReturn(Optional.empty());
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
@@ -181,7 +143,7 @@ public class TestAccessCheck {
     when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
       .thenReturn(List.of(constraint));
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
@@ -212,7 +174,7 @@ public class TestAccessCheck {
     when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
       .thenReturn(List.of(constraint));
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
@@ -239,7 +201,7 @@ public class TestAccessCheck {
     when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
       .thenReturn(List.of(constraint));
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
@@ -267,7 +229,7 @@ public class TestAccessCheck {
     when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
       .thenReturn(List.of(constraint));
 
-    var check = new AccessCheck(
+    var check = new PolicyAnalysis(
       policy,
       createSubject(SAMPLE_USER, Set.of()),
       SAMPLE_GROUPID,
@@ -280,5 +242,67 @@ public class TestAccessCheck {
     assertEquals(1, result.unsatisfiedConstraints().size());
     assertEquals(1, result.failedConstraints().size());
     assertNotNull(result.failedConstraints().get(constraint));
+  }
+
+
+  //---------------------------------------------------------------------------
+  // isAccessAllowed.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void isAccessAllowed_whenPolicyDeniesAccess() {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(false);
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+  }
+
+  @Test
+  public void isAccessAllowed_whenPolicyGrantsAccessButConstraintUnsatisfied() {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(true);
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(new CelConstraint("unsatisfied", "", List.of(), "false")));
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN))
+      .applyConstraints(Policy.ConstraintClass.JOIN)
+      .execute();
+
+    assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+  }
+
+  @Test
+  public void isAccessAllowed_whenPolicyGrantsAccesAndConstraintSatisfied() {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(true);
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(new CelConstraint("satisfied", "", List.of(), "true")));
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+    assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
   }
 }

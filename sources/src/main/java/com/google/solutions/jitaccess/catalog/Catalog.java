@@ -27,6 +27,7 @@ import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.EnvironmentPolicy;
 import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAnalysis;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -92,9 +93,9 @@ public class Catalog {
       .flatMap(sys -> sys.group(groupId.name()));
 
     if (!group.isPresent() || !group.get()
-      .createAccessCheck(this.subject, EnumSet.of(PolicyAccess.VIEW))
+      .analyze(this.subject, EnumSet.of(PolicyAccess.VIEW))
       .execute()
-      .isSubjectInAcl()) {
+      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
       throw new AccessDeniedException(
         String.format("The group '%s' does not exist or access is denied", groupId));
     }
@@ -123,9 +124,9 @@ public class Catalog {
     for (var system : environment.systems()) {
       for (var group : system.groups()) {
         if (group
-          .createAccessCheck(this.subject, EnumSet.of(PolicyAccess.VIEW))
+          .analyze(this.subject, EnumSet.of(PolicyAccess.VIEW))
           .execute()
-          .isSubjectInAcl()) {
+          .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
           //
           // User in ACL, so we're ok to return this group. The
           // user might not satisfy all constraints though, which is ok.

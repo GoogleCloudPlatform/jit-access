@@ -71,11 +71,14 @@ public record JitGroupPolicy(
       this.name);
   }
 
-  public @NotNull AccessCheck createAccessCheck(
+  /**
+   * Analyze access for a subject.
+   */
+  public @NotNull PolicyAnalysis analyze(
     @NotNull Subject subject,
     @NotNull EnumSet<PolicyAccess> requiredRights
   ) {
-    return new AccessCheck(
+    return new PolicyAnalysis(
       this,
       subject,
       id(),

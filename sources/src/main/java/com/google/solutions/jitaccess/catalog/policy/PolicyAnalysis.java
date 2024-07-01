@@ -31,9 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 /**
- * Check for whether a subject holds rights on a JIT group.
+ * Analyze level of access that a subject based on a policy.
  */
-public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
+public class PolicyAnalysis {
   private final @NotNull Subject subject;
   private final @NotNull JitGroupId groupId;
   private final @NotNull Policy policy;
@@ -43,7 +43,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
 
   private boolean executed = false;
 
-  AccessCheck(
+  PolicyAnalysis(
     @NotNull Policy policy,
     @NotNull Subject subject,
     @NotNull JitGroupId groupId,
@@ -94,7 +94,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
   /**
    * Add a set of constraints to be considered.
    */
-  public @NotNull AccessCheck applyConstraints(
+  public @NotNull PolicyAnalysis applyConstraints(
     @NotNull Policy.ConstraintClass constraintClass
   ) {
     // TODO: Also evaluate parent policy constraints
@@ -172,7 +172,7 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
      * Input used to perform check.
      */
     public @NotNull List<Property> input() {
-      return AccessCheck.this.input();
+      return PolicyAnalysis.this.input();
     }
 
     /**
@@ -206,19 +206,32 @@ public class AccessCheck { // TODO: Rename to JitGroupAccessCheck
     }
 
     /**
-     * Check if access is allowed based on the ACL.
+     * Check if access is allowed based on ACLs.
      */
-    public boolean isSubjectInAcl() {
-      return isSubjectInAcl;
+    public boolean isAccessAllowed(AccessOptions options) {
+      if (options == AccessOptions.IGNORE_CONSTRAINTS)
+      {
+        //
+        // Only consider ACL.
+        //
+        return isSubjectInAcl;
+      }
+      else {
+        //
+        // Check if access is allowed based on the ACL, constraints,
+        // and active memberships.
+        //
+        return this.activeMembership.isPresent() ||
+          (this.isSubjectInAcl && this.unsatisfiedConstraints.isEmpty());
+      }
     }
+  }
 
-    /**
-     * Check if access is allowed based on the ACL, constraints,
-     * and active memberships.
-     */
-    public boolean isAllowed() {
-      return this.activeMembership.isPresent() ||
-        (this.isSubjectInAcl && this.unsatisfiedConstraints.isEmpty());
-    }
+  public static enum AccessOptions {
+    /** Full access check, includes constraints */
+    NONE,
+
+    /** Shallow access check, ignores constraints */
+    IGNORE_CONSTRAINTS
   }
 }

@@ -22,7 +22,7 @@
 package com.google.solutions.jitaccess.catalog;
 
 import com.google.solutions.jitaccess.catalog.auth.GroupId;
-import com.google.solutions.jitaccess.catalog.policy.AccessCheck;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAnalysis;
 import com.google.solutions.jitaccess.catalog.policy.JitGroupPolicy;
 import com.google.solutions.jitaccess.catalog.policy.Policy;
 import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
@@ -63,19 +63,19 @@ public class JitGroup {
   /**
    * @return details about possibly unmet constraints.
    */
-  public @NotNull Optional<AccessCheck.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
+  public @NotNull Optional<PolicyAnalysis.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
     //
     // Analyze if the current subject can join this group, and what
     // constraints might be unsatisfied.
     //
     var result = group
-      .createAccessCheck(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
+      .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
       .applyConstraints(Policy.ConstraintClass.JOIN)
       .execute();
 
     // TODO: Attempt JOIN | APPROVE_SELF first (w/ approval consraints), fall back to JOIN
 
-    if (!result.isSubjectInAcl()) {
+    if (!result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
       //
       // Subject not in ACL, so we can't disclose any details.
       //

@@ -111,7 +111,7 @@ public class TestJitGroup {
     var access = new JitGroup(catalog, deniedGroup).analyzeJoinAccess();
 
     assertTrue(access.isPresent());
-    assertTrue(access.get().isSubjectInAcl());
+    assertTrue(access.get().isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
     assertEquals(0, access.get().satisfiedConstraints().size());
     assertEquals(1, access.get().unsatisfiedConstraints().size());
     assertEquals(1, access.get().failedConstraints().size());
