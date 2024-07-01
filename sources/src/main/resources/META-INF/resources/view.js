@@ -278,37 +278,34 @@ class AppBar {
         window.location.href = `#!/environments/${environment}/groups`;
     }
 
-    async initialize() {
+    async loadModel() {
+        this.model = window.location.host.startsWith("localhost:")
+            ? new DebugModel()
+            : new Model();
+
         //
         // Clear all views.
         //
         new DefaultView().showAsync();
 
         //
-        // Initialize model. This implicitly verifies that the
-        // API communication works.
+        // Determine resource to load.
         //
-        this.model = window.location.host.startsWith("localhost:")
-            ? new DebugModel()
-            : new Model();
-        await this.model.initialize();
-
-        $("#signed-in-user").text(this.model.context.subject.email);
-        $("#application-version").text(this.model.context.application.version);
-
-        // Get resource path from hash.
         const settings = new LocalSettings();
+        let resource;
         if (window.location.hash && window.location.hash.startsWith('#!')) {
-            this.resource = window.location.hash.substring(2);
+            resource = window.location.hash.substring(2);
         }
         else {
-            this.resource = settings.resource;
+            resource = settings.resource;
         }
 
-        if (this.resource) {
+        if (resource) {
+            //
             // Extract environment name.
-            const regex = /^\/environments\/(.*)\//;
-            const found = this.resource.match(regex);
+            //
+            const regex = /^\/environments\/(.*?)\//;
+            const found = resource.match(regex);
             if (found && found.length >= 2) {
                 this.environment = found[1];
 
@@ -321,10 +318,23 @@ class AppBar {
         }
 
         if (!this.environment) {
+            //
+            // Configuration incomplete, show dialog.
+            //
             await this.selectScopeAsync();
+            return null;
         }
 
-        settings.resource = this.resource;
+        //
+        // Load model.
+        //
+        await this.model.load(this.environment, resource);
+        settings.resource = resource;
+
+        $("#signed-in-user").text(this.model.context.subject.email);
+        $("#application-version").text(this.model.context.application.version);
+
+        return this.model;
     }
 
     /** Display an error bar at the top of the screen */
@@ -390,7 +400,9 @@ $(document).ready(async () => {
                 </div>
             </div>
         </div>
-        <div class='jit-view' id='jit-default-view'></div>`);
+        <div class='jit-view' id='jit-default-view'>
+            Loading...
+        </div>`);
     $('body').append(`
         <div class="mdc-dialog" id="jit-scopedialog">
             <div class="mdc-dialog__container">

@@ -1,5 +1,6 @@
 package com.google.solutions.jitaccess.web.rest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
@@ -30,7 +31,7 @@ public class GroupsResource {//TODO: test
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments/{environment}/groups/{id}")
-  public @NotNull GroupInfo getGroups(
+  public @NotNull GroupInfo getGroup(
     @PathParam("id") @Nullable String unparsedGroupId
   ) throws AccessDeniedException {
     var groupId = JitGroupId
@@ -60,7 +61,7 @@ public class GroupsResource {//TODO: test
 
   public record GroupsInfo(
     @NotNull List<GroupInfo> groups
-  ) {
+  ) implements ResponseEntity {
   }
 
   public record GroupInfo(
@@ -70,7 +71,7 @@ public class GroupsResource {//TODO: test
     @NotNull String cloudIdentityGroup,
     @NotNull SystemInfo system,
     @Nullable JoinAccessInfo access
-  ) {
+  ) implements ResponseEntity {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinAccessInfo = g.analyzeJoinAccess()
         .map(a -> new JoinAccessInfo(

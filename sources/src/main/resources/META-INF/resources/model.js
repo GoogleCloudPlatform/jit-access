@@ -37,11 +37,20 @@ class Model {
         return this._context;
     }
 
-    async initialize() {
+    async load(environment, resource) {
+        console.assert(environment);
+        console.assert(resource);
+
+        this.environment = environment;
+
         try {
-            await new Promise(r => setTimeout(r, 200));
             this._context = await $.ajax({
                 url: "/api/user/context",
+                dataType: "json",
+                headers: this._getHeaders()
+            });
+            this.content = await $.ajax({
+                url: `/api/catalog${resource}`,
                 dataType: "json",
                 headers: this._getHeaders()
             });
@@ -55,32 +64,6 @@ class Model {
         try {
             return await $.ajax({
                 url: "/api/catalog/environments",
-                dataType: "json",
-                headers: this._getHeaders()
-            });
-        }
-        catch (error) {
-            throw this._formatError(error);
-        }
-    }
-
-    async listGroups(environment) {
-        try {
-            return await $.ajax({
-                url: `/api/catalog/environments/${environment}/groups`,
-                dataType: "json",
-                headers: this._getHeaders()
-            });
-        }
-        catch (error) {
-            throw this._formatError(error);
-        }
-    }
-
-    async getGroup(environment, groupId) {
-        try {
-            return await $.ajax({
-                url: `/api/catalog/environments/${environment}/groups/${groupId}`,
                 dataType: "json",
                 headers: this._getHeaders()
             });
@@ -108,14 +91,6 @@ class DebugModel extends Model {
                         <option value="0">Simulate 0 results</option>
                         <option value="10">Simulate 10 result</option>
                         <option value="100">Simulate 100 results</option>
-                    </select>
-                </div>
-                <div>
-                    getGroup:
-                    <select id="debug-getGroup">
-                        <option value="">(default)</option>
-                        <option value="error">Simulate error</option>
-                        <option value="success">Success</option>
                     </select>
                 </div>
             </div>
@@ -150,18 +125,6 @@ class DebugModel extends Model {
         return Promise.reject("Simulated error");
     }
 
-    async initialize() {
-        super._context = {
-            subject: {
-                email: $("#debug-user").val(),
-                principals: [$("#debug-user").val()],
-            },
-            application: {
-                version: '0.0.1'
-            }
-        };
-    }
-
     async listEnvironments() {
         var setting = $("#debug-listEnvironments").val();
         if (!setting) {
@@ -181,61 +144,6 @@ class DebugModel extends Model {
                             description: `Debug environment-${i}`
                         };
                     })
-            });
-        }
-    }
-
-    async getGroup(environment, groupId) {
-        var setting = $("#debug-getGroup").val();
-        if (!setting) {
-            return super.getGroup(environment, groupId);
-        }
-        else if (setting === "error") {
-            await this._simulateError();
-        }
-        else {
-            return Promise.resolve({
-                "id": `${environment}.test-system.${groupId}`,
-                "name": `Name of ${groupId}`,
-                "description": `Description for ${groupId}`,
-                "cloudIdentityGroup": `jit.${groupId}@example.com`,
-                "system": {
-                    "id": "test-system",
-                    "name": "Test policy"
-                },
-                "access": {
-                    "membership": {
-                        active: true,
-                        expiry: new Date(new Date().getTime() + 30*60*1000).getTime()/1000
-                    },
-                    "satisfiedConstraints": [],
-                    "unsatisfiedConstraints": [
-                        {
-                            "name": "__expiry",
-                            "description": "You must choose an expiry between 1 minute and 1 day"
-                        },
-                        {
-                            "name": "test",
-                            "description": "Another unsatisfied constraint"
-                        }
-                    ],
-                    "input": [
-                        {
-                            "name": "__expiry",
-                            "description": "Expiry",
-                            "type": "Duration",
-                            "value": null,
-                            "minInclusive": "60",
-                            "maxInclusive": "86400"
-                        },
-                        {
-                            "name": "justification",
-                            "description": "Justification",
-                            "type": "String",
-                            "value": null
-                        }
-                    ]
-                }
             });
         }
     }
