@@ -54,7 +54,7 @@ public class TestPolicyAnalysis {
   }
 
   //---------------------------------------------------------------------------
-  // Membership check.
+  // activeMembership.
   //---------------------------------------------------------------------------
 
   @Test
@@ -92,6 +92,63 @@ public class TestPolicyAnalysis {
     var result = check.execute();
     assertTrue(result.activeMembership().isPresent());
     assertSame(SAMPLE_GROUPID, result.activeMembership().get().id());
+  }
+
+  //---------------------------------------------------------------------------
+  // effectiveConstraints.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void effectiveConstraints_whenParentEmpty() {
+    var constraint1 = new CelConstraint("constraint-1", "", List.of(), "false");
+    var policy = Mockito.mock(Policy.class);
+    when(policy.parent()).thenReturn(Optional.empty());
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(constraint1));
+
+    var check = new PolicyAnalysis(
+      policy,
+      createSubject(SAMPLE_USER, Set.of()),
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN));
+    var effectiveConstraints = check
+      .effectiveConstraints(Policy.ConstraintClass.JOIN)
+      .stream()
+      .toList();
+
+    assertEquals(1, effectiveConstraints.size());
+    assertTrue(effectiveConstraints.contains(constraint1));
+  }
+
+  @Test
+  public void effectiveConstraints_whenParentHasConstraints() {
+    var parentConstraint1 = new CelConstraint("constraint-1", "", List.of(), "false");
+    var parentConstraint2 = new CelConstraint("constraint-2", "", List.of(), "false");
+
+    var parentPolicy = Mockito.mock(Policy.class);
+    when(parentPolicy.parent()).thenReturn(Optional.empty());
+    when(parentPolicy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(parentConstraint1, parentConstraint2));
+
+    var overriddenConstraint1 = new CelConstraint(parentConstraint1.name(), "", List.of(), "true");
+    var policy = Mockito.mock(Policy.class);
+    when(policy.parent()).thenReturn(Optional.of(parentPolicy));
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(overriddenConstraint1));
+
+    var check = new PolicyAnalysis(
+      policy,
+      createSubject(SAMPLE_USER, Set.of()),
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN));
+    var effectiveConstraints = check
+      .effectiveConstraints(Policy.ConstraintClass.JOIN)
+      .stream()
+      .toList();
+
+    assertEquals(2, effectiveConstraints.size());
+    assertTrue(effectiveConstraints.contains(overriddenConstraint1));
+    assertTrue(effectiveConstraints.contains(parentConstraint2));
   }
 
   //---------------------------------------------------------------------------
