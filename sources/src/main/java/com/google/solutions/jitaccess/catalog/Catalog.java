@@ -95,7 +95,7 @@ public class Catalog {
     if (!group.isPresent() || !group.get()
       .analyze(this.subject, EnumSet.of(PolicyAccess.VIEW))
       .execute()
-      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
+      .isAccessAllowed(PolicyAnalysis.AccessOptions.NONE)) {
       throw new AccessDeniedException(
         String.format("The group '%s' does not exist or access is denied", groupId));
     }
@@ -126,7 +126,7 @@ public class Catalog {
         if (group
           .analyze(this.subject, EnumSet.of(PolicyAccess.VIEW))
           .execute()
-          .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
+          .isAccessAllowed(PolicyAnalysis.AccessOptions.NONE)) {
           //
           // User in ACL, so we're ok to return this group. The
           // user might not satisfy all constraints though, which is ok.

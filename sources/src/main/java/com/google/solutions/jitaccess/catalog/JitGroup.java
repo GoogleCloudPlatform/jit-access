@@ -29,6 +29,7 @@ import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -64,26 +65,27 @@ public class JitGroup {
    * @return details about possibly unmet constraints.
    */
   public @NotNull Optional<PolicyAnalysis.Result> analyzeJoinAccess() {//TODO: return JoinOperationBuilder
-    //
-    // Analyze if the current subject can join this group, and what
-    // constraints might be unsatisfied.
-    //
-    var result = group
-      .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
-      .applyConstraints(Policy.ConstraintClass.JOIN)
-      .execute();
+    var analysisAttempts = List.of(
+      // 1. Try join + self-approval.
+      EnumSet.of(PolicyAccess.JOIN, PolicyAccess.APPROVE_SELF),
 
-    // TODO: Attempt JOIN | APPROVE_SELF first (w/ approval consraints), fall back to JOIN
+      // 2. Try join.
+      EnumSet.of(PolicyAccess.JOIN));
 
-    if (!result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
-      //
-      // Subject not in ACL, so we can't disclose any details.
-      //
-      return Optional.empty();
+    for (var attempt : analysisAttempts) {
+      var result = group
+        .analyze(this.catalog.subject(), attempt)
+        .applyConstraints(Policy.ConstraintClass.JOIN)
+        .execute();
+      if (result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
+        //
+        // ACL grants access, return details about possibly unsatisfied constraints.
+        //
+        return Optional.of(result);
+      }
     }
-    else {
-      return Optional.of(result);
-    }
+
+    return Optional.empty();
   }
 
   //TODO: members()

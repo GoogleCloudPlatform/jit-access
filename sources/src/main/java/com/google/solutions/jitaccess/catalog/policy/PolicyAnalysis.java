@@ -37,8 +37,7 @@ public class PolicyAnalysis {
   private final @NotNull Subject subject;
   private final @NotNull JitGroupId groupId;
   private final @NotNull Policy policy;
-  private final @NotNull EnumSet<PolicyAccess> requiredRights;
-
+  private final @NotNull EnumSet<PolicyAccess> requestedAccess;
   private final @Nullable LinkedList<Constraint.Check> constraintChecks = new LinkedList<>();
 
   private boolean executed = false;
@@ -47,16 +46,16 @@ public class PolicyAnalysis {
     @NotNull Policy policy,
     @NotNull Subject subject,
     @NotNull JitGroupId groupId,
-    @NotNull EnumSet<PolicyAccess> requiredRights
+    @NotNull EnumSet<PolicyAccess> requestedAccess
   ) {
     Preconditions.checkArgument(
-      !requiredRights.isEmpty(),
+      !requestedAccess.isEmpty(),
       "At least one right must be specified");
 
     this.subject = subject;
     this.policy = policy;
     this.groupId = groupId;
-    this.requiredRights = requiredRights;
+    this.requestedAccess = requestedAccess;
   }
 
   private void evaluateConstraintCheck(
@@ -150,9 +149,9 @@ public class PolicyAnalysis {
     //
     // Evaluate ACLs of this policy and its parents.
     //
-    var result = new Result(policy.checkAccess(
-      this.subject,
-      this.requiredRights));
+    var result = new Result(
+      this.requestedAccess,
+      policy.checkAccess(this.subject, this.requestedAccess));
 
     for (var constraintCheck : this.constraintChecks) {
       evaluateConstraintCheck(constraintCheck, result);
@@ -178,18 +177,32 @@ public class PolicyAnalysis {
   }
 
   public class Result {
-    private final boolean isSubjectInAcl;
+    private final @NotNull EnumSet<PolicyAccess> requestedAccess;
+    private final boolean accessAllowed;
     private @NotNull Optional<Principal> activeMembership;
     private final @NotNull LinkedList<Constraint> satisfiedConstraints;
     private final @NotNull LinkedList<Constraint> unsatisfiedConstraints;
     private final @NotNull Map<Constraint, Exception> failedConstraints;
 
-    private Result(boolean isSubjectInAcl) {
-      this.isSubjectInAcl = isSubjectInAcl;
+    private Result(
+      @NotNull EnumSet<PolicyAccess> requestedAccess,
+      boolean accessAllowed
+    ) {
+      Preconditions.checkArgument(!requestedAccess.isEmpty(), "requestedAccess");
+
+      this.requestedAccess = requestedAccess;
+      this.accessAllowed = accessAllowed;
       this.activeMembership = Optional.empty();
       this.satisfiedConstraints = new LinkedList<>();
       this.unsatisfiedConstraints = new LinkedList<>();
       this.failedConstraints = new HashMap<>();
+    }
+
+    /**
+     * Access that was requested.
+     */
+    public @NotNull EnumSet<PolicyAccess> requestedAccess() {
+      return requestedAccess;
     }
 
     /**
@@ -238,7 +251,7 @@ public class PolicyAnalysis {
         //
         // Only consider ACL.
         //
-        return isSubjectInAcl;
+        return accessAllowed;
       }
       else {
         //
@@ -246,12 +259,12 @@ public class PolicyAnalysis {
         // and active memberships.
         //
         return this.activeMembership.isPresent() ||
-          (this.isSubjectInAcl && this.unsatisfiedConstraints.isEmpty());
+          (this.accessAllowed && this.unsatisfiedConstraints.isEmpty());
       }
     }
   }
 
-  public static enum AccessOptions {
+  public enum AccessOptions {
     /** Full access check, includes constraints */
     NONE,
 
