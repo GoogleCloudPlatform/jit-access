@@ -44,16 +44,19 @@ class Model {
         this.environment = environment;
 
         try {
-            this._context = await $.ajax({
+            const contextCall = $.ajax({
                 url: "/api/user/context",
                 dataType: "json",
                 headers: this._getHeaders()
             });
-            this.content = await $.ajax({
+            const contentCall = $.ajax({
                 url: `/api/catalog${resource}`,
                 dataType: "json",
                 headers: this._getHeaders()
             });
+
+            this._context = await contextCall;
+            this.content = await contentCall;
         }
         catch (error) {
             throw this._formatError(error);
@@ -101,8 +104,7 @@ class DebugModel extends Model {
         //
         [
             "debug-user",
-            "debug-listEnvironments",
-            "debug-getGroup"
+            "debug-listEnvironments"
         ].forEach(setting => {
             $("#" + setting).val(localStorage.getItem(setting))
             $("#" + setting).change(() => {
