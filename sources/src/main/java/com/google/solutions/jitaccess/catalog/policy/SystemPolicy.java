@@ -44,7 +44,7 @@ public class SystemPolicy extends AbstractPolicy {
   static final int NAME_MAX_LENGTH = 16;
   static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
-  private final @NotNull LinkedList<JitGroupPolicy> groups = new LinkedList<>();
+  private final @NotNull Map<String, JitGroupPolicy> groups = new TreeMap<>();
 
   public SystemPolicy(
     @NotNull String name,
@@ -73,13 +73,17 @@ public class SystemPolicy extends AbstractPolicy {
   }
 
   public @NotNull SystemPolicy add(@NotNull JitGroupPolicy group) {
+    Preconditions.checkArgument(
+      !this.groups.containsKey(group.name()),
+      "A group with the same name has already been added");
+
     group.setParent(this);
-    this.groups.addLast(group);
+    this.groups.put(group.name(), group);
     return this;
   }
 
-  public @NotNull List<JitGroupPolicy> groups() {
-    return Collections.unmodifiableList(this.groups);
+  public @NotNull Collection<JitGroupPolicy> groups() {
+    return Collections.unmodifiableCollection(this.groups.values());
   }
 
   public @NotNull EnvironmentPolicy environment() {
@@ -88,9 +92,6 @@ public class SystemPolicy extends AbstractPolicy {
   }
 
   public Optional<JitGroupPolicy> group(@NotNull String name) {
-    return this.groups
-      .stream()
-      .filter(s -> s.name().equals(name))
-      .findFirst();
+    return Optional.ofNullable(this.groups.get(name));
   }
 }

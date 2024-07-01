@@ -49,6 +49,22 @@ public class TestSystemPolicy {
   }
 
   //---------------------------------------------------------------------------
+  // add.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void add_whenAlreadyAdded_throwsException() {
+    var system = new SystemPolicy("system-1", "");
+    var group = new JitGroupPolicy(
+      "group-1",
+      "description",
+      new AccessControlList(List.of()),
+      Map.of());
+    system.add(group);
+    assertThrows(IllegalArgumentException.class, () -> system.add(group));
+  }
+
+  //---------------------------------------------------------------------------
   // toString.
   //---------------------------------------------------------------------------
 

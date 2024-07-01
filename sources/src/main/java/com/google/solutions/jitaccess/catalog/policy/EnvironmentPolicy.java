@@ -37,7 +37,7 @@ public class EnvironmentPolicy extends AbstractPolicy {
   static final int NAME_MAX_LENGTH = 16;
   static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
-  private final @NotNull LinkedList<SystemPolicy> systems = new LinkedList<>();
+  private final @NotNull Map<String, SystemPolicy> systems = new TreeMap<>();
 
   public EnvironmentPolicy(
     @NotNull String name,
@@ -66,19 +66,20 @@ public class EnvironmentPolicy extends AbstractPolicy {
   }
 
   public @NotNull EnvironmentPolicy add(@NotNull SystemPolicy system) {
+    Preconditions.checkArgument(
+      !this.systems.containsKey(system.name()),
+      "A system with the same name has already been added");
+
     system.setParent(this);
-    this.systems.addLast(system);
+    this.systems.put(system.name(), system);
     return this;
   }
 
-  public @NotNull List<SystemPolicy> systems() {
-    return Collections.unmodifiableList(this.systems);
+  public @NotNull Collection<SystemPolicy> systems() {
+    return Collections.unmodifiableCollection(this.systems.values());
   }
 
   public @NotNull Optional<SystemPolicy> system(@NotNull String name) {
-    return this.systems
-      .stream()
-      .filter(s -> s.name().equals(name))
-      .findFirst();
+    return Optional.ofNullable(this.systems.get(name));
   }
 }

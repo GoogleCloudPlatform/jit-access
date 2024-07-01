@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,6 +47,19 @@ public class TestEnvironmentPolicy {
     assertThrows(
       IllegalArgumentException.class,
       () -> new EnvironmentPolicy(name, "description"));
+  }
+
+
+  //---------------------------------------------------------------------------
+  // add.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void add_whenAlreadyAdded_throwsException() {
+    var environment = new EnvironmentPolicy("env", "");
+    var system = new SystemPolicy("system-1", "");
+    environment.add(system);
+    assertThrows(IllegalArgumentException.class, () -> environment.add(system));
   }
 
   //---------------------------------------------------------------------------

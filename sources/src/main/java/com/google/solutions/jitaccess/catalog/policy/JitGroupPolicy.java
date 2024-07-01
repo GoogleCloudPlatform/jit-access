@@ -57,7 +57,6 @@ public class JitGroupPolicy extends AbstractPolicy {
       name.matches(NAME_PATTERN),
       "JIT group names must only contain letters, numbers, and hyphens");
 
-    //TODO: Verify name is unique
     //TODO: Verify constraint names are unique
   }
 
