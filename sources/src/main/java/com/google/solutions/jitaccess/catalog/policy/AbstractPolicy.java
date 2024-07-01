@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,20 +33,18 @@ import java.util.Optional;
 abstract class AbstractPolicy implements Policy {
   private final @NotNull String name;
   private final @NotNull String description;
-  private final @Nullable Policy parent;
+  private @Nullable Policy parent;
   private final @Nullable AccessControlList acl;
   private final @NotNull Map<ConstraintClass, Collection<Constraint>> constraints;
 
   protected AbstractPolicy(
     @NotNull String name,
     @NotNull String description,
-    @Nullable Policy parent,
     @Nullable AccessControlList acl,
     @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
   ) {
     this.name = name;
     this.description = description;
-    this.parent = parent;
     this.acl = acl;
     this.constraints = constraints;
   }
@@ -83,5 +82,10 @@ abstract class AbstractPolicy implements Policy {
     return constraints != null
       ? constraints
       : List.of();
+  }
+
+  protected void setParent(@NotNull Policy parent) {
+    Preconditions.checkArgument(this.parent == null, "Parent has been set already");
+    this.parent = parent;
   }
 }

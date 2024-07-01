@@ -44,12 +44,9 @@ public class TestJitGroupPolicy {
     "with spaces",
     "?"})
   public void constructor_whenNameInvalid_throwsException(String name) {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     assertThrows(
       IllegalArgumentException.class,
       () -> new JitGroupPolicy(
-        system,
         name,
         "description",
         new AccessControlList(List.of()),
@@ -62,10 +59,7 @@ public class TestJitGroupPolicy {
 
   @Test
   public void toStringReturnsName() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
@@ -82,14 +76,15 @@ public class TestJitGroupPolicy {
 
   @Test
   public void id() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
       Map.of());
+
+    new EnvironmentPolicy("env", "")
+      .add(new SystemPolicy("system-1", "")
+        .add(group));
 
     assertEquals(
       new JitGroupId("env", "system-1", "group-1"),
@@ -98,44 +93,34 @@ public class TestJitGroupPolicy {
 
   @Test
   public void accessControlList() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
       Map.of());
 
     assertTrue(group.accessControlList().isPresent());
-    assertSame(group.acl(), group.accessControlList().get());
   }
 
   @Test
   public void constraints_whenPolicyHasConstraints_returnsList() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
       Map.of(Policy.ConstraintClass.JOIN, List.of(Mockito.mock(Constraint.class))));
 
-    assertFalse(group.constraints().isEmpty());
+    assertFalse(group.constraints(Policy.ConstraintClass.JOIN).isEmpty());
   }
 
   @Test
   public void constraints_whenPolicyHasNoConstraints_returnsEmpty() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
       Map.of());
 
-    assertTrue(group.constraints().isEmpty());
+    assertTrue(group.constraints(Policy.ConstraintClass.JOIN).isEmpty());
   }
 }

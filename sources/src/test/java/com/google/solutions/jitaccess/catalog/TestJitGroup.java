@@ -67,10 +67,7 @@ public class TestJitGroup {
     when(catalog.subject())
       .thenReturn(subject);
 
-    var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
     var deniedGroup = new JitGroupPolicy(
-      system,
       "group-1",
       "Group 1",
       new AccessControlList(
@@ -80,6 +77,10 @@ public class TestJitGroup {
       Map.of());
 
     var group = new JitGroup(catalog, deniedGroup);
+
+    new EnvironmentPolicy("env-1", "Environment")
+      .add(new SystemPolicy("system-1", "System")
+        .add(deniedGroup));
 
     assertFalse(group.analyzeJoinAccess().isPresent());
   }
@@ -96,10 +97,7 @@ public class TestJitGroup {
     when(catalog.subject())
       .thenReturn(subject);
 
-    var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
     var deniedGroup = new JitGroupPolicy(
-      system,
       "group-1",
       "Group 1",
       new AccessControlList(
@@ -107,6 +105,10 @@ public class TestJitGroup {
           SAMPLE_USER,
           PolicyAccess.JOIN.toMask()))),
       Map.of(Policy.ConstraintClass.JOIN, List.of(createFailingConstraint())));
+
+    new EnvironmentPolicy("env-1", "Environment")
+      .add(new SystemPolicy("system-1", "System")
+        .add(deniedGroup));
 
     var access = new JitGroup(catalog, deniedGroup).analyzeJoinAccess();
 

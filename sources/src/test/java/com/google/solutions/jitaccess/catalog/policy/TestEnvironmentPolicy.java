@@ -65,7 +65,7 @@ public class TestEnvironmentPolicy {
   @Test
   public void system() {
     var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
+    environment.add(new SystemPolicy("system-1", ""));
 
     assertTrue(environment.system("system-1").isPresent());
     assertFalse(environment.system("system-2").isPresent());

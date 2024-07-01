@@ -35,10 +35,9 @@ public class TestPolicy {
 
   private static class SamplePolicy extends AbstractPolicy {
     public SamplePolicy(
-      @Nullable Policy parent,
       @Nullable AccessControlList acl
     ) {
-      super("Test", "Test", parent, acl, Map.of());
+      super("Test", "Test", acl, Map.of());
     }
   }
 
@@ -48,7 +47,7 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenPolicyHasNoAcl_ThenAccessAllowedByAcl() {
-    var policy = new SamplePolicy(null, null);
+    var policy = new SamplePolicy(null);
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -57,9 +56,7 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenPolicyHasEmptyAcl() {
-    var policy = new SamplePolicy(
-      null,
-      new AccessControlList(List.of()));
+    var policy = new SamplePolicy(new AccessControlList(List.of()));
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -68,13 +65,13 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenParentHasNoAcl() {
-    var parentPolicy = new SamplePolicy(null, null);
+    var parentPolicy = new SamplePolicy(null);
 
     var policy = new SamplePolicy(
-      parentPolicy,
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
       )));
+    policy.setParent(parentPolicy);
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -84,16 +81,15 @@ public class TestPolicy {
   @Test
   public void checkAccess_whenParentDeniesAccess() {
     var parentPolicy = new SamplePolicy(
-      null,
       new AccessControlList(List.of(
         new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
       )));
 
     var policy = new SamplePolicy(
-      parentPolicy,
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
       )));
+    policy.setParent(parentPolicy);
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -103,16 +99,15 @@ public class TestPolicy {
   @Test
   public void checkAccess_whenChildDeniesAccess() {
     var parentPolicy = new SamplePolicy(
-      null,
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
       )));
 
     var policy = new SamplePolicy(
-      parentPolicy,
       new AccessControlList(List.of(
         new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
       )));
+    policy.setParent(parentPolicy);
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -122,16 +117,15 @@ public class TestPolicy {
   @Test
   public void checkAccess_whenParentAndChildGrantAccess() {
     var parentPolicy = new SamplePolicy(
-      null,
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
       )));
 
     var policy = new SamplePolicy(
-      parentPolicy,
       new AccessControlList(List.of(
         new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.JOIN.toMask())
       )));
+    policy.setParent(parentPolicy);
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),

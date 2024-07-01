@@ -23,11 +23,9 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Policy for a system.
@@ -39,20 +37,23 @@ import java.util.Optional;
  * - CI/CD system
  * - Data warehouse for the Bar app
  */
-public record SystemPolicy(
-  @NotNull EnvironmentPolicy environment,
-  @NotNull String name,
-  @NotNull String description,
-  @NotNull List<JitGroupPolicy> groups
-  ) implements Policy {
-
+public class SystemPolicy extends AbstractPolicy {
   /**
    * Maximum length for names, in characters.
    */
   static final int NAME_MAX_LENGTH = 16;
   static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
-  public SystemPolicy {
+  private final @NotNull LinkedList<JitGroupPolicy> groups = new LinkedList<>();
+
+  public SystemPolicy(
+    @NotNull String name,
+    @NotNull String description,
+    @Nullable AccessControlList acl,
+    @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
+  ) {
+    super(name, description, acl, constraints);
+
     Preconditions.checkNotNull(name, "Name must not be null");
     Preconditions.checkArgument(
       name.length() <= NAME_MAX_LENGTH,
@@ -62,16 +63,28 @@ public record SystemPolicy(
     Preconditions.checkArgument(
       name.matches(NAME_PATTERN),
       "System names must only contain letters, numbers, and hyphens");
-
-    environment.systems().add(this);
   }
 
   public SystemPolicy(
-    @NotNull EnvironmentPolicy parent,
     @NotNull String name,
     @NotNull String description
   ) {
-    this(parent, name, description, new LinkedList<>());
+    this(name, description, null, Map.of());
+  }
+
+  public @NotNull SystemPolicy add(@NotNull JitGroupPolicy group) {
+    group.setParent(this);
+    this.groups.addLast(group);
+    return this;
+  }
+
+  public @NotNull List<JitGroupPolicy> groups() {
+    return Collections.unmodifiableList(this.groups);
+  }
+
+  public @NotNull EnvironmentPolicy environment() {
+    Preconditions.checkNotNull(this.parent().isPresent(), "Parent must be set");
+    return (EnvironmentPolicy)this.parent().get();
   }
 
   public Optional<JitGroupPolicy> group(@NotNull String name) {
@@ -79,25 +92,5 @@ public record SystemPolicy(
       .stream()
       .filter(s -> s.name().equals(name))
       .findFirst();
-  }
-
-  @Override
-  public String toString() {
-    return this.name;
-  }
-
-  @Override
-  public @NotNull Optional<Policy> parent() {
-    return Optional.of(this.environment);
-  }
-
-  @Override
-  public @NotNull Optional<AccessControlList> accessControlList() {
-    return Optional.empty();
-  }
-
-  @Override
-  public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
-    return List.of();
   }
 }

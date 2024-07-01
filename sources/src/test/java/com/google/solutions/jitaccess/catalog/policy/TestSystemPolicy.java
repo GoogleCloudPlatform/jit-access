@@ -43,13 +43,9 @@ public class TestSystemPolicy {
     "with spaces",
     "?"})
   public void constructor_whenNameInvalid(String name) {
-    var environment = new EnvironmentPolicy("env", "");
     assertThrows(
       IllegalArgumentException.class,
-      () -> new SystemPolicy(
-        environment,
-        name,
-        "description"));
+      () -> new SystemPolicy(name, "description"));
   }
 
   //---------------------------------------------------------------------------
@@ -58,8 +54,7 @@ public class TestSystemPolicy {
 
   @Test
   public void toString_returnsName() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
+    var system = new SystemPolicy("system-1", "");
 
     assertEquals("system-1", system.toString());
   }
@@ -70,14 +65,13 @@ public class TestSystemPolicy {
 
   @Test
   public void group() {
-    var environment = new EnvironmentPolicy("env", "");
-    var system = new SystemPolicy(environment, "system-1", "");
+    var system = new SystemPolicy("system-1", "");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "description",
       new AccessControlList(List.of()),
       Map.of());
+    system.add(group);
 
     assertTrue(system.group("group-1").isPresent());
     assertFalse(system.group("group-2").isPresent());

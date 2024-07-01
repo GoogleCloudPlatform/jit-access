@@ -23,27 +23,30 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Policy for an environment such as "prod".
  */
-public record EnvironmentPolicy(
-  @NotNull String name,
-  @NotNull String description,
-  @NotNull List<SystemPolicy> systems
-) implements Policy {
+public class EnvironmentPolicy extends AbstractPolicy {
   /**
    * Maximum length for names, in characters.
    */
   static final int NAME_MAX_LENGTH = 16;
   static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
-  public EnvironmentPolicy {
+  private final @NotNull LinkedList<SystemPolicy> systems = new LinkedList<>();
+
+  public EnvironmentPolicy(
+    @NotNull String name,
+    @NotNull String description,
+    @Nullable AccessControlList acl,
+    @NotNull Map<Policy.ConstraintClass, Collection<Constraint>> constraints
+  ) {
+    super(name, description, acl, constraints);
+
     Preconditions.checkNotNull(name, "Name must not be null");
     Preconditions.checkArgument(
       name.length() <= NAME_MAX_LENGTH,
@@ -59,7 +62,17 @@ public record EnvironmentPolicy(
     @NotNull String name,
     @NotNull String description
   ) {
-    this(name, description, new LinkedList<>());
+    this(name, description, null, Map.of());
+  }
+
+  public @NotNull EnvironmentPolicy add(@NotNull SystemPolicy system) {
+    system.setParent(this);
+    this.systems.addLast(system);
+    return this;
+  }
+
+  public @NotNull List<SystemPolicy> systems() {
+    return Collections.unmodifiableList(this.systems);
   }
 
   public @NotNull Optional<SystemPolicy> system(@NotNull String name) {
@@ -67,25 +80,5 @@ public record EnvironmentPolicy(
       .stream()
       .filter(s -> s.name().equals(name))
       .findFirst();
-  }
-
-  @Override
-  public @NotNull String toString() {
-    return this.name;
-  }
-
-  @Override
-  public @NotNull Optional<Policy> parent() {
-    return Optional.empty();
-  }
-
-  @Override
-  public @NotNull Optional<AccessControlList> accessControlList() {
-    return Optional.empty();
-  }
-
-  @Override
-  public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
-    return List.of();
   }
 }

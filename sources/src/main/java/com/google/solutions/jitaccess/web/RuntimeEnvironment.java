@@ -321,32 +321,32 @@ public class RuntimeEnvironment {
     @NotNull GroupMapping groupMapping
   ) {
     // TODO: load YAML
-    var environment = new EnvironmentPolicy("test", "Test policy");
-    var system = new SystemPolicy(environment, "test-system", "Test policy");
-    new JitGroupPolicy(
-      system,
-      "test-group",
-      "Test group with custom expiry",
-      new AccessControlList(List.of(
-        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), PolicyAccess.JOIN.toMask()))),
-      Map.of(
-        Policy.ConstraintClass.JOIN,
-        List.of(
-          new CelConstraint(
-            "justification",
-            "You must provide a justification",
-            List.of(new CelConstraint.StringVariable("justification", "Justification", 1, 100)),
-            "input.justification.matches('^b/[0-9]+$')"),
-          new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1)))));
-    new JitGroupPolicy(
-      system,
-      "test-group-fixed",
-      "Test group with fixed expiry",
-      new AccessControlList(List.of(
-        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
-      Map.of(
-        Policy.ConstraintClass.JOIN,
-        List.of(new ExpiryConstraint(Duration.ofDays(1).plusMinutes(1)))));
+    var system = new SystemPolicy("test-system", "Test policy")
+      .add(new JitGroupPolicy(
+        "test-group",
+        "Test group with custom expiry",
+        new AccessControlList(List.of(
+          new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), PolicyAccess.JOIN.toMask()))),
+        Map.of(
+          Policy.ConstraintClass.JOIN,
+          List.of(
+            new CelConstraint(
+              "justification",
+              "You must provide a justification",
+              List.of(new CelConstraint.StringVariable("justification", "Justification", 1, 100)),
+              "input.justification.matches('^b/[0-9]+$')"),
+            new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1))))))
+      .add(new JitGroupPolicy(
+        "test-group-fixed",
+        "Test group with fixed expiry",
+        new AccessControlList(List.of(
+          new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
+        Map.of(
+          Policy.ConstraintClass.JOIN,
+          List.of(new ExpiryConstraint(Duration.ofDays(1).plusMinutes(1))))));
+
+    var environment = new EnvironmentPolicy("test", "Test policy")
+      .add(system);
 
     return new Catalog(
       subject,

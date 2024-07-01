@@ -25,29 +25,28 @@ import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
  * Policy for a JIT group.
- *
- * @param description description for the group
- * @param acl access control list
  */
-public record JitGroupPolicy(
-  @NotNull SystemPolicy system,
-  @NotNull String name,
-  @NotNull String description,
-  @NotNull AccessControlList acl,
-  @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
-) implements Policy {
+public class JitGroupPolicy extends AbstractPolicy {
   /**
    * Maximum length for names, in characters.
    */
   static final int NAME_MAX_LENGTH = 24;
   static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
 
-  public JitGroupPolicy {
+  public JitGroupPolicy(
+    @NotNull String name,
+    @NotNull String description,
+    @Nullable AccessControlList acl,
+    @NotNull Map<ConstraintClass, Collection<Constraint>> constraints
+  ) {
+    super(name, description, acl, constraints);
+
     Preconditions.checkNotNull(name, "Name must not be null");
     Preconditions.checkArgument(
       name.length() <= NAME_MAX_LENGTH,
@@ -58,17 +57,20 @@ public record JitGroupPolicy(
       name.matches(NAME_PATTERN),
       "JIT group names must only contain letters, numbers, and hyphens");
 
-    system.groups().add(this);
-
     //TODO: Verify name is unique
     //TODO: Verify constraint names are unique
   }
 
-  public JitGroupId id() {
+  public @NotNull JitGroupId id() {
     return new JitGroupId(
-      this.system.environment().name(),
-      this.system.name(),
-      this.name);
+      this.system().environment().name(),
+      this.system().name(),
+      this.name());
+  }
+
+  public @NotNull SystemPolicy system() {
+    Preconditions.checkNotNull(this.parent().isPresent(), "Parent must be set");
+    return (SystemPolicy)this.parent().get();
   }
 
   /**
@@ -83,28 +85,5 @@ public record JitGroupPolicy(
       subject,
       id(),
       requiredRights);
-  }
-
-  @Override
-  public String toString() {
-    return this.name;
-  }
-
-  @Override
-  public @NotNull Optional<Policy> parent() {
-    return Optional.of(this.system);
-  }
-
-  @Override
-  public @NotNull Optional<AccessControlList> accessControlList() {
-    return Optional.of(this.acl);
-  }
-
-  @Override
-  public @NotNull Collection<Constraint> constraints(ConstraintClass c) {
-    var constraints = this.constraints.get(c);
-    return constraints != null
-      ? constraints
-      : List.of();
   }
 }

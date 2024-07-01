@@ -77,7 +77,6 @@ public class TestCatalog {
   @Test
   public void group_whenInvalid_thenThrowsExeption() {
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
 
     var catalog = new Catalog(
       Mockito.mock(Subject.class),
@@ -92,13 +91,14 @@ public class TestCatalog {
   @Test
   public void group_whenNotAllowed_thenThrowsExeption() {
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
+    var system = new SystemPolicy("system-1", "System 1");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "Group 1",
       new AccessControlList(List.of()), // Empty ACL -> deny all
       Map.of());
+    system.add(group);
+    environment.add(system);
 
     var catalog = new Catalog(
       Mockito.mock(Subject.class),
@@ -117,9 +117,8 @@ public class TestCatalog {
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
 
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
+    var system = new SystemPolicy("system-1", "System 1");
     var group = new JitGroupPolicy(
-      system,
       "group-1",
       "Group 1",
       new AccessControlList(
@@ -127,6 +126,8 @@ public class TestCatalog {
           SAMPLE_USER,
           PolicyAccess.VIEW.toMask()))),
       Map.of());
+    system.add(group);
+    environment.add(system);
 
     var catalog = new Catalog(
       subject,
@@ -149,9 +150,8 @@ public class TestCatalog {
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
 
     var environment = new EnvironmentPolicy("env-1", "Environment 1");
-    var system = new SystemPolicy(environment, "system-1", "System 1");
+    var system = new SystemPolicy("system-1", "System 1");
     var allowedGroup = new JitGroupPolicy(
-      system,
       "allowed-1",
       "Group 1",
       new AccessControlList(
@@ -160,11 +160,13 @@ public class TestCatalog {
           PolicyAccess.VIEW.toMask()))),
       Map.of());
     var deniedGroup = new JitGroupPolicy(
-      system,
       "group-1",
       "Group 1",
       new AccessControlList(List.of()), // Empty ACL -> deny all
       Map.of());
+    system.add(allowedGroup);
+    system.add(deniedGroup);
+    environment.add(system);
 
     var catalog = new Catalog(
       subject,
