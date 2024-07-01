@@ -255,11 +255,13 @@ public class PolicyAnalysis {
       }
       else {
         //
-        // Check if access is allowed based on the ACL, constraints,
-        // and active memberships.
+        // Check if access is allowed based on the ACL and constraints.
         //
-        return this.activeMembership.isPresent() ||
-          (this.accessAllowed && this.unsatisfiedConstraints.isEmpty());
+        // NB. We must ignore active memberships, otherwise a member
+        // could perpetuate their access even if the ACL no longer grants
+        // them access.
+        //
+        return (this.accessAllowed && this.unsatisfiedConstraints.isEmpty());
       }
     }
   }

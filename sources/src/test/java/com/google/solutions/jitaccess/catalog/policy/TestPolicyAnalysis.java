@@ -324,6 +324,25 @@ public class TestPolicyAnalysis {
   }
 
   @Test
+  public void isAccessAllowed_whenMembershipActiveButPolicyDeniesAccess() {
+    var subject = createSubject(SAMPLE_USER, Set.of(SAMPLE_GROUPID));
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(false);
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    assertTrue(result.activeMembership().isPresent());
+
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+  }
+
+  @Test
   public void isAccessAllowed_whenPolicyGrantsAccessButConstraintUnsatisfied() {
     var subject = createSubject(SAMPLE_USER, Set.of());
     var policy = Mockito.mock(Policy.class);
@@ -345,7 +364,7 @@ public class TestPolicyAnalysis {
   }
 
   @Test
-  public void isAccessAllowed_whenPolicyGrantsAccesAndConstraintSatisfied() {
+  public void isAccessAllowed_whenPolicyGrantsAccessAndConstraintSatisfied() {
     var subject = createSubject(SAMPLE_USER, Set.of());
     var policy = Mockito.mock(Policy.class);
     when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
