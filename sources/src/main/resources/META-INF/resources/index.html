@@ -341,6 +341,12 @@
         async function routeToView() {
             let view;
             try {
+                await document.appbar.initialize();
+                if (!document.appbar.resource) {
+                    return;
+                }
+
+
                 if (window.location.hash == "#!/groups") {
                     view = new ListGroupsView(document.appbar.model);
                     await view.showAsync();
@@ -362,19 +368,8 @@
             }
         }
 
-        $(document).ready(async () => {
-            try {
-                await document.appbar.initialize();
-                window.addEventListener("hashchange", routeToView);
-                routeToView();
-            }
-            catch (e) {
-                document.appbar.showError(e ?? "No environment selected", true);
-            }
-
-            // TODO: window.addEventListener("hashchange", locationHandler);
-            // https://dev.to/thedevdrawer/single-page-application-routing-using-hash-or-url-9jh
-        });
+        window.onhashchange = routeToView;
+        $(document).ready(routeToView);
     </script>
   </body>
 </html>

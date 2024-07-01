@@ -260,9 +260,6 @@ class AppBar {
     constructor() {
         this._banner = new mdc.banner.MDCBanner(document.querySelector('.mdc-banner'));
         
-        const localSettings = new LocalSettings();
-        this.environment = new URLSearchParams(location.search).get("environment") ?? localSettings.environment;
-        
         $('#jit-environmentselector').on('click', () => {
             this.selectScopeAsync().catch(e => {
                 if (e) {
@@ -272,20 +269,13 @@ class AppBar {
         });
     }
 
-    /** Reload page, stripping previous parameters */
-    _reloadPage() {
-        let url = window.location.pathname;
-        window.location.href = url;
-    }
-    
     /** Prompt user to select a scope */
     async selectScopeAsync() {
         var dialog = new SelectScopeDialog();
 
-        const newEnvironment = await dialog.showAsync();
-        new LocalSettings().environment = newEnvironment;
+        const environment = await dialog.showAsync();
         
-        this._reloadPage();
+        window.location.href = `#!/environments/${environment}/groups`;
     }
 
     async initialize() {
@@ -306,13 +296,35 @@ class AppBar {
         $("#signed-in-user").text(this.model.context.subject.email);
         $("#application-version").text(this.model.context.application.version);
 
+        // Get resource path from hash.
+        const settings = new LocalSettings();
+        if (window.location.hash && window.location.hash.startsWith('#!')) {
+            this.resource = window.location.hash.substring(2);
+        }
+        else {
+            this.resource = settings.resource;
+        }
+
+        if (this.resource) {
+            // Extract environment name.
+            const regex = /^\/environments\/(.*)\//;
+            const found = this.resource.match(regex);
+            if (found && found.length >= 2) {
+                this.environment = found[1];
+
+                $('#jit-scope').text(this.environment);
+                $('title').html(`JIT Access: ${this.environment}`);
+            }
+            else {
+                this.environment = null;
+            }
+        }
+
         if (!this.environment) {
             await this.selectScopeAsync();
         }
-        else {
-            $('#jit-scope').text(this.environment);
-            $('title').html(`JIT Access: ${this.environment}`);
-        }
+
+        settings.resource = this.resource;
     }
 
     /** Display an error bar at the top of the screen */
