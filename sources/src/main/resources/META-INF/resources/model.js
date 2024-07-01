@@ -2,20 +2,20 @@
 
 /** Manage browser-local storage */
 class LocalSettings {
-    /* lookup last-accessed resource path */
-    get resource() {
+    /* get last-used environment */
+    get environment() {
         if (typeof (Storage) !== "undefined") {
-            return localStorage.getItem("resource");
+            return localStorage.getItem("environment");
         }
         else {
             return null;
         }
     }
 
-    /* save last-accessed resource path */
-    set resource(value) {
+    /* save last-used environment */
+    set environment(value) {
         if (typeof (Storage) !== "undefined") {
-            localStorage.setItem("resource", value);
+            localStorage.setItem("environment", value);
         }
     }
 }

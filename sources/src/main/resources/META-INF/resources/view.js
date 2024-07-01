@@ -273,9 +273,9 @@ class AppBar {
     async selectScopeAsync() {
         var dialog = new SelectScopeDialog();
 
-        const environment = await dialog.showAsync();
+        new LocalSettings().environment = await dialog.showAsync();
         
-        window.location.href = `#!/environments/${environment}/groups`;
+        window.location.reload();
     }
 
     async loadModel() {
@@ -295,26 +295,30 @@ class AppBar {
         let resource;
         if (window.location.hash && window.location.hash.startsWith('#!')) {
             resource = window.location.hash.substring(2);
-        }
-        else {
-            resource = settings.resource;
-        }
 
-        if (resource) {
-            //
-            // Extract environment name.
-            //
-            const regex = /^\/environments\/(.*?)\//;
-            const found = resource.match(regex);
-            if (found && found.length >= 2) {
-                this.environment = found[1];
+            if (resource) {
+                //
+                // Extract environment name.
+                //
+                const regex = /^\/environments\/(.*?)\//;
+                const found = resource.match(regex);
+                if (found && found.length >= 2) {
+                    this.environment = found[1];
 
-                $('#jit-scope').text(this.environment);
-                $('title').html(`JIT Access: ${this.environment}`);
+                    $('#jit-scope').text(this.environment);
+                    $('title').html(`JIT Access: ${this.environment}`);
+                }
+                else {
+                    this.environment = null;
+                }
             }
-            else {
-                this.environment = null;
-            }
+        }
+        else if (settings.environment) {
+            this.environment = settings.environment;
+            resource = `/environments/${this.environment}/groups`;
+
+            $('#jit-scope').text(this.environment);
+            $('title').html(`JIT Access: ${this.environment}`);
         }
 
         if (!this.environment) {
@@ -329,7 +333,6 @@ class AppBar {
         // Load model.
         //
         await this.model.load(this.environment, resource);
-        settings.resource = resource;
 
         $("#signed-in-user").text(this.model.context.subject.email);
         $("#application-version").text(this.model.context.application.version);
