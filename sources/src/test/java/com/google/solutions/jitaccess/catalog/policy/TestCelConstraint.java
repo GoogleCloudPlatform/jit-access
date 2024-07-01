@@ -22,6 +22,8 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,23 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestCelConstraint {
+
+  //---------------------------------------------------------------------------
+  // Constructor.
+  //---------------------------------------------------------------------------
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+    " ",
+    "123456789_1234567",
+    "with spaces",
+    "?"})
+  public void constructor_whenNameInvalid(String name) {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> new CelConstraint(name, "display name", List.of(), "?"));
+  }
+
   //---------------------------------------------------------------------------
   // toString.
   //---------------------------------------------------------------------------

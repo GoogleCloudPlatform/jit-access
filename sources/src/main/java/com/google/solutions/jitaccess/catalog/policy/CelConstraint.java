@@ -43,6 +43,8 @@ import java.util.Map;
  * Constraint that executes a CEL expression.
  */
 public class CelConstraint implements Constraint {
+  static final String NAME_PATTERN = "[a-zA-Z0-9\\-]+";
+
   private static final CelRuntime CEL_RUNTIME =
     CelRuntimeFactory
       .standardCelRuntimeBuilder()
@@ -60,6 +62,10 @@ public class CelConstraint implements Constraint {
     @NotNull Collection<Variable> variables,
     @NotNull String expression
   ) {
+    Preconditions.checkArgument(
+      name.matches(NAME_PATTERN),
+      "Constraint names must only contain letters, numbers, and hyphens");
+
     this.name = name; // TODO: check syntax
     this.displayName = displayName;
     this.variableDeclarations = variables;
