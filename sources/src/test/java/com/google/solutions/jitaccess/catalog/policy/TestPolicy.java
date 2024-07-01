@@ -2,6 +2,7 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.solutions.jitaccess.catalog.auth.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -32,20 +33,12 @@ public class TestPolicy {
     return subject;
   }
 
-  private static class SamplePolicy implements  Policy {
-    @Override
-    public @NotNull Collection<Constraint> constraints(ConstraintClass action) {
-      return List.of();
-    }
-
-    @Override
-    public @NotNull Optional<Policy> parent() {
-      return Optional.empty();
-    }
-
-    @Override
-    public @NotNull Optional<AccessControlList> accessControlList() {
-      return Optional.empty();
+  private static class SamplePolicy extends AbstractPolicy {
+    public SamplePolicy(
+      @Nullable Policy parent,
+      @Nullable AccessControlList acl
+    ) {
+      super("Test", "Test", parent, acl, Map.of());
     }
   }
 
@@ -55,7 +48,7 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenPolicyHasNoAcl_ThenAccessAllowedByAcl() {
-    var policy = new SamplePolicy();
+    var policy = new SamplePolicy(null, null);
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -64,12 +57,9 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenPolicyHasEmptyAcl() {
-    var policy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of()));
-      }
-    };
+    var policy = new SamplePolicy(
+      null,
+      new AccessControlList(List.of()));
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -78,26 +68,13 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenParentHasNoAcl() {
-    var parentPolicy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.empty();
-      }
-    };
+    var parentPolicy = new SamplePolicy(null, null);
 
-    var policy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<Policy> parent() {
-        return Optional.of(parentPolicy);
-      }
-
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var policy = new SamplePolicy(
+      parentPolicy,
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
+      )));
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -106,28 +83,17 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenParentDeniesAccess() {
-    var parentPolicy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var parentPolicy = new SamplePolicy(
+      null,
+      new AccessControlList(List.of(
+        new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
+      )));
 
-    var policy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<Policy> parent() {
-        return Optional.of(parentPolicy);
-      }
-
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var policy = new SamplePolicy(
+      parentPolicy,
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
+      )));
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -136,28 +102,17 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenChildDeniesAccess() {
-    var parentPolicy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var parentPolicy = new SamplePolicy(
+      null,
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
+      )));
 
-    var policy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<Policy> parent() {
-        return Optional.of(parentPolicy);
-      }
-
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var policy = new SamplePolicy(
+      parentPolicy,
+      new AccessControlList(List.of(
+        new AccessControlList.DeniedEntry(SAMPLE_USER, -1)
+      )));
 
     assertFalse(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),
@@ -166,28 +121,17 @@ public class TestPolicy {
 
   @Test
   public void checkAccess_whenParentAndChildGrantAccess() {
-    var parentPolicy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
-        )));
-      }
-    };
+    var parentPolicy = new SamplePolicy(
+      null,
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(SAMPLE_USER, -1)
+      )));
 
-    var policy = new SamplePolicy() {
-      @Override
-      public @NotNull Optional<Policy> parent() {
-        return Optional.of(parentPolicy);
-      }
-
-      @Override
-      public @NotNull Optional<AccessControlList> accessControlList() {
-        return Optional.of(new AccessControlList(List.of(
-          new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.JOIN.toMask())
-        )));
-      }
-    };
+    var policy = new SamplePolicy(
+      parentPolicy,
+      new AccessControlList(List.of(
+        new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.JOIN.toMask())
+      )));
 
     assertTrue(policy.checkAccess(
       createSubject(SAMPLE_USER, Set.of()),

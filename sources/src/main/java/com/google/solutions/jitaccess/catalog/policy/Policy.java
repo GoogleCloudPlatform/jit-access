@@ -30,6 +30,16 @@ import java.util.Optional;
 
 public interface Policy {
   /**
+   * Name of policy.
+   */
+  @NotNull String name();
+
+  /**
+   * Description of policy.
+   */
+  @NotNull String description();
+
+  /**
    * @return parent policy, if any.
    */
   @NotNull Optional<Policy> parent();
@@ -44,10 +54,9 @@ public interface Policy {
    */
   @NotNull Collection<Constraint> constraints(ConstraintClass action);
 
-  public enum ConstraintClass {
+  enum ConstraintClass {
     JOIN,
-    APPROVE,
-    RECERTIFY
+    APPROVE
   }
 
   /**
