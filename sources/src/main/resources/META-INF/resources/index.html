@@ -169,10 +169,18 @@
 
                 this.formFields = []
 
+                //
+                // Details.
+                //
                 $('#jit-groupinfo-back').on("click", () => window.location.href=`#!/environments/${model.environment}/groups`);
                 $('#jit-groupinfo-system-name').text(model.content.system.name);
                 $('#jit-groupinfo-group-name').text(model.content.name);
                 $('#jit-groupinfo-group-description').text(model.content.description);
+
+                this.details.addRow({
+                    icon: 'group',
+                    primary: model.content.cloudIdentityGroup
+                });
 
                 if (model.content.access.membership.active) {
                     this.details.addRow({
@@ -190,11 +198,16 @@
                         primary: "You're not a member of this group"
                     });
                 }
-                this.details.addRow({
-                    icon: 'alternate_email',
-                    primary: model.content.cloudIdentityGroup
-                });
 
+                //
+                // Constraints.
+                //
+                if (!model.content.access.allowSelfApproval) {
+                    this.constraints.addRow({
+                        primary: "Membership requests are subject to approval",
+                        icon: 'exclamation'
+                    });
+                }
                 if (model.content.access.satisfiedConstraints) {
                     model.content.access.satisfiedConstraints.forEach(item => {
                         this.constraints.addRow({

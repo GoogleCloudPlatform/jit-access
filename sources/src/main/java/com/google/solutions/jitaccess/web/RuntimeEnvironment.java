@@ -328,7 +328,7 @@ public class RuntimeEnvironment {
       "test-group",
       "Test group with custom expiry",
       new AccessControlList(List.of(
-        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), -1))),
+        new AccessControlList.AllowedEntry(new UserId("alice@c.joonix.net"), PolicyAccess.JOIN.toMask()))),
       Map.of(
         Policy.ConstraintClass.JOIN,
         List.of(

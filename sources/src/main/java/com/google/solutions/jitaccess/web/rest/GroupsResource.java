@@ -7,6 +7,7 @@ import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.Catalog;
 import com.google.solutions.jitaccess.catalog.JitGroup;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -75,6 +76,7 @@ public class GroupsResource {//TODO: test
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinAccessInfo = g.analyzeJoinAccess()
         .map(a -> new JoinAccessInfo(
+          a.requestedAccess().contains(PolicyAccess.APPROVE_SELF),
           new MembershipInfo(
             a.activeMembership().isPresent(),
             a.activeMembership().map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null).orElse(null)),
@@ -112,9 +114,8 @@ public class GroupsResource {//TODO: test
   ) {}
 
   public record JoinAccessInfo(
+    boolean allowSelfApproval,
     @NotNull MembershipInfo membership,
-
-    //TODO: requiresApproval
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints,
     @NotNull List<InputInfo> input
