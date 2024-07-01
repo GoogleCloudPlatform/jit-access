@@ -61,9 +61,10 @@ public class JitGroup {
   /**
    * @return details about possibly unmet constraints.
    */
-  public @NotNull Optional<JoinOperation> join() {//TODO: return JoinOperationBuilder, test
+  public @NotNull JoinOperation join() {//TODO: return JoinOperationBuilder, test
     //
-    // 1. Try to join with self-approval.
+    // Check if the current subject can self-approve. If so, initiate a join-
+    // operation with self-approval.
     //
     // NB. Self approval requires that the subject satisfies also approval constraints.
     //
@@ -77,25 +78,20 @@ public class JitGroup {
       //
       // ACL grants access, return details about possibly unsatisfied constraints.
       //
-      return Optional.of(new JoinOperation(joinWithSelfApprovalAnalysis));
+      return new JoinOperation(
+        false,
+        joinWithSelfApprovalAnalysis);
     }
 
     //
-    // 2. Try to join with approval.
+    // The current subject can't self-approve, but they might be allowed
+    // to join with approval.
     //
-    var joinAnalysis = group
-      .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
-      .applyConstraints(Policy.ConstraintClass.JOIN);
-    if (joinAnalysis
-      .execute()
-      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS)) {
-      //
-      // ACL grants access, return details about possibly unsatisfied constraints.
-      //
-      return Optional.of(new JoinOperation(joinAnalysis));
-    }
-
-    return Optional.empty();
+    return new JoinOperation(
+      true,
+      group
+        .analyze(this.catalog.subject(), EnumSet.of(PolicyAccess.JOIN))
+        .applyConstraints(Policy.ConstraintClass.JOIN));
   }
 
   // public ApprovalOperation approve(@NotNull String token)
@@ -103,10 +99,22 @@ public class JitGroup {
 
 
   public class JoinOperation {
+    private final boolean requiresApproval;
     private final @NotNull PolicyAnalysis analysis;
 
-    private JoinOperation(@NotNull PolicyAnalysis analysis) {
+    private JoinOperation(
+      boolean requiresApproval,
+      @NotNull PolicyAnalysis analysis
+    ) {
+      this.requiresApproval = requiresApproval;
       this.analysis = analysis;
+    }
+
+    /**
+     * Indicates whether the operation requires approval.
+     */
+    public boolean requiresApproval() {
+      return this.requiresApproval;
     }
 
     /**

@@ -44,7 +44,7 @@ public class PolicyAnalysis {
     @NotNull Policy policy,
     @NotNull Subject subject,
     @NotNull JitGroupId groupId,
-    @NotNull EnumSet<PolicyAccess> requestedAccess // TODO: remove
+    @NotNull EnumSet<PolicyAccess> requestedAccess
   ) {
     Preconditions.checkArgument(
       !requestedAccess.isEmpty(),
@@ -147,7 +147,6 @@ public class PolicyAnalysis {
     // Evaluate ACLs of this policy and its parents.
     //
     var result = new Result(
-      this.requestedAccess,
       policy.checkAccess(this.subject, this.requestedAccess));
 
     for (var constraintCheck : this.constraintChecks) {
@@ -174,32 +173,18 @@ public class PolicyAnalysis {
   }
 
   public class Result {
-    private final @NotNull EnumSet<PolicyAccess> requestedAccess;
     private final boolean accessAllowed;
     private @NotNull Optional<Principal> activeMembership;
     private final @NotNull LinkedList<Constraint> satisfiedConstraints;
     private final @NotNull LinkedList<Constraint> unsatisfiedConstraints;
     private final @NotNull Map<Constraint, Exception> failedConstraints;
 
-    private Result(
-      @NotNull EnumSet<PolicyAccess> requestedAccess,
-      boolean accessAllowed
-    ) {
-      Preconditions.checkArgument(!requestedAccess.isEmpty(), "requestedAccess");
-
-      this.requestedAccess = requestedAccess;
+    private Result(boolean accessAllowed) {
       this.accessAllowed = accessAllowed;
       this.activeMembership = Optional.empty();
       this.satisfiedConstraints = new LinkedList<>();
       this.unsatisfiedConstraints = new LinkedList<>();
       this.failedConstraints = new HashMap<>();
-    }
-
-    /**
-     * Access that was requested.
-     */
-    public @NotNull EnumSet<PolicyAccess> requestedAccess() {
-      return requestedAccess;
     }
 
     /**

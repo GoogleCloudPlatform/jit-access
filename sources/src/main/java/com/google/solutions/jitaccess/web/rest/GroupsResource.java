@@ -73,31 +73,30 @@ public class GroupsResource {//TODO: test
     @Nullable JoinAccessInfo access
   ) implements ResponseEntity {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
-      var joinAccessInfo = g.join()
-        .map(j -> j.dryRun())
-        .map(a -> new JoinAccessInfo(
-          a.requestedAccess().contains(PolicyAccess.APPROVE_SELF),
-          new MembershipInfo(
-            a.activeMembership().isPresent(),
-            a.activeMembership()
-              .map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null)
-              .orElse(null)),
-          a.satisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
-            .toList(),
-          a.unsatisfiedConstraints().stream()
-            .map(c -> new ConstraintInfo(c.name(), c.displayName()))
-            .toList(),
-          a.input().stream()
-            .map(i -> new InputInfo(
-              i.name(),
-              i.displayName(),
-              i.type().getSimpleName(),
-              i.get(),
-              i.minInclusive().orElse(null),
-              i.maxInclusive().orElse(null)))
-            .toList()))
-        .orElse(null);
+      var joinOp = g.join();
+      var analysis = joinOp.dryRun();
+      var joinAccessInfo = new JoinAccessInfo(
+        joinOp.requiresApproval(),
+        new MembershipInfo(
+          analysis.activeMembership().isPresent(),
+          analysis.activeMembership()
+            .map(p -> p.expiry() != null ? p.expiry().getEpochSecond(): null)
+            .orElse(null)),
+        analysis.satisfiedConstraints().stream()
+          .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+          .toList(),
+        analysis.unsatisfiedConstraints().stream()
+          .map(c -> new ConstraintInfo(c.name(), c.displayName()))
+          .toList(),
+        analysis.input().stream()
+          .map(i -> new InputInfo(
+            i.name(),
+            i.displayName(),
+            i.type().getSimpleName(),
+            i.get(),
+            i.minInclusive().orElse(null),
+            i.maxInclusive().orElse(null)))
+          .toList());
 
       return new GroupInfo(
         g.group().id().toString(),
@@ -116,8 +115,7 @@ public class GroupsResource {//TODO: test
   ) {}
 
   public record JoinAccessInfo(
-    // TODO: canJoin, canSelfApprove
-    boolean allowSelfApproval,
+    boolean requiresApproval,
     @NotNull MembershipInfo membership,
     @NotNull List<ConstraintInfo> satisfiedConstraints,
     @NotNull List<ConstraintInfo> unsatisfiedConstraints,

@@ -25,6 +25,7 @@ import com.google.solutions.jitaccess.catalog.auth.Principal;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.auth.UserId;
 import com.google.solutions.jitaccess.catalog.policy.*;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -39,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class TestJitGroup {
   private static final UserId SAMPLE_USER = new UserId("user@example.com");
 
-  private static Constraint createFailingConstraint() throws ConstraintException {
+  private static Constraint createFailingConstraint(@NotNull String name) throws ConstraintException {
     var check = Mockito.mock(Constraint.Check.class);
     when(check.execute())
       .thenThrow(new IllegalStateException("Mock"));
@@ -47,8 +48,13 @@ public class TestJitGroup {
       .thenReturn(Mockito.mock(Constraint.Context.class));
 
     var constraint = Mockito.mock(Constraint.class);
+    when(constraint.name())
+      .thenReturn(name);
     when(constraint.createCheck())
       .thenReturn(check);
+
+    when(check.constraint())
+      .thenReturn(constraint);
 
     return constraint;
   }
@@ -58,7 +64,7 @@ public class TestJitGroup {
   // -------------------------------------------------------------------------
 
   @Test
-  public void join_whenNotAllowed_thenReturnsEmpty() {
+  public void join_whenNotAllowed() {
     var subject = Mockito.mock(Subject.class);
     when(subject.principals())
       .thenReturn(Set.of(new Principal(SAMPLE_USER)));
@@ -82,11 +88,52 @@ public class TestJitGroup {
       .add(new SystemPolicy("system-1", "System")
         .add(deniedGroup));
 
-    assertFalse(group.join().isPresent());
+    var joinOp = group.join();
+    assertTrue(joinOp.requiresApproval());
+    assertFalse(joinOp
+      .dryRun()
+      .isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
   }
 
   @Test
-  public void join_whenAllowedButConstraintFails_thenReturnsBuilder() throws Exception {
+  public void join_whenAllowedWithSelfApprovalButConstraintFails() throws Exception {
+    var subject = Mockito.mock(Subject.class);
+    when(subject.user())
+      .thenReturn(SAMPLE_USER);
+    when(subject.principals())
+      .thenReturn(Set.of(new Principal(SAMPLE_USER)));
+
+    var catalog = Mockito.mock(Catalog.class);
+    when(catalog.subject())
+      .thenReturn(subject);
+
+    var deniedGroup = new JitGroupPolicy(
+      "group-1",
+      "Group 1",
+      new AccessControlList(
+        List.of(
+          new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.JOIN.toMask()),
+          new AccessControlList.AllowedEntry(SAMPLE_USER, PolicyAccess.APPROVE_SELF.toMask()))),
+      Map.of(
+        Policy.ConstraintClass.JOIN, List.of(createFailingConstraint("join")),
+        Policy.ConstraintClass.APPROVE, List.of(createFailingConstraint("approve"))));
+
+    new EnvironmentPolicy("env-1", "Environment")
+      .add(new SystemPolicy("system-1", "System")
+        .add(deniedGroup));
+
+    var joinOp = new JitGroup(catalog, deniedGroup).join();
+    assertFalse(joinOp.requiresApproval());
+
+    var analysis = joinOp.dryRun();
+    assertTrue(analysis.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertEquals(0, analysis.satisfiedConstraints().size());
+    assertEquals(2, analysis.unsatisfiedConstraints().size()); // JOIN + APPROVE
+    assertEquals(2, analysis.failedConstraints().size());      // JOIN + APPROVE
+  }
+
+  @Test
+  public void join_whenAllowedWithApprovalButConstraintFails() throws Exception {
     var subject = Mockito.mock(Subject.class);
     when(subject.user())
       .thenReturn(SAMPLE_USER);
@@ -104,16 +151,18 @@ public class TestJitGroup {
         List.of(new AccessControlList.AllowedEntry(
           SAMPLE_USER,
           PolicyAccess.JOIN.toMask()))),
-      Map.of(Policy.ConstraintClass.JOIN, List.of(createFailingConstraint())));
+      Map.of(
+        Policy.ConstraintClass.JOIN, List.of(createFailingConstraint("join")),
+        Policy.ConstraintClass.APPROVE, List.of(createFailingConstraint("approve"))));
 
     new EnvironmentPolicy("env-1", "Environment")
       .add(new SystemPolicy("system-1", "System")
         .add(deniedGroup));
 
     var joinOp = new JitGroup(catalog, deniedGroup).join();
-    assertTrue(joinOp.isPresent());
+    assertTrue(joinOp.requiresApproval());
 
-    var analysis = joinOp.get().dryRun();
+    var analysis = joinOp.dryRun();
     assertTrue(analysis.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
     assertEquals(0, analysis.satisfiedConstraints().size());
     assertEquals(1, analysis.unsatisfiedConstraints().size());
