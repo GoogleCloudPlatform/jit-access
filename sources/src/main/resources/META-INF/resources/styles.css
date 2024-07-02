@@ -136,6 +136,16 @@ a {
     width: 130px;
 }
 
+div[title]:not(:empty)::before {
+    content: attr(title);
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+}
+
+ul[title]:not(:empty)::before {
+    content: attr(title);
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+}
+
 /* ==== MDC Overrides === */
 
 .material-symbols-outlined {
@@ -175,7 +185,7 @@ a {
 }
 
 main .mdc-button {
-    margin-top: 8px;
+    margin-top: 20px;
     margin-right: 0;
 }
 
