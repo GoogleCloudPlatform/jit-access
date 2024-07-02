@@ -24,7 +24,7 @@
         <!-- GroupsInfoView -->
         <div class='jit-view' id='jit-groupsinfo-view'>
             <h1>Groups</h1>
-            <div class="mdc-data-table" id="jit-groupsinfo-table">
+            <div class="mdc-data-table">
                 <div class="mdc-data-table__table-container">
                     <table class="mdc-data-table__table">
                         <thead>
@@ -46,29 +46,29 @@
         <!-- GroupInfoView -->
         <div class='jit-view' id='jit-groupinfo-view'>
             <h1>
-                <button class="mdc-icon-button material-icons"  id='jit-groupinfo-back'>
+                <button class="mdc-icon-button material-icons jit-back">
                     <div class="mdc-icon-button__ripple"></div>
                     arrow_back
                 </button>
                 <span>
-                    <span id="jit-groupinfo-system-name"></span>
+                    <span class="jit-system-name"></span>
                     <span class="jit-material-icons">chevron_right</span>
-                    <span id="jit-groupinfo-group-name"></span>
+                    <span class="jit-group-name"></span>
                 </span>
             </h1>
 
             <div class="jit-card-subsection">
-                <span id="jit-groupinfo-group-description"></span>
-                <ul class="mdc-list" id="jit-getgroups-details"></ul>
+                <span class="jit-group-description"></span>
+                <ul class="mdc-list jit-group-details"></ul>
             </div>
             <div class="jit-card-subsection">
-                <ul class="mdc-list" id="jit-groupinfo-constraints" title="Membership of this group is subject to the following constraints:"></ul>
+                <ul class="mdc-list jit-group-constraints" title="Membership of this group is subject to the following constraints:"></ul>
             </div>
 
             <div class="jit-card-subsection">
-                <div id="jit-groupinfo-request-form" title="To join the group, provide the following information:"></div>
+                <form title="To join the group, provide the following information:"></form>
 
-                <button class="mdc-button foo-button mdc-button--raised" id="jit-groupinfo-request-button" type="submit">
+                <button class="mdc-button foo-button mdc-button--raised" type="submit">
                     <div class="mdc-button__ripple"></div>
                     <span class="mdc-button__label">Request access</span>
                 </button>
@@ -82,7 +82,7 @@
                 <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true">
                     <h2 class="mdc-dialog__title">Please wait...</h2>
                     <div class="mdc-dialog__content">
-                        <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate" aria-label="Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0" id="jit-wait-dialog-progress-bar">
+                        <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate" aria-label="Progress Bar" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0">
                             <div class="mdc-linear-progress__buffer">
                                 <div class="mdc-linear-progress__buffer-bar"></div>
                                 <div class="mdc-linear-progress__buffer-dots"></div>
@@ -110,7 +110,7 @@
             constructor() {
                 super('#jit-wait-dialog');
 
-                const progressBar = new mdc.linearProgress.MDCLinearProgress(document.querySelector('#jit-wait-dialog-progress-bar'));
+                const progressBar = new mdc.linearProgress.MDCLinearProgress(this.select('.mdc-linear-progress').get(0));
             }
         }
 
@@ -126,7 +126,7 @@
 
                 console.assert(model);
 
-                this.table = new mdc.dataTable.MDCDataTable(document.querySelector('#jit-groupsinfo-table'));
+                this.table = new mdc.dataTable.MDCDataTable(this.select('table').get(0));
                 this.table.clearRows();
 
                 if (model.content.groups && model.content.groups.length > 0) {
@@ -153,13 +153,13 @@
 
                 console.assert(model);
 
-                this.constraints = new mdc.list.MDCList(document.querySelector('#jit-groupinfo-constraints'));
+                this.constraints = new mdc.list.MDCList(this.select('.jit-group-constraints').get(0));
                 this.constraints.clearRows();
 
-                this.details = new mdc.list.MDCList(document.querySelector('#jit-getgroups-details'));
+                this.details = new mdc.list.MDCList(this.select('.jit-group-details').get(0));
                 this.details.clearRows();
 
-                this.form = $('#jit-groupinfo-request-form');
+                this.form = this.select('form');
                 this.form.empty();
 
                 this.formFields = []
@@ -167,10 +167,10 @@
                 //
                 // Details.
                 //
-                $('#jit-groupinfo-back').on("click", () => window.location.href=`#!/environments/${model.environment}/groups`);
-                $('#jit-groupinfo-system-name').text(model.content.system.name);
-                $('#jit-groupinfo-group-name').text(model.content.name);
-                $('#jit-groupinfo-group-description').text(model.content.description);
+                this.select('.jit-back').on("click", () => window.location.href=`#!/environments/${model.environment}/groups`);
+                this.select('.jit-system-name').text(model.content.system.name);
+                this.select('.jit-group-name').text(model.content.name);
+                this.select('.jit-group-description').text(model.content.description);
 
                 this.details.addRow({
                     icon: 'group',
@@ -225,7 +225,7 @@
                     this._addInput(item);
                 });
 
-                $('#jit-groupinfo-request-button').click(async () => {
+                this.select('button').click(async () => {
                     var dialog = new WaitDialog();
                     dialog.showAsync();
 
@@ -253,7 +253,7 @@
                 switch (input.type) {
                     case "String": {
                         const element = $(`
-                            <label class="mdc-text-field mdc-text-field--outlined" id="jit-groupinfo-request-form-${input.name}">
+                            <label class="mdc-text-field mdc-text-field--outlined">
                                 <span class="mdc-notched-outline">
                                     <span class="mdc-notched-outline__leading"></span>
                                     <span class="mdc-notched-outline__notch">
@@ -261,25 +261,25 @@
                                     </span>
                                     <span class="mdc-notched-outline__trailing"></span>
                                 </span>
-                                <input type="text" class="mdc-text-field__input" id="jit-groupinfo-request-input-${input.name}" ${input.isRequired ? 'required' : ''} autocomplete="off">
+                                <input type="text" class="mdc-text-field__input" name="${input.name}" ${input.isRequired ? 'required' : ''} autocomplete="off">
                             </label>`);
                         this.form.append(element);
 
                         if (input.minInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('minlength', input.minInclusive);
+                            element.find('input').prop('minlength', input.minInclusive);
                         }
 
                         if (input.maxInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('maxlength', input.maxInclusive);
+                            element.find('input').prop('maxlength', input.maxInclusive);
                         }
 
-                        const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-groupinfo-request-form-${input.name}`));
+                        const textField = new mdc.textField.MDCTextField(element.get(0));
                         this.formFields.push(textField);
                         break;
                     }
                     case "Duration": {
                         const element = $(`
-                             <label class="mdc-text-field mdc-text-field--outlined" id="jit-groupinfo-request-form-${input.name}">
+                             <label class="mdc-text-field mdc-text-field--outlined">
                                  <span class="mdc-notched-outline">
                                      <span class="mdc-notched-outline__leading"></span>
                                      <span class="mdc-notched-outline__notch">
@@ -287,19 +287,19 @@
                                      </span>
                                      <span class="mdc-notched-outline__trailing"></span>
                                  </span>
-                                 <input type="datetime-local" class="mdc-text-field__input" id="jit-groupinfo-request-input-${input.name}" required>
+                                 <input type="datetime-local" class="mdc-text-field__input" name="${input.name}" ${input.isRequired ? 'required' : ''}>
                              </label>`);
                         this.form.append(element);
 
                         if (input.minInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('min', this._dateFromDuration(input.minInclusive));
+                            element.find('input').prop('min', this._dateFromDuration(input.minInclusive));
                         }
 
                         if (input.maxInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('max', this._dateFromDuration(input.maxInclusive));
+                            element.find('input').prop('max', this._dateFromDuration(input.maxInclusive));
                         }
 
-                        const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-groupinfo-request-form-${input.name}`));
+                        const textField = new mdc.textField.MDCTextField(element.get(0));
                         this.formFields.push(textField);
                         break;
                     }

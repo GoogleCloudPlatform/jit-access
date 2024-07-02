@@ -178,6 +178,10 @@ class DialogBase {
         });
     }
 
+    select(relativeSelector) {
+        return $(this.selector + ' ' + relativeSelector);
+    }
+
     close() {
         this.element.close();
     }
@@ -196,6 +200,10 @@ class ViewBase {
         $(this.selector).show();
         
         return Promise.resolve({});
+    }
+
+    select(relativeSelector) {
+        return $(this.selector + ' ' + relativeSelector);
     }
 
     cancelView(error) {

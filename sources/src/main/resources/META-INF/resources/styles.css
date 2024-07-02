@@ -146,6 +146,12 @@ ul[title]:not(:empty)::before {
     font-size: var(--mdc-typography-body2-font-size, 0.875rem);
 }
 
+form[title]:not(:empty)::before {
+    content: attr(title);
+    font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+}
+
+
 /* ==== MDC Overrides === */
 
 .material-symbols-outlined {
