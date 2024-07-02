@@ -9,6 +9,7 @@ import com.google.solutions.jitaccess.catalog.JitGroup;
 import com.google.solutions.jitaccess.catalog.Logger;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.policy.PolicyAnalysis;
+import com.google.solutions.jitaccess.catalog.policy.Property;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
@@ -18,8 +19,8 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,7 +69,7 @@ public class GroupsResource {//TODO: test
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments/{environment}/groups/{group}")
-  public @NotNull JoinInfo join(
+  public @NotNull GroupInfo join(
     @PathParam("environment") @Nullable String unvalidatedEnvironment,
     @PathParam("group") @Nullable String unvalidatedGroupId,
     MultivaluedMap<String, String> inputValues
@@ -87,9 +88,8 @@ public class GroupsResource {//TODO: test
       groupId.environment().equals(unvalidatedEnvironment),
       "The group is not part of this environment");
 
-    var joinOp = this.catalog
-      .group(groupId)
-      .join();
+    var group = this.catalog.group(groupId);
+    var joinOp = group.join();
 
     for (var input : joinOp.input()) {
       //
@@ -109,6 +109,22 @@ public class GroupsResource {//TODO: test
       }
       else {
         joinOp.execute();
+
+        return GroupInfo.fromJitGroup(
+          group,
+          new GroupAccessInfo(
+            JoinStatusInfo.JOINED,
+            new MembershipInfo(
+              true,
+              joinOp.expiry()
+                .map(Instant::getEpochSecond)
+                .get()),
+            List.of(), // Don't repeat constraints
+            List.of(), // Don't repeat constraints
+            joinOp.input()
+              .stream()
+              .map(InputInfo::fromProperty)
+              .toList()));
       }
     }
     catch (PolicyAnalysis.ConstraintFailedException e) {
@@ -131,10 +147,6 @@ public class GroupsResource {//TODO: test
     throw new RuntimeException("NIY");
   }
 
-  public record JoinInfo() implements ResponseEntity {
-    // TODO: status granted | sent for approval
-  }
-
   public record GroupsInfo(
     @NotNull List<GroupInfo> groups
   ) implements ResponseEntity {
@@ -146,13 +158,53 @@ public class GroupsResource {//TODO: test
     @NotNull String description,
     @NotNull String cloudIdentityGroup,
     @NotNull SystemInfo system,
-    @Nullable JoinAccessInfo access
+    @Nullable GroupAccessInfo access
   ) implements ResponseEntity {
     static GroupInfo fromJitGroup(@NotNull JitGroup g) {
       var joinOp = g.join();
       var analysis = joinOp.dryRun();
-      var joinAccessInfo = new JoinAccessInfo(
-        joinOp.requiresApproval(),
+      return fromJitGroup(
+        g,
+        GroupAccessInfo.fromAnalysis(
+        joinOp.requiresApproval()
+          ? JoinStatusInfo.JOIN_ALLOWED_WITH_APPROVAL
+          : JoinStatusInfo.JOIN_ALLOWED_WITHOUT_APPROVAL,
+        analysis));
+    }
+
+    static GroupInfo fromJitGroup(
+      @NotNull JitGroup g,
+      @NotNull GroupsResource.GroupAccessInfo groupAccessInfo) {
+      return new GroupInfo(
+        g.group().id().toString(),
+        g.group().name(),
+        g.group().description(),
+        g.cloudIdentityGroupId().email,
+        new SystemInfo(
+          g.group().system().name(),
+          g.group().system().description()),
+        groupAccessInfo);
+    }
+  }
+
+  public record SystemInfo(
+    @NotNull String id,
+    @NotNull String name
+  ) {}
+
+  public record GroupAccessInfo( // TODO: JoinStatusInfo + status
+     @NotNull JoinStatusInfo status,
+     @NotNull MembershipInfo membership,
+     @NotNull List<ConstraintInfo> satisfiedConstraints,
+     @NotNull List<ConstraintInfo> unsatisfiedConstraints,
+     @NotNull List<InputInfo> input
+  ) {
+    public static GroupAccessInfo fromAnalysis(
+      @NotNull JoinStatusInfo status,
+      @NotNull PolicyAnalysis.Result analysis
+    ) {
+      return new GroupAccessInfo(
+        status,
         new MembershipInfo(
           analysis.activeMembership().isPresent(),
           analysis.activeMembership()
@@ -165,40 +217,17 @@ public class GroupsResource {//TODO: test
           .map(c -> new ConstraintInfo(c.name(), c.displayName()))
           .toList(),
         analysis.input().stream()
-          .map(i -> new InputInfo(
-            i.name(),
-            i.displayName(),
-            i.type().getSimpleName(),
-            i.isRequired(),
-            i.get(),
-            i.minInclusive().orElse(null),
-            i.maxInclusive().orElse(null)))
+          .map(InputInfo::fromProperty)
           .toList());
-
-      return new GroupInfo(
-        g.group().id().toString(),
-        g.group().name(),
-        g.group().description(),
-        g.cloudIdentityGroupId().email,
-        new SystemInfo(
-          g.group().system().name(),
-          g.group().system().description()),
-        joinAccessInfo);
     }
   }
 
-  public record SystemInfo(
-    @NotNull String id,
-    @NotNull String name
-  ) {}
-
-  public record JoinAccessInfo( // TODO: JoinStatusInfo + status
-    boolean requiresApproval,
-    @NotNull MembershipInfo membership,
-    @NotNull List<ConstraintInfo> satisfiedConstraints,
-    @NotNull List<ConstraintInfo> unsatisfiedConstraints,
-    @NotNull List<InputInfo> input
-  ) {}
+  public enum JoinStatusInfo {
+    JOIN_ALLOWED_WITHOUT_APPROVAL,
+    JOIN_ALLOWED_WITH_APPROVAL,
+    JOIN_REQUESTED,
+    JOINED
+  }
 
   public record MembershipInfo(
     boolean active,
@@ -219,5 +248,16 @@ public class GroupsResource {//TODO: test
     @NotNull String value,
     @Nullable String minInclusive,
     @Nullable String maxInclusive
-  ) {}
+  ) {
+    static InputInfo fromProperty(@NotNull Property i) {
+      return new InputInfo(
+        i.name(),
+        i.displayName(),
+        i.type().getSimpleName(),
+        i.isRequired(),
+        i.get(),
+        i.minInclusive().orElse(null),
+        i.maxInclusive().orElse(null));
+    }
+  }
 }

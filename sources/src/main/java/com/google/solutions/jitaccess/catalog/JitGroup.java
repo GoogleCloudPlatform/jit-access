@@ -27,9 +27,13 @@ import com.google.solutions.jitaccess.catalog.auth.GroupId;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JIT Group in the context of a specific subject.
@@ -139,6 +143,10 @@ public class JitGroup {
       // Re-run analysis using the latest inputs.
       //
       return this.analysis.execute();
+    }
+
+    public @Nullable Optional<Instant> expiry() {
+      throw new RuntimeException("NIY"); //TODO: expiry
     }
 
     public @NotNull ApprovalOperation delegateForApproval() throws AccessException { // TODO: test
