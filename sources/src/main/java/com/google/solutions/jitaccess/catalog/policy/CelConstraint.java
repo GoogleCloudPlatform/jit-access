@@ -66,7 +66,7 @@ public class CelConstraint implements Constraint {
       name.matches(NAME_PATTERN),
       "Constraint names must only contain letters, numbers, and hyphens");
 
-    this.name = name; // TODO: check syntax
+    this.name = name;
     this.displayName = displayName;
     this.variableDeclarations = variables;
     this.expression = expression;
@@ -182,6 +182,9 @@ public class CelConstraint implements Constraint {
       Preconditions.checkArgument(
         name.matches(NAME_PATTERN),
         "Variable names must be alphanumeric");
+      Preconditions.checkArgument(
+        !name.startsWith("_"),
+        "Variable names with leading underscores are reserved");
 
       this.name = name;
       this.displayName = displayName;

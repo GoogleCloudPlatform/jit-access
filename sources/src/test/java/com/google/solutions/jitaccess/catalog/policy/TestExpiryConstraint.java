@@ -21,11 +21,16 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class TestExpiryConstraint {
   private static final ExpiryConstraint FIXED =
@@ -126,5 +131,73 @@ public class TestExpiryConstraint {
     expiry.set(String.valueOf(USER_DEFINED.minDuration().toSeconds()));
 
     assertTrue(check.execute());
+  }
+
+  //---------------------------------------------------------------------------
+  // extractExpiry.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void extractExpiry_whenResultHasUnsatisfiedConstraints() {
+    var result = Mockito.mock(PolicyAnalysis.Result.class);
+    when(result.unsatisfiedConstraints())
+      .thenReturn(List.of(Mockito.mock(Constraint.class)));
+
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> FIXED.extractExpiry(result));
+  }
+
+  @Test
+  public void extractExpiry_whenResultHasFailedConstraints() {
+    var result = Mockito.mock(PolicyAnalysis.Result.class);
+    when(result.unsatisfiedConstraints())
+      .thenReturn(List.of());
+    when(result.failedConstraints())
+      .thenReturn(Map.of(Mockito.mock(Constraint.class), new Exception()));
+
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> FIXED.extractExpiry(result));
+  }
+
+  @Test
+  public void extractExpiry_whenFixedDuration() {
+    var result = Mockito.mock(PolicyAnalysis.Result.class);
+    when(result.unsatisfiedConstraints())
+      .thenReturn(List.of());
+    when(result.failedConstraints())
+      .thenReturn(Map.of());
+
+    assertEquals(FIXED.minDuration(), FIXED.extractExpiry(result).get());
+  }
+
+  @Test
+  public void extractExpiry_whenInputMissing() {
+    var result = Mockito.mock(PolicyAnalysis.Result.class);
+    when(result.unsatisfiedConstraints())
+      .thenReturn(List.of());
+    when(result.failedConstraints())
+      .thenReturn(Map.of());
+
+    assertFalse(USER_DEFINED.extractExpiry(result).isPresent());
+  }
+
+  @Test
+  public void extractExpiry_whenUserDefined() {
+    var result = Mockito.mock(PolicyAnalysis.Result.class);
+    when(result.unsatisfiedConstraints())
+      .thenReturn(List.of());
+    when(result.failedConstraints())
+      .thenReturn(Map.of());
+
+    var input = USER_DEFINED.createCheck().input();
+    when(result.input())
+      .thenReturn(input);
+
+    input.get(0).set("120");
+    assertEquals(
+      Duration.ofMinutes(2),
+      USER_DEFINED.extractExpiry(result).get());
   }
 }

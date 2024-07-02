@@ -170,7 +170,7 @@ public class ExpiryConstraint implements Constraint {
 
   public @NotNull Optional<Duration> extractExpiry(
     @NotNull PolicyAnalysis.Result analysisResult
-  ) { // TODO: test
+  ) {
     Preconditions.checkArgument(
       analysisResult.unsatisfiedConstraints().isEmpty(),
       "Policy analysis result has unsatisfied constraints");

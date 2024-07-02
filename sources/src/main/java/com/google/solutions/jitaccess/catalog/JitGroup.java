@@ -186,13 +186,14 @@ public class JitGroup {
       // Extract expiry, which could be fixed or user-provided.
       //
       // NB. We verified all constraints, so if expiry is empty, then
-      // there was no expiry constraint.
+      // there is no expiry constraint.
       //
       var expiry = analysisResult.satisfiedConstraints()
         .stream()
         .filter(c -> c instanceof ExpiryConstraint)
         .map(c -> (ExpiryConstraint)c)
         .flatMap(c -> c.extractExpiry(analysisResult).stream())
+        .map(d -> Instant.now().plus(d))
         .findFirst();
 
 

@@ -106,7 +106,7 @@ public class TestCelConstraint {
   }
 
   //---------------------------------------------------------------------------
-  // Input variables.
+  // Check.
   //---------------------------------------------------------------------------
 
   @Test
@@ -134,5 +134,27 @@ public class TestCelConstraint {
     check.input().get(0).set("some value");
 
     assertTrue(check.execute());
+  }
+
+  //---------------------------------------------------------------------------
+  // Variable.
+  //---------------------------------------------------------------------------
+
+  @ParameterizedTest
+  @ValueSource(strings = {
+    " ",
+    "123456789_1234567",
+    "with spaces",
+    "_reserved"})
+  public void variableConstructor_whenNameInvalid(String name) {
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> new CelConstraint.StringVariable(name, "display name", 0, 1));
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> new CelConstraint.IntegerVariable(name, "display name", 0, 1));
+    assertThrows(
+      IllegalArgumentException.class,
+      () -> new CelConstraint.BooleanVariable(name, "display name"));
   }
 }
