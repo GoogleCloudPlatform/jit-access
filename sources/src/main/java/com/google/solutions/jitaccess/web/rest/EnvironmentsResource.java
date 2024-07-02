@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
 @Dependent
 @Path("/api/catalog")
 @RequireIapPrincipal
-public class CatalogResource {//TODO: test
+public class EnvironmentsResource {//TODO: test
   @Inject
   Catalog catalog;
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments")
-  public @NotNull CatalogResource.EnvironmentsInfo listEnvironments() {
+  public @NotNull EnvironmentsResource.EnvironmentsInfo list() {
     var environments = this.catalog.environments()
       .stream()
       .map(env -> new EnvironmentInfo(env.name(), env.description()))

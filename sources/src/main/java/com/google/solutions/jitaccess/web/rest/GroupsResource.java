@@ -3,23 +3,25 @@ package com.google.solutions.jitaccess.web.rest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
+import com.google.solutions.jitaccess.apis.clients.AccessException;
 import com.google.solutions.jitaccess.catalog.Catalog;
 import com.google.solutions.jitaccess.catalog.JitGroup;
+import com.google.solutions.jitaccess.catalog.Logger;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
-import com.google.solutions.jitaccess.catalog.policy.PolicyAccess;
+import com.google.solutions.jitaccess.catalog.policy.PolicyAnalysis;
 import com.google.solutions.jitaccess.web.RequireIapPrincipal;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Dependent
 @Path("/api/catalog")
@@ -28,14 +30,17 @@ public class GroupsResource {//TODO: test
   @Inject
   Catalog catalog;
 
+  @Inject
+  Logger logger;
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments/{environment}/groups/{id}")
-  public @NotNull GroupInfo getGroup(
-    @PathParam("id") @Nullable String unparsedGroupId
+  public @NotNull GroupInfo get(
+    @PathParam("id") @Nullable String unvalidatedGroupId
   ) throws AccessDeniedException {
     var groupId = JitGroupId
-      .parse(unparsedGroupId)
+      .parse(unvalidatedGroupId)
       .orElseThrow(() -> new IllegalArgumentException("The ID is invalid"));
 
     return GroupInfo.fromJitGroup(this.catalog.group(groupId));
@@ -44,19 +49,90 @@ public class GroupsResource {//TODO: test
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Path("environments/{environment}/groups")
-  public @NotNull GroupsInfo listGroups(
-    @PathParam("environment") @Nullable String environment
+  public @NotNull GroupsInfo list(
+    @PathParam("environment") @Nullable String unvalidatedEnvironment
   ) {
     Preconditions.checkArgument(
-      !Strings.isNullOrEmpty(environment),
+      !Strings.isNullOrEmpty(unvalidatedEnvironment),
       "Environment must be specified");
 
-    var groups = this.catalog.groups(environment)
+    var groups = this.catalog
+      .groups(unvalidatedEnvironment)
       .stream()
       .map(GroupInfo::fromJitGroup)
       .collect(Collectors.toList());
 
     return new GroupsInfo(groups);
+  }
+
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("environments/{environment}/groups/{group}")
+  public @NotNull JoinInfo join(
+    @PathParam("environment") @Nullable String unvalidatedEnvironment,
+    @PathParam("group") @Nullable String unvalidatedGroupId,
+    MultivaluedMap<String, String> inputValues
+  ) throws AccessException {
+    Preconditions.checkArgument(
+      !Strings.isNullOrEmpty(unvalidatedEnvironment),
+      "Environment must be specified");
+    Preconditions.checkArgument(
+      !Strings.isNullOrEmpty(unvalidatedGroupId),
+      "Group must be specified");
+
+    var groupId = JitGroupId
+      .parse(unvalidatedGroupId)
+      .orElseThrow(() -> new IllegalArgumentException("The ID is invalid"));
+    Preconditions.checkArgument(
+      groupId.environment().equals(unvalidatedEnvironment),
+      "The group is not part of this environment");
+
+    var joinOp = this.catalog
+      .group(groupId)
+      .join();
+
+    for (var input : joinOp.input()) {
+      //
+      // Set input. This might throw an exception if the
+      // user-provided input it incomplete or invalid.
+      //
+      input.set(Stream
+        .ofNullable(inputValues.get(input.name()))
+        .flatMap(i -> i.stream())
+        .findFirst()
+        .orElse(null));
+    }
+
+    try {
+      if (joinOp.requiresApproval()) {
+        // TODO: create token, send out
+      }
+      else {
+        joinOp.execute();
+      }
+    }
+    catch (PolicyAnalysis.ConstraintFailedException e) {
+      //
+      // A failed constraint indicates a configuration issue, so
+      // log all the details.
+      //
+      for (var detail : e.exceptions()) {
+        this.logger.error(
+          EventIds.API_CONSTRAINT_FAILURE,
+          e.getMessage(),
+          detail);
+      }
+
+      throw new AccessDeniedException(e.getMessage(), e);
+    }
+
+    //TODO: log, notify
+
+    throw new RuntimeException("NIY");
+  }
+
+  public record JoinInfo() implements ResponseEntity {
+    // TODO: status granted | sent for approval
   }
 
   public record GroupsInfo(
@@ -109,12 +185,13 @@ public class GroupsResource {//TODO: test
         joinAccessInfo);
     }
   }
+
   public record SystemInfo(
     @NotNull String id,
     @NotNull String name
   ) {}
 
-  public record JoinAccessInfo(
+  public record JoinAccessInfo( // TODO: JoinStatusInfo + status
     boolean requiresApproval,
     @NotNull MembershipInfo membership,
     @NotNull List<ConstraintInfo> satisfiedConstraints,

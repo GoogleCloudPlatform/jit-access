@@ -22,6 +22,8 @@
 package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
+import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
+import com.google.solutions.jitaccess.apis.clients.AccessException;
 import com.google.solutions.jitaccess.catalog.auth.JitGroupId;
 import com.google.solutions.jitaccess.catalog.auth.Principal;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
@@ -225,9 +227,9 @@ public class PolicyAnalysis {
     }
 
     /**
-     * Check if access is allowed based on ACLs.
+     * Check if access is allowed.
      */
-    public boolean isAccessAllowed(AccessOptions options) {
+    public boolean isAccessAllowed(@NotNull AccessOptions options) {
       if (options == AccessOptions.IGNORE_CONSTRAINTS)
       {
         //
@@ -246,11 +248,50 @@ public class PolicyAnalysis {
         return (this.accessAllowed && this.unsatisfiedConstraints.isEmpty());
       }
     }
+
+    /**
+     * Verify that access is allowed.
+     *
+     * @throws AccessDeniedException if access is denied
+     * @throws ConstraintFailedException if one or more constraints failed to execute
+     */
+    public void verifyAccessAllowed(
+      @NotNull AccessOptions options
+    ) throws AccessDeniedException, ConstraintFailedException {
+      if (isAccessAllowed(options)) {
+        return;
+      }
+
+      if (!failedConstraints().isEmpty()) {
+        throw new ConstraintFailedException(failedConstraints().values());
+      }
+
+      throw unsatisfiedConstraints()
+        .stream()
+        .findFirst()
+        .map(c -> new AccessDeniedException(c.displayName()))
+        .orElse(new AccessDeniedException("Access is denied"));
+    }
+  }
+
+  public class ConstraintFailedException extends AccessException {
+    private final @NotNull Collection<Exception> exceptions;
+
+    public ConstraintFailedException(
+      @NotNull Collection<Exception> exceptions
+    ) {
+      super("One ore more constraints failed to execute");
+      this.exceptions = exceptions;
+    }
+
+    public Collection<Exception> exceptions() {
+      return exceptions;
+    }
   }
 
   public enum AccessOptions {
     /** Full access check, includes constraints */
-    NONE,
+    DEFAULT,
 
     /** Shallow access check, ignores constraints */
     IGNORE_CONSTRAINTS

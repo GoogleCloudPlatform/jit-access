@@ -59,6 +59,8 @@ import java.util.Map;
  */
 @Singleton
 public class RuntimeEnvironment {
+  private static final String EVENT_ID = "runtime.startup";
+  
   private static final String CONFIG_IMPERSONATE_SA = "jitaccess.impersonateServiceAccount";
   private static final String CONFIG_DEBUG_MODE = "jitaccess.debug";
   private static final String CONFIG_PROJECT = "jitaccess.project";
@@ -125,7 +127,7 @@ public class RuntimeEnvironment {
 
     if (!this.configuration.isSmtpConfigured()) {
       logger.warn(
-        EventIds.RUNTIME_STARTUP,
+        EVENT_ID,
         "The SMTP configuration is incomplete");
     }
 
@@ -163,7 +165,7 @@ public class RuntimeEnvironment {
         }
 
         logger.info(
-          EventIds.RUNTIME_STARTUP,
+          EVENT_ID,
           String.format("Running in project %s (%s) as %s, version %s",
             this.projectId,
             this.projectNumber,
@@ -172,7 +174,7 @@ public class RuntimeEnvironment {
       }
       catch (IOException e) {
         logger.error(
-          EventIds.RUNTIME_STARTUP,
+          EVENT_ID,
           "Failed to lookup instance metadata", e);
         throw new RuntimeException("Failed to initialize runtime environment", e);
       }
@@ -234,7 +236,7 @@ public class RuntimeEnvironment {
       }
 
       logger.warn(
-        EventIds.RUNTIME_STARTUP,
+        EVENT_ID,
         String.format("Running in development mode as %s", this.applicationPrincipal));
     }
     else {

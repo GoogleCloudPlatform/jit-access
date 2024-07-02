@@ -19,12 +19,9 @@
 // under the License.
 //
 
-package com.google.solutions.jitaccess.web;
+package com.google.solutions.jitaccess.web.rest;
 
-public class EventIds {
+class EventIds {
   public static final String API_HEALTH = "api.checkHealth";
-  public static final String RUNTIME_STARTUP = "runtime.startup";
-
-  private EventIds() {
-  }
+  public static final String API_CONSTRAINT_FAILURE = "api.constraintFailure";
 }

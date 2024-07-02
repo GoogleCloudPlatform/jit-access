@@ -21,6 +21,7 @@
 
 package com.google.solutions.jitaccess.catalog.policy;
 
+import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.catalog.auth.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -301,7 +302,6 @@ public class TestPolicyAnalysis {
     assertNotNull(result.failedConstraints().get(constraint));
   }
 
-
   //---------------------------------------------------------------------------
   // isAccessAllowed.
   //---------------------------------------------------------------------------
@@ -320,7 +320,7 @@ public class TestPolicyAnalysis {
       EnumSet.of(PolicyAccess.JOIN)).execute();
 
     assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
-    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
   }
 
   @Test
@@ -339,7 +339,7 @@ public class TestPolicyAnalysis {
     assertTrue(result.activeMembership().isPresent());
 
     assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
-    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
   }
 
   @Test
@@ -360,7 +360,7 @@ public class TestPolicyAnalysis {
       .execute();
 
     assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
-    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+    assertFalse(result.isAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
   }
 
   @Test
@@ -378,7 +378,128 @@ public class TestPolicyAnalysis {
       SAMPLE_GROUPID,
       EnumSet.of(PolicyAccess.JOIN)).execute();
 
-    assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.NONE));
+    assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
     assertTrue(result.isAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+  }
+  
+  //---------------------------------------------------------------------------
+  // verifyAccessAllowed.
+  //---------------------------------------------------------------------------
+
+  @Test
+  public void verifyAccessAllowed_whenPolicyDeniesAccess() {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(false);
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    assertThrows(
+      AccessDeniedException.class,
+      () -> result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertThrows(
+      AccessDeniedException.class,
+      () -> result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
+  }
+
+  @Test
+  public void verifyAccessAllowed_whenMembershipActiveButPolicyDeniesAccess() {
+    var subject = createSubject(SAMPLE_USER, Set.of(SAMPLE_GROUPID));
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(false);
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    assertTrue(result.activeMembership().isPresent());
+
+    assertThrows(
+      AccessDeniedException.class,
+      () -> result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS));
+    assertThrows(
+      AccessDeniedException.class,
+      () -> result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT));
+  }
+
+  @Test
+  public void verifyAccessAllowed_whenPolicyGrantsAccessButConstraintUnsatisfied() throws Exception {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(true);
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(new CelConstraint("unsatisfied", "message", List.of(), "false")));
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN))
+      .applyConstraints(Policy.ConstraintClass.JOIN)
+      .execute();
+
+    result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS);
+    try {
+      result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT);
+      fail();
+    }
+    catch (AccessDeniedException e) {
+      assertEquals("message", e.getMessage());
+    }
+  }
+
+  @Test
+  public void verifyAccessAllowed_whenPolicyGrantsAccessButConstraintFails() throws Exception {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(true);
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(new CelConstraint("invalid", "", List.of(), "(;invalid")));
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN))
+      .applyConstraints(Policy.ConstraintClass.JOIN)
+      .execute();
+
+    result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS);
+    try {
+      result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT);
+      fail();
+    }
+    catch (PolicyAnalysis.ConstraintFailedException e) {
+      assertEquals(1, e.exceptions().size());
+    }
+  }
+
+  @Test
+  public void verifyAccessAllowed_whenPolicyGrantsAccessAndConstraintSatisfied() throws Exception {
+    var subject = createSubject(SAMPLE_USER, Set.of());
+    var policy = Mockito.mock(Policy.class);
+    when(policy.checkAccess(subject, EnumSet.of(PolicyAccess.JOIN)))
+      .thenReturn(true);
+    when(policy.constraints(eq(Policy.ConstraintClass.JOIN)))
+      .thenReturn(List.of(new CelConstraint("satisfied", "", List.of(), "true")));
+
+    var result = new PolicyAnalysis(
+      policy,
+      subject,
+      SAMPLE_GROUPID,
+      EnumSet.of(PolicyAccess.JOIN)).execute();
+
+    result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT);
+    result.verifyAccessAllowed(PolicyAnalysis.AccessOptions.IGNORE_CONSTRAINTS);
   }
 }
