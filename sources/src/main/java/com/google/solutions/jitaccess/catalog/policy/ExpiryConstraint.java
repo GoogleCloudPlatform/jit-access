@@ -23,11 +23,13 @@ package com.google.solutions.jitaccess.catalog.policy;
 
 import com.google.common.base.Preconditions;
 import com.google.solutions.jitaccess.util.DurationFormatter;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Constraint that requires group memberships to have
@@ -164,5 +166,29 @@ public class ExpiryConstraint implements Constraint {
         }
       }
     };
+  }
+
+  public @NotNull Optional<Duration> extractExpiry(
+    @NotNull PolicyAnalysis.Result analysisResult
+  ) { // TODO: test
+    Preconditions.checkArgument(
+      analysisResult.unsatisfiedConstraints().isEmpty(),
+      "Policy analysis result has unsatisfied constraints");
+    Preconditions.checkArgument(
+      analysisResult.failedConstraints().isEmpty(),
+      "Policy analysis result has failed constraints");
+
+    if (isFixedDuration()) {
+      return Optional.of(this.minDuration);
+    }
+    else {
+      return analysisResult.input()
+        .stream()
+        .filter(p -> p instanceof AbstractDurationProperty && p.name().equals(NAME))
+        .map(p -> (AbstractDurationProperty)p)
+        .map(p -> p.getCore())
+        .filter(v -> v != null)
+        .findFirst();
+    }
   }
 }

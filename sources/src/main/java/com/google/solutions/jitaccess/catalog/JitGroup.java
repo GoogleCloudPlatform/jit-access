@@ -24,6 +24,7 @@ package com.google.solutions.jitaccess.catalog;
 import com.google.solutions.jitaccess.apis.clients.AccessDeniedException;
 import com.google.solutions.jitaccess.apis.clients.AccessException;
 import com.google.solutions.jitaccess.catalog.auth.GroupId;
+import com.google.solutions.jitaccess.catalog.auth.Principal;
 import com.google.solutions.jitaccess.catalog.auth.Subject;
 import com.google.solutions.jitaccess.catalog.policy.*;
 import org.jetbrains.annotations.NotNull;
@@ -169,7 +170,7 @@ public class JitGroup {
      * Perform the join.
      * @throws AccessException
      */
-    public void execute() throws AccessException {// TODO: test
+    public @NotNull Principal execute() throws AccessException {// TODO: test
       if (this.requiresApproval) {
         throw new AccessDeniedException("The join operation requires approval");
       }
@@ -178,9 +179,22 @@ public class JitGroup {
       // Verify that access is granted and all constraints
       // are satisfied.
       //
-      this.analysis
-        .execute()
-        .verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT);
+      var analysisResult = this.analysis.execute();
+      analysisResult.verifyAccessAllowed(PolicyAnalysis.AccessOptions.DEFAULT);
+
+      //
+      // Extract expiry, which could be fixed or user-provided.
+      //
+      // NB. We verified all constraints, so if expiry is empty, then
+      // there was no expiry constraint.
+      //
+      var expiry = analysisResult.satisfiedConstraints()
+        .stream()
+        .filter(c -> c instanceof ExpiryConstraint)
+        .map(c -> (ExpiryConstraint)c)
+        .flatMap(c -> c.extractExpiry(analysisResult).stream())
+        .findFirst();
+
 
       // TODO: provision access
       throw new RuntimeException("NIY");

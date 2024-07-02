@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -108,7 +109,7 @@ public class GroupsResource {//TODO: test
         // TODO: create token, send out
       }
       else {
-        joinOp.execute();
+        var principal = joinOp.execute();
 
         return GroupInfo.fromJitGroup(
           group,
@@ -116,7 +117,7 @@ public class GroupsResource {//TODO: test
             JoinStatusInfo.JOINED,
             new MembershipInfo(
               true,
-              joinOp.expiry()
+              Optional.ofNullable(principal.expiry())
                 .map(Instant::getEpochSecond)
                 .get()),
             List.of(), // Don't repeat constraints
