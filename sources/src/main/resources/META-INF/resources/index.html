@@ -258,7 +258,7 @@
                                     </span>
                                     <span class="mdc-notched-outline__trailing"></span>
                                 </span>
-                                <input type="text" class="mdc-text-field__input" id="jit-groupinfo-request-input-${input.name}" required autocomplete="off">
+                                <input type="text" class="mdc-text-field__input" id="jit-groupinfo-request-input-${input.name}" ${input.isRequired ? 'required' : ''} autocomplete="off">
                             </label>`);
                         this.form.append(element);
 

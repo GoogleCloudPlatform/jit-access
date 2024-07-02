@@ -169,6 +169,7 @@ public class GroupsResource {//TODO: test
             i.name(),
             i.displayName(),
             i.type().getSimpleName(),
+            i.isRequired(),
             i.get(),
             i.minInclusive().orElse(null),
             i.maxInclusive().orElse(null)))
@@ -214,7 +215,8 @@ public class GroupsResource {//TODO: test
     @NotNull String name,
     @NotNull String description,
     @NotNull String type,
-    @NotNull String value, // TODO: is-required
+    boolean isRequired,
+    @NotNull String value,
     @Nullable String minInclusive,
     @Nullable String maxInclusive
   ) {}
