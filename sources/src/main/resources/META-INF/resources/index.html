@@ -222,31 +222,34 @@
                 }
 
                 model.content.access.input.forEach(item => {
-                    this.addInput(item);
+                    this._addInput(item);
                 });
 
                 $('#jit-groupinfo-request-button').click(async () => {
+                    var dialog = new WaitDialog();
+                    dialog.showAsync();
+
                     try {
-                        var dialog = new WaitDialog();
-                        dialog.showAsync();
-                        await new Promise(r => setTimeout(r, 2000));
-                        dialog.close();
-                        throw "NIY";
+                        await model.joinGroup(
+                            model.environment,
+                            model.content.system.name,
+                            model.content.name) // https://stackoverflow.com/questions/1960240/jquery-ajax-submit-form
                     }
                     catch (e) {
-                        if (e) {
-                            document.appbar.showError(e, false);
-                        }
+                        document.appbar.showError(e, false);
+                    }
+                    finally {
+                        dialog.close();
                     }
                 });
             }
 
-            dateFromDuration(durationInSeconds) {
+            _dateFromDuration(durationInSeconds) {
                 // Cut seconds to ensure compatibility with datetime-local fields.
                 return new Date(new Date().getTime() + durationInSeconds * 1000).toISOString().substring(0, 16);
             }
 
-            addInput(input) {
+            _addInput(input) {
                 switch (input.type) {
                     case "String": {
                         const element = $(`
@@ -289,11 +292,11 @@
                         this.form.append(element);
 
                         if (input.minInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('min', this.dateFromDuration(input.minInclusive));
+                            $(`#jit-groupinfo-request-input-${input.name}`).prop('min', this._dateFromDuration(input.minInclusive));
                         }
 
                         if (input.maxInclusive) {
-                            $(`#jit-groupinfo-request-input-${input.name}`).prop('max', this.dateFromDuration(input.maxInclusive));
+                            $(`#jit-groupinfo-request-input-${input.name}`).prop('max', this._dateFromDuration(input.maxInclusive));
                         }
 
                         const textField = new mdc.textField.MDCTextField(document.querySelector(`#jit-groupinfo-request-form-${input.name}`));

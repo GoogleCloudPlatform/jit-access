@@ -330,9 +330,9 @@ class AppBar {
         }
 
         //
-        // Load model.
+        // Initialize model.
         //
-        await this.model.load(this.environment, resource);
+        await this.model.initialize(this.environment, resource);
 
         $("#signed-in-user").text(this.model.context.subject.email);
         $("#application-version").text(this.model.context.application.version);

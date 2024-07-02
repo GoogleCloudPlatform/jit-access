@@ -37,7 +37,7 @@ class Model {
         return this._context;
     }
 
-    async load(environment, resource) {
+    async initialize(environment, resource) {
         console.assert(environment);
         console.assert(resource);
 
@@ -74,6 +74,11 @@ class Model {
         catch (error) {
             throw this._formatError(error);
         }
+    }
+
+    async joinGroup(environment, system, group) {
+        await new Promise(r => setTimeout(r, 2000));
+        throw "NIY";
     }
 }
 
