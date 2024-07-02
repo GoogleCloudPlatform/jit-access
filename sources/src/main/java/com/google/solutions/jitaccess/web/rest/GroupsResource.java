@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,6 +125,7 @@ public class GroupsResource {//TODO: test
             List.of(), // Don't repeat constraints
             joinOp.input()
               .stream()
+              .sorted(Comparator.comparing(p -> p.name()))
               .map(InputInfo::fromProperty)
               .toList()));
       }
@@ -218,6 +220,7 @@ public class GroupsResource {//TODO: test
           .map(c -> new ConstraintInfo(c.name(), c.displayName()))
           .toList(),
         analysis.input().stream()
+          .sorted(Comparator.comparing(p -> p.name()))
           .map(InputInfo::fromProperty)
           .toList());
     }

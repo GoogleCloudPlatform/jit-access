@@ -337,6 +337,11 @@ public class RuntimeEnvironment {
               "You must provide a justification",
               List.of(new CelConstraint.StringVariable("justification", "Justification", 1, 100)),
               "input.justification.matches('^b/[0-9]+$')"),
+            new CelConstraint(
+              "tos",
+              "You must accept the ToS",
+              List.of(new CelConstraint.BooleanVariable("tos_accepted", "Accept terms of services")),
+              "tos_accepted"),
             new ExpiryConstraint(Duration.ofMinutes(1), Duration.ofDays(1))))))
       .add(new JitGroupPolicy(
         "test-group-fixed",

@@ -257,13 +257,15 @@
                                 <span class="mdc-notched-outline">
                                     <span class="mdc-notched-outline__leading"></span>
                                     <span class="mdc-notched-outline__notch">
-                                        <span class="mdc-floating-label">${input.description}</span>
+                                        <span class="mdc-floating-label jit-description"></span>
                                     </span>
                                     <span class="mdc-notched-outline__trailing"></span>
                                 </span>
                                 <input type="text" class="mdc-text-field__input" name="${input.name}" ${input.isRequired ? 'required' : ''} autocomplete="off">
                             </label>`);
                         this.form.append(element);
+
+                        element.find('.jit-description').text(input.description);
 
                         if (input.minInclusive) {
                             element.find('input').prop('minlength', input.minInclusive);
@@ -277,19 +279,48 @@
                         this.formFields.push(textField);
                         break;
                     }
+
+                    case "Boolean": {
+                        const element = $(`
+                            <div class="mdc-form-field" style="display: flex">
+                              <div class="mdc-checkbox">
+                                <input type="checkbox" class="mdc-checkbox__native-control" name="${input.name}" id="${input.name}"/>
+                                <div class="mdc-checkbox__background">
+                                  <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                    <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                  </svg>
+                                  <div class="mdc-checkbox__mixedmark"></div>
+                                </div>
+                                <div class="mdc-checkbox__ripple"></div>
+                                <div class="mdc-checkbox__focus-ring"></div>
+                              </div>
+                              <label class="jit-description" for="${input.name}"></label>
+                            </div>`);
+                        this.form.append(element);
+
+                        element.find('.jit-description').text(input.description);
+
+                        const checkbox = new mdc.checkbox.MDCCheckbox(element.find('.mdc-checkbox').get(0));
+                        const formField = new mdc.formField.MDCFormField(element.get(0));
+                        formField.input = checkbox;
+                        break;
+                    }
+
                     case "Duration": {
                         const element = $(`
                              <label class="mdc-text-field mdc-text-field--outlined">
                                  <span class="mdc-notched-outline">
                                      <span class="mdc-notched-outline__leading"></span>
                                      <span class="mdc-notched-outline__notch">
-                                        <span class="mdc-floating-label">${input.description}</span>
+                                        <span class="mdc-floating-label jit-description"></span>
                                      </span>
                                      <span class="mdc-notched-outline__trailing"></span>
                                  </span>
                                  <input type="datetime-local" class="mdc-text-field__input" name="${input.name}" ${input.isRequired ? 'required' : ''}>
                              </label>`);
                         this.form.append(element);
+
+                        element.find('.jit-description').text(input.description);
 
                         if (input.minInclusive) {
                             element.find('input').prop('min', this._dateFromDuration(input.minInclusive));
@@ -303,6 +334,8 @@
                         this.formFields.push(textField);
                         break;
                     }
+
+                    //TODO: Int
 
                     default:
                         break;
