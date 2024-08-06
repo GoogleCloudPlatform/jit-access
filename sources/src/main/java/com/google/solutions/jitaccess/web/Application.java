@@ -132,7 +132,7 @@ public class Application {
     //
     this.logger = new StructuredLogger.ApplicationContextLogger(System.out);
 
-    if (!this.configuration.isSmtpConfigured()) {
+    if (!this.configuration.isSmtpConfigured() && !this.isRunningOnAppEngine()) {
       logger.warn(
         EventIds.STARTUP,
         "The SMTP configuration is incomplete");
@@ -413,6 +413,10 @@ public class Application {
       return new DebugProposalHandler(tokenSigner);
     }
     else if (configuration.isSmtpConfigured()) {
+      //
+      // Use regular SMTP client.
+      //
+
       var smtpOptions = new SmtpClient.Options(
         this.configuration.smtpHost.value(),
         this.configuration.smtpPort.value(),
@@ -446,7 +450,24 @@ public class Application {
           this.configuration.notificationTimeZone.value(),
           this.configuration.proposalTimeout.value()));
     }
+    else if (isRunningOnAppEngine()) {
+      //
+      // Use AppEngine mail client.
+      //
+      return new MailProposalHandler(
+        tokenSigner,
+        new EmailMapping(this.configuration.smtpAddressMapping.value()),
+        new AppEngineMailClient(
+          "JIT Access",
+          new EmailAddress(String.format("jit-access@%s.appspotmail.com", this.projectId))),
+        new MailProposalHandler.Options(
+          this.configuration.notificationTimeZone.value(),
+          this.configuration.proposalTimeout.value()));
+    }
     else {
+      //
+      // Use pseudo-handler.
+      //
       return new ProposalHandler() {
         @Override
         public @NotNull ProposalHandler.ProposalToken propose(
