@@ -756,6 +756,9 @@ public class CloudIdentityGroupsClient {
 
   public record MembershipId(String id) {}
 
+  /**
+   * Constructor options, to be injected using CDI.
+   */
   public record Options(
     @NotNull String customerId
   ) {
