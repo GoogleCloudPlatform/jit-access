@@ -142,6 +142,9 @@ public class RequireIapPrincipalFilter implements ContainerRequestFilter {
       "Authenticated IAP principal");
   }
 
+  /**
+   * Constructor options, to be injected using CDI.
+   */
   public record Options(
     /**
      * Enable pseudo-authentication for debugging.

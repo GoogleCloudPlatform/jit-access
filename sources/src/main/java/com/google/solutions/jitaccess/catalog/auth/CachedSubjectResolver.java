@@ -80,6 +80,9 @@ public class CachedSubjectResolver extends SubjectResolver {
     }
   }
 
+  /**
+   * Constructor options, to be injected using CDI.
+   */
   public record Options(
     @NotNull Duration cacheDuration
   ) {}
